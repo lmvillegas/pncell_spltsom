@@ -1,0 +1,29 @@
+#
+# File name: ea_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#--------------------------------------------------------
+# Integration for SmartDBA
+#
+# Description : This file defines an event class used for propagating 
+#               Enterprise Access events to a Cell
+#--------------------------------------------------------
+
+MC_EV_CLASS:
+    EA_EVENT ISA EVENT
+    DEFINES
+    {
+        ea_event_data_names             : LIST_OF STRING;
+        ea_event_data_values            : LIST_OF STRING;
+        ea_recovery_action_url          : STRING;
+        ea_recovery_action_action       : STRING;
+        ea_recovery_action_descr        : STRING;
+        ea_recovery_action_tool         : STRING;
+        ea_monitorable_id               : STRING;
+        ea_dbms_source_object_name      : STRING;
+        ea_dbms_source_object_type      : STRING;
+        ea_dbms_source_partition_name   : STRING;
+        ea_threshold_parameter_descr    : STRING;
+    };
+END

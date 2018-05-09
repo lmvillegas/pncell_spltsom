@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ `uname` = "HP-UX" ]
+then
+	echo "ping $mc_host_address -n 5"
+	ping $mc_host_address -n 5
+else
+	echo "ping -c 5 $mc_host_address"
+	ping -c 5 $mc_host_address
+fi
+

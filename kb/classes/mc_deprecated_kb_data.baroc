@@ -1,0 +1,66 @@
+#
+# File name: mc_deprecated_kb_data.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------
+#
+# Data classes provided in the default KB
+# and supporting the Service Management Model
+#
+# The parent class is system defined (internal class)
+#
+#====================================================
+# DEPRECATED KB DATA TABLES
+#====================================================
+#
+# 1=DEPRECATED_SCHEDULE
+# 2=DEPRECATED_POLICY
+#
+# A schedule is said "active"
+# when is_active_from <= UTC_TIME + sched_utc_offset <= is_active_until
+# otherwise it is said "inactive"
+#
+# A notification/propagation policy applies if all its
+# conditions are met and the attached schedule is "active"
+#
+#-----+---------------------+------------------------
+# 1   | schedule_name       | name of the schedule
+#     | day_of_week    1..7 | name of the day
+#     | is_active_from      | day starts at hr:mn
+#     | is_active_until     | day ends at hr:mn
+#     | sched_utc_offset    | timezone offset [-12, +12]
+#-----+---------------------+------------------------
+# 2   | policy_name         | name of the policy
+#     | class               | valid event [super]class
+#     | high_severity       | high end of severity range
+#     | low_severity        | low end of severity range
+#     | location_list       | valid source location(s)
+#-----+---------------------+------------------------
+MC_DATA_CLASS:
+	MC_DEPRECATED_KB_DATA ISA DATA DEFINES
+	{
+	};
+END
+
+MC_DATA_CLASS:
+	DEPRECATED_SCHEDULE ISA MC_DEPRECATED_KB_DATA DEFINES
+	{
+		schedule_name: STRING, key = yes;         #   1,  2,  3,  4,  5,  6,  7
+		day_of_week:     LIST_OF STRING, default = [Mon,Tue,Wed,Thu,Fri,Sat,Sun], parse = no;
+		is_active_from:  LIST_OF STRING, default = [ '', '', '', '', '', '', ''];
+		is_active_until: LIST_OF STRING, default = [ '', '', '', '', '', '', ''];
+		sched_utc_offset: INTEGER, default = 0;
+	};
+END
+
+MC_DATA_CLASS:
+	DEPRECATED_POLICY ISA MC_DEPRECATED_KB_DATA DEFINES
+	{
+		policy_name: STRING, key = yes;
+		class: STRING, default = "EVENT";
+		high_severity: SEVERITY, default = DOWN;
+		low_severity: SEVERITY, default = OK;
+		location_list: LIST_OF STRING;
+	};
+END

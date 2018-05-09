@@ -1,0 +1,15 @@
+#
+# File name: state_change.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+MC_EV_CLASS:
+	SMC_STATE_CHANGE ISA EVENT DEFINES
+	{
+		mc_smc_id: STRING, dup_detect=yes ;
+		smc_status: SIM_NOTIFICATION_STATUS;
+		smc_previous_status: SIM_NOTIFICATION_STATUS;
+		msg: default='A Service Management Component status has changed';
+		mc_smc_impact: default=NON_ELECTABLE;
+	};
+END

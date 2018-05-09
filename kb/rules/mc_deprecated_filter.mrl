@@ -1,0 +1,31 @@
+#
+# File name: mc_deprecated_filter.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# This rule uses the data defined in the DEPRECATED_FILTER_POLICY
+# instance to filter out the events where:
+# - the class of the event matches a specific [super-]class
+# - the severity of the event is within a given severity range
+# - the location the event is originated from is a valid location
+# - the message of the event matches a regular expression (if any)
+#
+#----------------------------------------------------
+
+filter filter_using_dynamic_policy: NOPASS
+	EVENT ($EV) where [$EM_KB_OPTIONS.dfilter_enabled == YES]
+    using
+    {
+    	DEPRECATED_FILTER_POLICY ($POL) where
+    	[
+			$EV.CLASS subclass_of $POL.class AND
+			($POL.low_severity <= $EV.severity AND $EV.severity <= $POL.high_severity) AND
+			($POL.location_list == [] OR $EV.mc_location within $POL.location_list) AND
+    		($POL.reg_exp_str == "" OR (match_regex($EV.msg, $POL.reg_exp_str, '')))
+    	]
+    }
+END
+

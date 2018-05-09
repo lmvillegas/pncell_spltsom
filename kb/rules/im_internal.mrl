@@ -1,0 +1,1407 @@
+#
+# File name: im_internal.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: im_internal.mrl
+# Version: -v
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#===============================================================================
+# Enrichment rules
+#
+# Uses IM_ENRICHMENT_POLICY entries to control enrichment
+#-------------------------------------------------------------------------------
+
+#----------------------------------------------------
+# Normalize mc_host to lower case
+#----------------------------------------------------
+refine im_internal_lowercase_hostname:
+    EVENT ($EV)
+    {
+        $EV.mc_host=lower($EV.mc_host);
+    }
+END
+
+refine im_internal_lowercase_hostname2:
+    MC_CELL_CONTROL ($EV)
+    {
+        $EV.mc_host=lower($EV.mc_host);
+    }
+END
+
+#----------------------------------------------------
+# Enrich the mc_location, mc_service, and msg slots
+#----------------------------------------------------
+refine im_internal_enrichment:
+    using_policy
+    {
+        IM_ENRICHMENT_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    {
+        if ($POL.override_event_severity == 1) then
+        {
+            $EV.severity = $POL.event_severity;
+        };
+        if ($POL.override_event_priority == 1) then
+        {
+            $EV.mc_priority = $POL.event_priority;
+        };
+        if ($POL.override_event_category == 1) then
+        {
+            $EV.mc_event_category = $POL.event_category;
+        };
+        if ($POL.override_location == 1) then
+        {
+            $EV.mc_location = $POL.location;
+        }
+        else
+        {
+            if ($EV.mc_location == "") then
+            {
+                if ($POL.location != "") then
+                {
+                    $EV.mc_location = $POL.location;
+                }
+                else
+                {
+                    if ($EM_KB_OPTIONS.default_location != "") then
+                    {
+                        $EV.mc_location = $EM_KB_OPTIONS.default_location;
+                    }
+                    else
+                    {
+                        $HLEN = len($EV.mc_host);
+                        $ZPOS = strpart($EV.mc_host, '.');
+                        if ($HLEN == 0 OR $ZPOS == 0 OR $ZPOS == $HLEN) then
+                        {
+                            $EV.mc_location = "Unknown";
+                        }
+                        else
+                        {
+                            $EV.mc_location = substring($EV.mc_host, $ZPOS, $HLEN - $ZPOS);
+                        };
+                    };
+                };
+            };
+        };
+        if ($POL.override_service == 1 OR ($EV.mc_service == "" AND $POL.service != "")) then
+        {
+            $EV.mc_service = $POL.service;
+        };
+        if ($POL.override_msg == 1 AND $POL.msg_format != "") then
+        {
+            $MSG = mapslots([$EV], $POL.msg_format, $POL.msg_slots);
+            $EV.msg = $MSG;
+        };
+        opadd($EV, $POL.name, "ENRICHMENT", "");
+    }
+END
+
+#----------------------------------------------------
+# Normalize mc_host to lower case
+#----------------------------------------------------
+refine im_internal_default_location:
+    EVENT ($EV) where [ $EV.mc_location == "" ]
+    {
+        if ($EM_KB_OPTIONS.default_location != "") then
+        {
+            $EV.mc_location = $EM_KB_OPTIONS.default_location;
+        }
+        else
+        {
+            $HLEN = len($EV.mc_host);
+            $ZPOS = strpart($EV.mc_host, '.');
+            if ($HLEN == 0 OR $ZPOS == 0 OR $ZPOS == $HLEN) then
+            {
+                $EV.mc_location = "Unknown";
+            }
+            else
+            {
+                $EV.mc_location = substring($EV.mc_host, $ZPOS, $HLEN - $ZPOS);
+            };
+        };
+    }
+END
+
+refine im_internal_default_location2:
+    MC_CELL_CONTROL ($EV) where [ $EV.mc_location == "" ]
+    {
+        if ($EM_KB_OPTIONS.default_location != "") then
+        {
+            $EV.mc_location = $EM_KB_OPTIONS.default_location;
+        }
+        else
+        {
+            $HLEN = len($EV.mc_host);
+            $ZPOS = strpart($EV.mc_host, '.');
+            if ($HLEN == 0 OR $ZPOS == 0 OR $ZPOS == $HLEN) then
+            {
+                $EV.mc_location = "Unknown";
+            }
+            else
+            {
+                $EV.mc_location = substring($EV.mc_host, $ZPOS, $HLEN - $ZPOS);
+            };
+        };
+    }
+END
+
+#===============================================================================
+# Data Driven Enrichment rule
+#
+# Uses IM_DDEN_POLICY entries to control dynamic data enrichment
+#-------------------------------------------------------------------------------
+
+index dden_index : IM_DDEN_POLICY sorted [execution_order] END
+
+execute dden_policy_rule:
+        using_policy ALL
+        {
+            index dden_index [] ($POL) where
+                    [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+        }
+        $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+when $EV.severity       
+ {
+                $L = get_list_slotvalues( [$EV], $POL.match_fields );
+
+                find_match_entry( "DDEN_MATCH_TABLE", $POL.lookup_table_tag,
+                           $L,
+                           $MATCH );
+
+                apply_match_entry($MATCH, $L, [ $EV ], $L_OUT);  
+                set_list_slotvalues( [$EV], $POL.output_fields, $L_OUT );
+
+                opadd($EV, $POL.name, "Dynamic Data Enrichment", "");
+
+                if ($POL.trace == YES) then
+                {
+                    ntadd($EV, concat(["DDEN policy: ", $POL.name, 
+                               " matching: ", $MATCH.name, " in  ", $MATCH.tag]));
+                };
+        }
+END
+
+execute dden_policy_rule2:
+        using_policy ALL
+        {
+            index dden_index [] ($POL) where
+                    [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND $POL.redo_fields != [] ]
+        }
+        $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+when($EV,listwalk($POL.redo_fields), '', '', '', '', yes)
+        {
+                $L = get_list_slotvalues( [$EV], $POL.match_fields );
+
+                find_match_entry( "DDEN_MATCH_TABLE", $POL.lookup_table_tag,
+                           $L,
+                           $MATCH );
+
+                apply_match_entry($MATCH, $L, [ $EV ], $L_OUT);  
+                set_list_slotvalues( [$EV], $POL.output_fields, $L_OUT );
+
+                opadd($EV, $POL.name, "Dynamic Data Enrichment", "redone");
+
+                if ($POL.trace == YES) then
+                {
+                    ntadd($EV, concat(["DDEN policy: ", $POL.name, 
+                               " matching: ", $MATCH.name, " in  ", $MATCH.tag]));
+                };
+        }
+END
+
+
+#===============================================================================
+# Blackout rule
+#
+# Uses IM_BLACKOUT_POLICY entries to control suppression
+#-------------------------------------------------------------------------------
+
+refine im_internal_blackout:
+    using_policy ALL
+    {
+        IM_BLACKOUT_POLICY ($POL) where [ ($POL.enabled == 1) ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == OPEN ]
+    {
+    if ($POL.during_schedule == YES AND $POL.during_schedule_op == BLACKOUT) then
+       {  
+       	   $EV.status = BLACKOUT;
+           opadd($EV, $POL.name, "BLACKED_OUT", "");
+       };
+    }
+END
+
+execute im_internal_blackout_create_blackout_table_instance:
+    using_policy ALL
+    {
+        IM_BLACKOUT_POLICY ($POL)
+	 where [ ($POL.enabled == 1) AND ( $POL.start_action != '' OR $POL.end_action != '' )]
+    }
+    $POL.selector_ecf ($EV)
+    when $EV.event_handle
+    {
+	   new_data($BET, IM_BLACKOUT_EVENT_TABLE, [policy_udid = $POL.mc_udid, event_ueid = $EV.mc_ueid]);	
+    }
+END
+
+delete im_internal_delete_blackout:
+    EVENT ($EV) 
+    using ALL { IM_BLACKOUT_EVENT_TABLE ($BET) where [$BET.event_ueid == $EV.mc_ueid] }
+    {
+	remove_data($BET);
+    }
+END
+
+filter im_internal_blackout_filter: NOPASS
+    using_policy
+    {
+        IM_BLACKOUT_POLICY ($POL) where [ $POL.enabled == 1 AND $POL.during_schedule == YES AND $POL.during_schedule_op == FILTER ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == OPEN ]
+END
+
+#===============================================================================
+# Data Driven Blackout rule
+#
+# Uses IM_DDBL_POLICY entries to control dynamic data blackout
+#-------------------------------------------------------------------------------
+
+index ddbl_index : IM_DDBL_POLICY sorted [execution_order] END
+
+refine ddbl_policy_rule:
+     using_policy ALL
+     {
+         index ddbl_index [] ($POL) where
+                 [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+     }
+     $POL.selector_ecf ($EV) where [ $EV.status == OPEN ]
+     {
+         $L = get_list_slotvalues( [$EV], $POL.match_fields );
+
+         find_match_entry( "DDBL_MATCH_TABLE", $POL.lookup_table_tag,
+                           $L,
+                           $MATCH );
+
+         if ((($MATCH.active_timeframes == []
+             OR tf_active($MATCH.active_timeframes))
+             AND NOT tf_active($MATCH.except_timeframes)) AND
+             (($MATCH.active_global_timeframes == [] 
+             OR tf_udid_active($MATCH.active_global_timeframes)) 
+             AND NOT tf_udid_active($MATCH.except_global_timeframes))) then
+         {
+             $EV.status = BLACKOUT;
+             opadd($EV, $POL.name, "BLACKED_OUT", $MATCH.name);
+         };
+         if ($POL.trace == YES) then
+         {
+             ntadd($EV, concat(["DDBL policy: ", $POL.name, 
+                               " matching: ", $MATCH.name, " in  ", $MATCH.tag, ". Status = ", $EV.status ]));
+         };
+    }
+END
+
+#===============================================================================
+# Suppression rule
+#
+# Uses IM_SUPPRESSION_POLICY entries to control suppression
+#-------------------------------------------------------------------------------
+
+filter im_internal_suppression: NOPASS
+    using_policy
+    {
+        IM_SUPPRESSION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV)
+END
+
+#===============================================================================
+# Closure rule
+#-------------------------------------------------------------------------------
+
+# IM_CLOSURE_POLICY perform below operation -
+#   1. Close the existing events. Event criteria is specified in the closed_events slot
+#   2. If supp_closing_event is selected then the new event is also dropped.
+new im_internal_closure:
+    using_policy ALL
+    {
+        IM_CLOSURE_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES 
+		                AND $POL.closed_events != '' ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    updates ALL $POL.closed_events ($CLOSE_EV) where [ $CLOSE_EV.status != CLOSED AND $CLOSE_EV.status != BLACKOUT ]
+    within $POL.time_window
+    {
+		$CLOSE_EV.status = CLOSED;
+		opadd($CLOSE_EV, $POL.name, "EVENT_CLOSED", "");
+		$CLOSE_EV.mc_timeout=0;
+		if ($POL.supp_closing_event == 1) then
+		{
+			drop_new;
+		}
+    }
+END
+
+# IM_CLOSURE_POLICY is used to self close the events on the basis of the when criteria
+execute im_internal_self_closure:
+    using_policy ALL
+    {
+        IM_CLOSURE_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES 
+		                  AND $POL.when_slot != '' AND $POL.when_operator != '' AND $POL.when_value != '' ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+	when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value)
+    {
+		opadd($EV, $POL.name, "EVENT_CLOSED", "");
+        $EV.status = CLOSED;
+    }
+END
+
+#===============================================================================
+# Recurrence rules
+#-------------------------------------------------------------------------------
+
+# IM_RECURRENCE_POLICY perform below operations -
+#  1. Combines duplicate events into one event
+#  2. Maintain a counter of number of events 
+#  3. Update the msg, severity, priority, parameter slot
+
+new im_internal_recurrence:
+    using_policy
+    {
+        IM_RECURRENCE_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND $POL.update_events == "" ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    updates duplicate ($OLD_EV) where [ $OLD_EV.status != CLOSED AND $OLD_EV.status != BLACKOUT ]
+    within $POL.time_window
+    {
+        $OLD_EV.repeat_count = $OLD_EV.repeat_count + 1;
+        $OLD_EV.mc_timeout = $EV.mc_timeout;
+        if ($POL.update_severity == 1) then
+        {
+            if ($POL.keep_highest_sev == 1) then
+            {
+                if ($EV.severity > $OLD_EV.severity) then
+                {
+                    $OLD_EV.severity = $EV.severity;
+                };
+            }
+            else
+            {
+                $OLD_EV.severity = $EV.severity;
+            };
+        };
+        if ($POL.update_priority == 1) then
+        {
+            if ($POL.keep_highest_pri == 1) then
+            {
+                if ($EV.mc_priority > $OLD_EV.mc_priority) then
+                {
+                    $OLD_EV.mc_priority = $EV.mc_priority;
+                };
+            }
+            else
+            {
+                $OLD_EV.mc_priority = $EV.mc_priority;
+            };
+        };
+        if ($POL.update_msg == 1) then
+        {
+            $OLD_EV.msg = $EV.msg;
+        };
+        if ($POL.update_parameter == 1) then
+        {
+            $OLD_EV.mc_parameter       = $EV.mc_parameter;
+            $OLD_EV.mc_parameter_value = $EV.mc_parameter_value;
+        };
+		if (opqry($OLD_EV, $POL.name, "RECURRENCE", $OLD_CNT, $OP_NR)) then
+		{
+			if (stringtoint($OLD_CNT, $OLD_CNT1)) then
+			{
+				$NEW_CNT = $OLD_CNT1 + 1;
+			}
+			else
+			{
+				$NEW_CNT = 2;
+			};
+			opset($OLD_EV, $OP_NR, $POL.name, "RECURRENCE", inttostring($NEW_CNT));
+		}	
+		else	
+		{
+			opadd($OLD_EV, $POL.name, "RECURRENCE", '1');
+		};
+        drop_new;
+    }
+END
+
+# IM_RECURRENCE_POLICY perform below operations -
+#  1. Combines old events into one event and event criteria is specified in the update_events slot 
+#  2. Maintain a counter of number of events 
+#  3. Update the msg, severity, priority, parameter slot
+
+new im_internal_update:
+    using_policy
+    {
+        IM_RECURRENCE_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND $POL.update_events != "" ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+	updates $POL.update_events ($OLD_EV) where [ $OLD_EV.status != CLOSED AND $OLD_EV.status != BLACKOUT ]
+    within $POL.time_window
+    {
+        $OLD_EV.repeat_count = $OLD_EV.repeat_count + 1;
+        $OLD_EV.mc_timeout = $EV.mc_timeout;
+        if ($POL.update_severity == 1) then
+        {
+            if ($POL.keep_highest_sev == 1) then
+            {
+                if ($EV.severity > $OLD_EV.severity) then
+                {
+                    $OLD_EV.severity = $EV.severity;
+                };
+            }
+            else
+            {
+                $OLD_EV.severity = $EV.severity;
+            };
+        };
+        if ($POL.update_priority == 1) then
+        {
+            if ($POL.keep_highest_pri == 1) then
+            {
+                if ($EV.mc_priority > $OLD_EV.mc_priority) then
+                {
+                    $OLD_EV.mc_priority = $EV.mc_priority;
+                };
+            }
+            else
+            {
+                $OLD_EV.mc_priority = $EV.mc_priority;
+            };
+        };
+        if ($POL.update_msg == 1) then
+        {
+            $OLD_EV.msg = $EV.msg;
+        };
+        if ($POL.update_parameter == 1) then
+        {
+            $OLD_EV.mc_parameter       = $EV.mc_parameter;
+            $OLD_EV.mc_parameter_value = $EV.mc_parameter_value;
+        };
+		if (opqry($OLD_EV, $POL.name, "RECURRENCE", $OLD_CNT, $OP_NR)) then
+		{
+			if (stringtoint($OLD_CNT, $OLD_CNT1)) then
+			{
+				$NEW_CNT = $OLD_CNT1 + 1;
+			}
+			else
+			{
+				$NEW_CNT = 2;
+			};
+			opset($OLD_EV, $OP_NR, $POL.name, "RECURRENCE", inttostring($NEW_CNT));
+		}	
+		else	
+		{
+			opadd($OLD_EV, $POL.name, "RECURRENCE", '1');
+		};
+        drop_new;
+    }
+END
+
+# IM_RECURRENCE_POLICY to control recurrence of duplicate event for blackout event
+new im_internal_recurrence_blackout:
+    using_policy
+    {
+        IM_RECURRENCE_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND $POL.update_events == "" ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == BLACKOUT ]
+    updates duplicate ($OLD_EV) where [ $OLD_EV.status == BLACKOUT ]
+    within $POL.time_window
+    {
+        $OLD_EV.repeat_count = $OLD_EV.repeat_count + 1;
+        $OLD_EV.mc_timeout = $EV.mc_timeout;
+        if ($POL.update_severity == 1) then
+        {
+            if ($POL.keep_highest_sev == 1) then
+            {
+                if ($EV.severity > $OLD_EV.severity) then
+                {
+                    $OLD_EV.severity = $EV.severity;
+                };
+            }
+            else
+            {
+                $OLD_EV.severity = $EV.severity;
+            };
+        };
+        if ($POL.update_priority == 1) then
+        {
+            if ($POL.keep_highest_pri == 1) then
+            {
+                if ($EV.mc_priority > $OLD_EV.mc_priority) then
+                {
+                    $OLD_EV.mc_priority = $EV.mc_priority;
+                };
+            }
+            else
+            {
+                $OLD_EV.mc_priority = $EV.mc_priority;
+            };
+        };
+        if ($POL.update_msg == 1) then
+        {
+            $OLD_EV.msg = $EV.msg;
+        };
+        if ($POL.update_parameter == 1) then
+        {
+            $OLD_EV.mc_parameter       = $EV.mc_parameter;
+            $OLD_EV.mc_parameter_value = $EV.mc_parameter_value;
+        };
+	if (opqry($OLD_EV, $POL.name, "RECURRENCE", $OLD_CNT, $OP_NR)) then
+	{
+		if (stringtoint($OLD_CNT, $OLD_CNT1)) then
+		{
+			$NEW_CNT = $OLD_CNT1 + 1;
+		}
+		else
+		{
+			$NEW_CNT = 2;
+		};
+		opset($OLD_EV, $OP_NR, $POL.name, "RECURRENCE", inttostring($NEW_CNT));
+	}	
+	else	
+	{
+		opadd($OLD_EV, $POL.name, "RECURRENCE", '1');
+	};
+        drop_new;
+    }
+END
+
+# IM_RECURRENCE_POLICY to control recurrence of other class event for blackout event
+new im_internal_update_blackout:
+    using_policy
+    {
+        IM_RECURRENCE_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES  AND $POL.update_events != "" ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == BLACKOUT ]
+	updates $POL.update_events ($OLD_EV) where [ $OLD_EV.status == BLACKOUT ]
+    within $POL.time_window
+    {
+        $OLD_EV.repeat_count = $OLD_EV.repeat_count + 1;
+        $OLD_EV.mc_timeout = $EV.mc_timeout;
+        if ($POL.update_severity == 1) then
+        {
+            if ($POL.keep_highest_sev == 1) then
+            {
+                if ($EV.severity > $OLD_EV.severity) then
+                {
+                    $OLD_EV.severity = $EV.severity;
+                };
+            }
+            else
+            {
+                $OLD_EV.severity = $EV.severity;
+            };
+        };
+        if ($POL.update_priority == 1) then
+        {
+            if ($POL.keep_highest_pri == 1) then
+            {
+                if ($EV.mc_priority > $OLD_EV.mc_priority) then
+                {
+                    $OLD_EV.mc_priority = $EV.mc_priority;
+                };
+            }
+            else
+            {
+                $OLD_EV.mc_priority = $EV.mc_priority;
+            };
+        };
+        if ($POL.update_msg == 1) then
+        {
+            $OLD_EV.msg = $EV.msg;
+        };
+        if ($POL.update_parameter == 1) then
+        {
+            $OLD_EV.mc_parameter       = $EV.mc_parameter;
+            $OLD_EV.mc_parameter_value = $EV.mc_parameter_value;
+        };
+	if (opqry($OLD_EV, $POL.name, "RECURRENCE", $OLD_CNT, $OP_NR)) then
+	{
+		if (stringtoint($OLD_CNT, $OLD_CNT1)) then
+		{
+			$NEW_CNT = $OLD_CNT1 + 1;
+		}
+		else
+		{
+			$NEW_CNT = 2;
+		};
+		opset($OLD_EV, $OP_NR, $POL.name, "RECURRENCE", inttostring($NEW_CNT));
+	}	
+	else	
+	{
+		opadd($OLD_EV, $POL.name, "RECURRENCE", '1');
+	};
+        drop_new;
+    }
+END
+
+
+#===============================================================================
+# Thresholding rules
+#
+# Uses IM_THRESHOLD_POLICY entries to control thresholding
+#-------------------------------------------------------------------------------
+
+regulate im_internal_threshold:
+    using_policy
+    {
+        IM_THRESHOLD_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.hold_events == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    hold $POL.num_events : $POL.dup_or_match within $POL.time_window
+    send {$POL.event_to_pass ; msg = cond(opadd($THIS, $POL.name, "THRESHOLD", ""), $THIS.msg, $THIS.msg); }
+    unless $POL.num_cont_events within $POL.cont_time_window
+    {
+        if ($POL.cont_end_operation == "CLOSE") then
+        {
+            $THIS.status = CLOSED;
+            opadd($THIS, $POL.name, "THRESHOLD_CLOSED", "");
+        };
+        if ($POL.cont_end_operation == "ACKNOWLEDGE") then
+        {
+            $THIS.status = ACK;
+            opadd($THIS, $POL.name, "THRESHOLD_ACKNOWLEDGED", "");
+        };
+    }
+END
+
+threshold im_internal_threshold:
+    using_policy
+    {
+        IM_THRESHOLD_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.hold_events == 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    when $POL.num_events : $POL.dup_or_match within $POL.time_window
+    {
+        if ($POL.thresh_sev_levels < -5) then
+        {
+            $EV.severity = $POL.thresh_severity;
+            opadd($EV, $POL.name, "THRESHOLD", $POL.thresh_severity);
+        }
+        else
+        {
+            if ($POL.thresh_sev_levels >= 0) then
+            {
+				if ($EV.severity < CRITICAL) then
+				{
+	                incr($EV.severity, $POL.thresh_sev_levels, CRITICAL);
+	            };
+            }
+            else
+            {
+				if ($EV.severity > OK) then
+				{
+	                decr($EV.severity, abs($POL.thresh_sev_levels), OK);
+	            };
+            };
+            opadd($EV, $POL.name, "THRESHOLD", $POL.thresh_sev_levels);
+        };
+    }
+END
+
+
+#===============================================================================
+# Escalation rules
+#
+# Uses IM_ESCALATION_POLICY entries to control escalation/de-escalation
+#-------------------------------------------------------------------------------
+
+new im_internal_escalation:
+    using_policy
+    {
+        IM_ESCALATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.time_limit > 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    triggers
+    {
+        set_timer($EV, $POL.time_limit, Event_Time_Escalate);
+    }
+END
+
+#---------------------------------------
+# Timer pop handling
+#---------------------------------------
+
+timer im_internal_escalation:
+    using_policy
+    {
+        IM_ESCALATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.time_limit > 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where 
+    [ 
+        $EV.status != CLOSED AND $EV.status != BLACKOUT 
+        AND ($POL.escalate_if_ack == 1 OR $EV.status != ACK) 
+        AND ($POL.escalate_if_assigned == 1 OR $EV.status != ASSIGNED)
+    ]
+    timer_info: equals Event_Time_Escalate
+    {
+        if ($POL.escalation_levels < -5) then
+        {
+            $EV.mc_priority = $POL.escalation_priority;
+            opadd($EV, $POL.name, "ESCALATION_TIME", $POL.escalation_priority);
+        }
+        else
+        {
+            if ($POL.escalation_levels >= 0) then
+            {
+                incr($EV.mc_priority, $POL.escalation_levels, PRIORITY_1);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.escalation_levels), PRIORITY_5);
+            };
+            opadd($EV, $POL.name, "ESCALATION_TIME", $POL.escalation_levels);
+        };
+    }
+END
+
+#---------------------------------------
+# Quntity Escalation handling
+#---------------------------------------
+
+threshold im_internal_escalation:
+    using_policy
+    {
+        IM_ESCALATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.quantity_esc_limit > 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    when $POL.quantity_esc_limit : $POL.dup_or_match within $POL.quantity_esc_time_limit
+    {
+        if ($POL.quantity_esc_levels < -5) then
+        {
+            $EV.mc_priority = $POL.quantity_esc_priority;
+            opadd($EV, $POL.name, "ESCALATION_QUANTITY", $POL.quantity_esc_priority);
+        }
+        else
+        {
+            if ($POL.quantity_esc_levels >= 0) then
+            {
+                incr($EV.mc_priority, $POL.quantity_esc_levels, PRIORITY_1);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.quantity_esc_levels), PRIORITY_5);
+            };
+            opadd($EV, $POL.name, "ESCALATION_QUANTITY", $POL.quantity_esc_levels);
+        };
+    }
+END
+
+
+#===============================================================================
+# Notification rule
+#
+# Uses IM_NOTIFICATION_POLICY entries to control escalation/de-escalation
+#-------------------------------------------------------------------------------
+
+execute im_internal_notification:
+    using_policy ALL
+    {
+        IM_NOTIFICATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND
+		   ($POL.when_slot != '' OR $POL.notify_on_operations != []) ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != BLACKOUT ]
+    using
+    { 
+        IM_NOTIFICATION_SERVICE ($SERV) where [ $SERV.name == $POL.notification_service ]
+    }
+    when $EV.status within $POL.notify_on_operations
+    {
+        if ($POL.notify_msg_format != "") then
+        {
+            $MSG = mapslots([$EV], $POL.notify_msg_format, $POL.notify_msg_slots);
+        }
+        else
+        {
+            $MSG = "";
+        };
+        if ($POL.notify_subject_format != "") then
+        {
+            $ESUBJECT = mapslots([$EV], $POL.notify_subject_format, $POL.notify_subject_slots);
+        }
+        else
+        {
+            $ESUBJECT = " ";
+        };
+		  if ($POL.notify_source != "") then
+        {
+            $ESOURCE = $POL.notify_source;
+        }
+        else
+        {
+            $ESOURCE = " ";
+        };
+	if ($POL.notify_targets != []) then
+        {
+	    $TARGETS=listtostr($POL.notify_targets, ', ');
+            if ($SERV.type == SERVICE_TYPE_GATEWAY) then
+            {
+                $TARGET_PARM = concat(["[",$TARGETS,"]"]);
+                send_to_ext($SERV.service, $EV, [NOTIFY_TARGETS,NOTIFY_MSG],[$TARGET_PARM, $MSG]);
+            }
+            else
+            {
+                if ($SERV.type == SERVICE_TYPE_COMMAND) then
+                {
+                    $POM_ENABLED = cellinfo(POMEnabled);
+                    $DISPLAY_DATE = time_stamp_to_str($EV.date_reception,$POL.date_format);
+                    $LOC = '';
+                    $VAL_SEV = 'ENUMVAL.SEVERITY.'||$EV.severity;
+                    $VAL_STAT = 'ENUMVAL.STATUS.'||$EV.status;
+                    $VAL_CLS = 'CLASS.'||$EV.CLASS;
+                    execute($EV,$SERV.service,[
+                       '-mp',$POM_ENABLED,
+                       '-ft',localize(kb,$LOC,[MAIL_To]),$TARGETS,
+                       '-ff',localize(kb,$LOC,[MAIL_From]),$ESOURCE,
+                       '-fd',localize(kb,$LOC,[MAIL_Date]),$DISPLAY_DATE,
+                       '-fs',localize(kb,$LOC,[MAIL_Subject]),$ESUBJECT,
+                       '-fm',localize(kb,$LOC,[MAIL_Msg]),$MSG,
+                       '-fr',localize(kb,$LOC,['ENUM.SEVERITY']),localize(kb,$LOC,[$VAL_SEV]),
+                       '-fa',localize(kb,$LOC,['ENUM.STATUS']),localize(kb,$LOC,[$VAL_STAT]),
+                       '-fc',localize(kb,$LOC,['SLOT.CORE_EVENT.CLASS']),localize(kb,$LOC,[$VAL_CLS])
+                       ],YES,NO);
+                };
+            };
+            opadd($EV, $POL.name, "NOTIFICATION_REQUEST", concat([$SERV.name,":",$TARGETS]));
+            add_to_list(concat([time_stamp_to_str(time_stamp(),'%c')," ","Notification requested via ",$SERV.name," for ",$TARGETS]), $EV.mc_notification_history);
+        };
+        if ($POL.auto_ack == 1) then
+        {
+            perform($EV, "im_operations.Acknowledge", []);
+        };
+        if ($POL.auto_assign == 1) then
+        {
+           perform($EV, "im_operations.AssignTo", [$POL.assign_to_user]);
+        };
+    }
+    when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value, $POL.from_operator, $POL.from_value, $POL.change_only)
+    {
+        if ($POL.notify_msg_format != "") then
+        {
+            $MSG = mapslots([$EV], $POL.notify_msg_format, $POL.notify_msg_slots);
+        }
+        else
+        {
+            $MSG = "";
+        };
+        if ($POL.notify_subject_format != "") then
+        {
+            $ESUBJECT = mapslots([$EV], $POL.notify_subject_format, $POL.notify_subject_slots);
+        }
+        else
+        {
+            $ESUBJECT = " ";
+        };
+		  if ($POL.notify_source != "") then
+        {
+            $ESOURCE = $POL.notify_source;
+        }
+        else
+        {
+            $ESOURCE = " ";
+        };
+	if ($POL.notify_targets != []) then
+        {
+	    $TARGETS=listtostr($POL.notify_targets, ', ');
+            if ($SERV.type == SERVICE_TYPE_GATEWAY) then
+            {
+                $TARGET_PARM = concat(["[",$TARGETS,"]"]);
+                send_to_ext($SERV.service, $EV, [NOTIFY_TARGETS,NOTIFY_MSG],[$TARGET_PARM, $MSG]);
+            }
+            else
+            {
+                if ($SERV.type == SERVICE_TYPE_COMMAND) then
+                {
+                    $POM_ENABLED = cellinfo(POMEnabled);
+                    $DISPLAY_DATE = time_stamp_to_str($EV.date_reception,$POL.date_format);
+                    $LOC = '';
+                    $VAL_SEV = 'ENUMVAL.SEVERITY.'||$EV.severity;
+                    $VAL_STAT = 'ENUMVAL.STATUS.'||$EV.status;
+                    $VAL_CLS = 'CLASS.'||$EV.CLASS;
+                    execute($EV,$SERV.service,[
+                       '-mp',$POM_ENABLED,
+                       '-ft',localize(kb,$LOC,[MAIL_To]),$TARGETS,
+                       '-ff',localize(kb,$LOC,[MAIL_From]),$ESOURCE,
+                       '-fd',localize(kb,$LOC,[MAIL_Date]),$DISPLAY_DATE,
+                       '-fs',localize(kb,$LOC,[MAIL_Subject]),$ESUBJECT,
+                       '-fm',localize(kb,$LOC,[MAIL_Msg]),$MSG,
+                       '-fr',localize(kb,$LOC,['ENUM.SEVERITY']),localize(kb,$LOC,[$VAL_SEV]),
+                       '-fa',localize(kb,$LOC,['ENUM.STATUS']),localize(kb,$LOC,[$VAL_STAT]),
+                       '-fc',localize(kb,$LOC,['SLOT.CORE_EVENT.CLASS']),localize(kb,$LOC,[$VAL_CLS])
+                       ],YES,NO);
+                };
+            };
+            opadd($EV, $POL.name, "NOTIFICATION_REQUEST", concat([$SERV.name,":",$TARGETS]));
+            add_to_list(concat([time_stamp_to_str(time_stamp(),'%c')," ","Notification requested via ",$SERV.name," for ",$TARGETS]), $EV.mc_notification_history);
+        };
+        if ($POL.auto_ack == 1) then
+        {
+            perform($EV, "im_operations.Acknowledge", []);
+        };
+        if ($POL.auto_assign == 1) then
+        {
+           perform($EV, "im_operations.AssignTo", [$POL.assign_to_user]);
+        };
+    }
+END
+
+execute im_internal_notification_without_when_condition:
+    using_policy ALL
+    {
+        IM_NOTIFICATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND 
+			($POL.when_slot == '' AND $POL.notify_on_operations == []) ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != BLACKOUT ]
+    using
+    { 
+        IM_NOTIFICATION_SERVICE ($SERV) where [ $SERV.name == $POL.notification_service ]
+    }
+    when $EV.event_handle
+    {
+        if ($POL.notify_msg_format != "") then
+        {
+            $MSG = mapslots([$EV], $POL.notify_msg_format, $POL.notify_msg_slots);
+        }
+        else
+        {
+            $MSG = "";
+        };
+        if ($POL.notify_subject_format != "") then
+        {
+            $ESUBJECT = mapslots([$EV], $POL.notify_subject_format, $POL.notify_subject_slots);
+        }
+        else
+        {
+            $ESUBJECT = " ";
+        };
+		  if ($POL.notify_source != "") then
+        {
+            $ESOURCE = $POL.notify_source;
+        }
+        else
+        {
+            $ESOURCE = " ";
+        };
+		if ($POL.notify_targets != []) then
+        {
+			$TARGETS=listtostr($POL.notify_targets, ', ');
+            if ($SERV.type == SERVICE_TYPE_GATEWAY) then
+            {
+                $TARGET_PARM = concat(["[",$TARGETS,"]"]);
+                send_to_ext($SERV.service, $EV, [NOTIFY_TARGETS,NOTIFY_MSG],[$TARGET_PARM, $MSG]);
+            }
+            else
+            {
+                if ($SERV.type == SERVICE_TYPE_COMMAND) then
+                {
+                    $POM_ENABLED = cellinfo(POMEnabled);
+                    $DISPLAY_DATE = time_stamp_to_str($EV.date_reception,$POL.date_format);
+                    $LOC = '';
+                    $VAL_SEV = 'ENUMVAL.SEVERITY.'||$EV.severity;
+                    $VAL_STAT = 'ENUMVAL.STATUS.'||$EV.status;
+                    $VAL_CLS = 'CLASS.'||$EV.CLASS;
+                    execute($EV,$SERV.service,[
+                       '-mp',$POM_ENABLED,
+                       '-ft',localize(kb,$LOC,[MAIL_To]),$TARGETS,
+                       '-ff',localize(kb,$LOC,[MAIL_From]),$ESOURCE,
+                       '-fd',localize(kb,$LOC,[MAIL_Date]),$DISPLAY_DATE,
+                       '-fs',localize(kb,$LOC,[MAIL_Subject]),$ESUBJECT,
+                       '-fm',localize(kb,$LOC,[MAIL_Msg]),$MSG,
+                       '-fr',localize(kb,$LOC,['ENUM.SEVERITY']),localize(kb,$LOC,[$VAL_SEV]),
+                       '-fa',localize(kb,$LOC,['ENUM.STATUS']),localize(kb,$LOC,[$VAL_STAT]),
+                       '-fc',localize(kb,$LOC,['SLOT.CORE_EVENT.CLASS']),localize(kb,$LOC,[$VAL_CLS])
+                       ],YES,NO);
+                };
+            };
+            opadd($EV, $POL.name, "NOTIFICATION_REQUEST", concat([$SERV.name,":",$TARGETS]));
+            add_to_list(concat([time_stamp_to_str(time_stamp(),'%c')," ","Notification requested via ",$SERV.name," for ",$TARGETS]), $EV.mc_notification_history);
+        };
+        if ($POL.auto_ack == 1) then
+        {
+            perform($EV, "im_operations.Acknowledge", []);
+        };
+        if ($POL.auto_assign == 1) then
+        {
+           perform($EV, "im_operations.AssignTo", [$POL.assign_to_user]);
+        };
+    }
+END
+
+#===============================================================================
+# Propagation rule
+#
+# Uses IM_PROPAGATION_POLICY entries to control escalation/de-escalation
+#-------------------------------------------------------------------------------
+
+#Propagate on the basis of selector and "when" condition
+
+propagate im_internal_propagation:
+    using_policy ALL
+    {
+        IM_PROPAGATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND $POL.when_slot != '' ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    to all $POL.all_of_propagation_list
+       when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value, $POL.from_operator, $POL.from_value, $POL.change_only)
+    to one_of $POL.one_of_propagation_list
+       when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value, $POL.from_operator, $POL.from_value, $POL.change_only)
+END
+
+
+#Propagate on the basis of selector condition only ( without "when" block condition)
+
+propagate im_internal_propagation_without_when_block:
+    using_policy ALL
+    {
+        IM_PROPAGATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND $POL.when_slot == '']
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    to all $POL.all_of_propagation_list       
+    to one_of $POL.one_of_propagation_list       
+END
+
+#===============================================================================
+# Correlation rule
+#
+# Uses IM_CORRELATION_POLICY entries to control restoring
+#-------------------------------------------------------------------------------
+
+correlate im_internal_correlation:
+    {
+      description = cond(($POL.description == ''), 'event correlated by policy '|| $POL.name, $POL.description)
+    }:
+    using_policy
+    {
+        IM_CORRELATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    # Cause Event 1 -------------------------------------------------------------------------
+    with $POL.cause_event_1 ($CAUSE_EV1) where [ $CAUSE_EV1.status != BLACKOUT ]
+    within $POL.time_window_1
+    when $CAUSE_EV1.status == OPEN
+    {
+        if ($POL.escalate_cause_1 == 1 AND $CAUSE_EV1.mc_priority <= $CAUSE_EV1.mc_original_priority) then
+        {
+            if ($POL.cause_pri_levels_1 <= 0) then
+            {
+                $CAUSE_EV1.mc_priority = $POL.cause_priority_1;
+                opadd($CAUSE_EV1, $POL.name, "CORRELATION_CAUSE", $POL.cause_priority_1);
+            }
+            else
+            {
+                incr($CAUSE_EV1.mc_priority, $POL.cause_pri_levels_1, PRIORITY_1);
+                opadd($CAUSE_EV1, $POL.name, "CORRELATION_CAUSE", $POL.cause_pri_levels_1);
+            };
+        };
+        if ($POL.de_escalate_effect_1 == 1 AND $EV.mc_priority <= $EV.mc_original_priority) then
+        {
+            if ($POL.effect_pri_levels_1 >= 0 OR $POL.effect_pri_levels_1 < -5) then
+            {
+                $EV.mc_priority = $POL.effect_priority_1;
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_priority_1);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.effect_pri_levels_1), PRIORITY_5);
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_pri_levels_1);
+            };
+        };
+        if ($POL.effect_closure_1 == CLOSE_NOW) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+    }
+    when $CAUSE_EV1.status == CLOSED
+    {
+        if ($POL.effect_closure_1 == CLOSE_WITH_CAUSE) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+	unset_cause;
+    }
+    # Cause Event 2 -------------------------------------------------------------------------
+    with $POL.cause_event_2 ($CAUSE_EV2) where [ $CAUSE_EV2.status != BLACKOUT ]
+    within $POL.time_window_2
+    when $CAUSE_EV2.status == OPEN
+    {
+        if ($POL.escalate_cause_2 == 1 AND $CAUSE_EV2.mc_priority <= $CAUSE_EV2.mc_original_priority) then
+        {
+            if ($POL.cause_pri_levels_2 <= 0) then
+            {
+                $CAUSE_EV2.mc_priority = $POL.cause_priority_2;
+                opadd($CAUSE_EV2, $POL.name, "CORRELATION_CAUSE", $POL.cause_priority_2);
+            }
+            else
+            {
+                incr($CAUSE_EV2.mc_priority, $POL.cause_pri_levels_2, PRIORITY_1);
+                opadd($CAUSE_EV2, $POL.name, "CORRELATION_CAUSE", $POL.cause_pri_levels_2);
+            };
+        };
+        if ($POL.de_escalate_effect_2 == 1 AND $EV.mc_priority <= $EV.mc_original_priority) then
+        {
+            if ($POL.effect_pri_levels_2 >= 0 OR $POL.effect_pri_levels_2 < -5) then
+            {
+                $EV.mc_priority = $POL.effect_priority_2;
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_priority_2);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.effect_pri_levels_2), PRIORITY_5);
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_pri_levels_2);
+            };
+        };
+        if ($POL.effect_closure_2 == CLOSE_NOW) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+    }
+    when $CAUSE_EV2.status == CLOSED
+    {
+        if ($POL.effect_closure_2 == CLOSE_WITH_CAUSE) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+	unset_cause;
+    }
+    # Cause Event 3 -------------------------------------------------------------------------
+    with $POL.cause_event_3 ($CAUSE_EV3) where [ $CAUSE_EV3.status != BLACKOUT ]
+    within $POL.time_window_3
+    when $CAUSE_EV3.status == OPEN
+    {
+        if ($POL.escalate_cause_3 == 1 AND $CAUSE_EV3.mc_priority <= $CAUSE_EV3.mc_original_priority) then
+        {
+            if ($POL.cause_pri_levels_3 <= 0) then
+            {
+                $CAUSE_EV3.mc_priority = $POL.cause_priority_3;
+                opadd($CAUSE_EV3, $POL.name, "CORRELATION_CAUSE", $POL.cause_priority_3);
+            }
+            else
+            {
+                incr($CAUSE_EV3.mc_priority, $POL.cause_pri_levels_3, PRIORITY_1);
+                opadd($CAUSE_EV3, $POL.name, "CORRELATION_CAUSE", $POL.cause_pri_levels_3);
+            };
+        };
+        if ($POL.de_escalate_effect_3 == 1 AND $EV.mc_priority <= $EV.mc_original_priority) then
+        {
+            if ($POL.effect_pri_levels_3 >= 0 OR $POL.effect_pri_levels_3 < -5) then
+            {
+                $EV.mc_priority = $POL.effect_priority_3;
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_priority_3);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.effect_pri_levels_3), PRIORITY_5);
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_pri_levels_3);
+            };
+        };
+        if ($POL.effect_closure_3 == CLOSE_NOW) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+    }
+    when $CAUSE_EV3.status == CLOSED
+    {
+        if ($POL.effect_closure_3 == CLOSE_WITH_CAUSE) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+	unset_cause;
+    }
+    # Cause Event 4 -------------------------------------------------------------------------
+    with $POL.cause_event_4 ($CAUSE_EV4) where [ $CAUSE_EV4.status != BLACKOUT ]
+    within $POL.time_window_4
+    when $CAUSE_EV4.status == OPEN
+    {
+        if ($POL.escalate_cause_4 == 1 AND $CAUSE_EV4.mc_priority <= $CAUSE_EV4.mc_original_priority) then
+        {
+            if ($POL.cause_pri_levels_4 <= 0) then
+            {
+                $CAUSE_EV4.mc_priority = $POL.cause_priority_4;
+                opadd($CAUSE_EV4, $POL.name, "CORRELATION_CAUSE", $POL.cause_priority_4);
+            }
+            else
+            {
+                incr($CAUSE_EV4.mc_priority, $POL.cause_pri_levels_4, PRIORITY_1);
+                opadd($CAUSE_EV4, $POL.name, "CORRELATION_CAUSE", $POL.cause_pri_levels_4);
+            };
+        };
+        if ($POL.de_escalate_effect_4 == 1 AND $EV.mc_priority <= $EV.mc_original_priority) then
+        {
+            if ($POL.effect_pri_levels_4 >= 0 OR $POL.effect_pri_levels_4 < -5) then
+            {
+                $EV.mc_priority = $POL.effect_priority_4;
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_priority_4);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.effect_pri_levels_4), PRIORITY_5);
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_pri_levels_4);
+            };
+        };
+        if ($POL.effect_closure_4 == CLOSE_NOW) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+    }
+    when $CAUSE_EV4.status == CLOSED
+    {
+        if ($POL.effect_closure_4 == CLOSE_WITH_CAUSE) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+	unset_cause;
+    }
+    # Cause Event 5 -------------------------------------------------------------------------
+    with $POL.cause_event_5 ($CAUSE_EV5) where [ $CAUSE_EV5.status != BLACKOUT ]
+    within $POL.time_window_5
+    when $CAUSE_EV5.status == OPEN
+    {
+        if ($POL.escalate_cause_5 == 1 AND $CAUSE_EV5.mc_priority <= $CAUSE_EV5.mc_original_priority) then
+        {
+            if ($POL.cause_pri_levels_5 <= 0) then
+            {
+                $CAUSE_EV5.mc_priority = $POL.cause_priority_5;
+                opadd($CAUSE_EV5, $POL.name, "CORRELATION_CAUSE", $POL.cause_priority_5);
+            }
+            else
+            {
+                incr($CAUSE_EV5.mc_priority, $POL.cause_pri_levels_5, PRIORITY_1);
+                opadd($CAUSE_EV5, $POL.name, "CORRELATION_CAUSE", $POL.cause_pri_levels_5);
+            };
+        };
+        if ($POL.de_escalate_effect_5 == 1 AND $EV.mc_priority <= $EV.mc_original_priority) then
+        {
+            if ($POL.effect_pri_levels_5 >= 0 OR $POL.effect_pri_levels_5 < -5) then
+            {
+                $EV.mc_priority = $POL.effect_priority_5;
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_priority_5);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.effect_pri_levels_5), PRIORITY_5);
+                opadd($EV, $POL.name, "CORRELATION_EFFECT", $POL.effect_pri_levels_5);
+            };
+        };
+        if ($POL.effect_closure_5 == CLOSE_NOW) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        };
+    }
+    when $CAUSE_EV5.status == CLOSED
+    {
+        if ($POL.effect_closure_5 == CLOSE_WITH_CAUSE) then
+        {
+            $EV.status = CLOSED;
+            opadd($EV, $POL.name, "CORRELATION_CLOSED", "");
+        }; 
+	unset_cause;
+   }
+END
+
+
+
+new im_internal_remoteexecution:
+    using_policy ALL
+    {
+        IM_DREA_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    triggers
+    {
+opadd($EV, $POL.name, "Automated Remote Execution", "Policy Name:" || $POL.name || " Action Name : "  || $POL.action_name);
+            perform($EV,$POL.action_name,[]);
+    }
+END
+
+
+#===============================================================================
+# Timeout rules
+#
+# Uses IM_TIMEOUT_POLICY entries to set the timeout value (if not already set)
+# Uses timeout value in the event to control timeout
+#-------------------------------------------------------------------------------
+
+refine im_internal_timeout:
+    using_policy
+    {
+        IM_TIMEOUT_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == OPEN AND $EV.mc_timeout == 0 ]
+    {
+        $EV.mc_timeout = $POL.timeout_secs;
+        opadd($EV, $POL.name, "TIMEOUT_SET", $POL.timeout_secs);
+    }
+END
+
+#---------------------------------------
+# Timer setting
+#---------------------------------------
+
+execute im_internal_timeout:
+    EVENT ($EV) 
+    when $EV.mc_timeout == 0
+    {
+	delete_timers($EV, Event_Timeout);
+    }
+    when $EV.mc_timeout > 0
+    {
+	delete_timers($EV, Event_Timeout);
+        set_timer($EV, $EV.mc_timeout, Event_Timeout);
+    }
+END
+
+#---------------------------------------
+# Timer pop handling
+#---------------------------------------
+
+timer im_internal_timeout: 
+    EVENT ($EV) where [ $EV.status != CLOSED AND $EV.mc_timeout > 0]
+    timer_info: equals Event_Timeout
+    {
+        $EV.status = CLOSED;
+        opadd($EV, "TIMEOUT_CLOSED", "");
+    }
+END
+

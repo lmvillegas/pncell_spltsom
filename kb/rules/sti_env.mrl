@@ -1,0 +1,16 @@
+
+
+
+execute TranslateSelf:
+PPM_SM_EV ($PSM)
+when $PSM.status == OPEN
+	{
+	concat (['El agente en el servidor: ',$PSM.mc_host, ' se encuentra desconectado, es posible que el servidor se encuentre apagado'],$TRADUC );
+	$PSM.msg = $TRADUC ;
+		} 
+END
+
+filter APMEventos: NOPASS
+APM_INCIDENT_EV ($AP)
+where [ $AP.status == OPEN ] 
+END

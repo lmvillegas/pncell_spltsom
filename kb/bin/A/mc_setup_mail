@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "E-mail setup only needs to be run for cells running on Windows!"
+

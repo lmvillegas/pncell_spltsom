@@ -1,0 +1,25 @@
+#
+# File name: ibrsd_error_event_association.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#******************************************************************************************************************************
+# BMC Impact Integration for ARS
+# Date     		: April 10 , 2006
+# Description	: Event association rule for EVENT_INCIDENT_INFO . 
+#				  It will create Related events of type "biiars_event_association"
+# Author		: SMS Pune Integration Connect Team
+# Revision		: 
+#				  
+#******************************************************************************************************************************
+
+#Relate Event_incident_Info to the event,having mc_ueid stored in the mc_relation_source of event_incident_info
+new ibrsd_error_relate : IBRSD_ERROR($E)
+triggers
+      { relate($E); }
+END
+
+#UnRelate Event_incident_Info from the event,having mc_ueid stored in the mc_relation_source of event_incident_info
+execute ibrsd_error_unrelate : IBRSD_ERROR($E)
+      when $E.status == CLOSED { unrelate($E); }
+END

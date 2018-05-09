@@ -1,0 +1,107 @@
+#
+# File name: impact_admin_server.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: Events for error report from BMC Impact Administration Server
+#
+#----------------------------------------------------
+
+# ---- This is the super class for all mccs events ----
+MC_EV_CLASS :
+   IAS_EVENT ISA EVENT
+   DEFINES {
+      mc_tool_class: default = "BMC Impact Administration Server";
+      mc_incident_time: INTEGER, representation = date;
+      mc_arrival_time: INTEGER, representation = date;
+   };
+END
+
+# -- event for IAS start information --
+MC_EV_CLASS :
+   IAS_START ISA IAS_EVENT
+   DEFINES {
+      mc_object_class: default = "BMC Impact Administration Server";
+      mc_event_category: default = OPERATIONS_MANAGEMENT;
+      severity : default = OK;
+   };
+END
+
+# -- event for IAS stop information --
+MC_EV_CLASS :
+   IAS_STOP ISA IAS_EVENT
+   DEFINES {
+      mc_object_class: default = "BMC Impact Administration Server";
+      mc_event_category: default = OPERATIONS_MANAGEMENT;
+      severity : default = CRITICAL;
+   };
+END
+
+# -- event for synchronization information --
+MC_EV_CLASS :
+   IAS_SYNC_EVENT ISA IAS_EVENT
+   DEFINES {
+      mc_event_category: default = CONFIGURATION_MANAGEMENT;
+      severity : default = OK;
+      server_mode: STRING;
+      transaction_log_history: INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   IAS_SYNC_PRIMARY ISA IAS_SYNC_EVENT
+   DEFINES {
+      server_mode: default = PRIMARY;
+      backup_server: LIST_OF STRING;
+   };
+END
+
+MC_EV_CLASS :
+   IAS_SYNC_BACKUP ISA IAS_SYNC_EVENT
+   DEFINES {
+      server_mode: default = BACKUP;
+      primary_server: STRING;
+      sync_period: INTEGER;
+      start_time: INTEGER, representation = date;
+      end_time: INTEGER, representation = date;
+      last_sync_time: INTEGER, representation = date;
+   };
+END
+
+# -- event for IAS re-init information --
+MC_EV_CLASS :
+   IAS_REINIT ISA IAS_EVENT
+   DEFINES {
+      mc_event_category: default = CONFIGURATION_MANAGEMENT;
+      severity : default = WARNING;
+      reinit_time: INTEGER, representation = date;
+   };
+END
+
+#-- event for IAS login information, normally when a login fails --
+MC_EV_CLASS :
+   IAS_LOGIN ISA IAS_EVENT
+   DEFINES {
+      severity : default = WARNING;
+      mc_object_class: default = "User";
+      mc_object: default = "";
+      mc_parameter: default = "Login";
+      mc_parameter_value: default = "Failed";
+      mc_parameter_unit: default = "State";
+      mc_event_category: default = SECURITY_MANAGEMENT;
+   };
+END
+
+# -- event for all kinds of other error messages
+MC_EV_CLASS :
+   IAS_ERROR ISA IAS_EVENT
+   DEFINES {
+      severity : default = WARNING;
+   };
+END
+
+
+#
+# End-of-file
+#

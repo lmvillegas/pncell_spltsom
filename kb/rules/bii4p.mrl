@@ -1,0 +1,345 @@
+#
+# File name: bii4p.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+#
+# BMC Impact Integration for PATROL
+#
+# Date     : March , 2004
+# Revision : 
+#
+#################################################################################
+#  Author: Jean Zhou
+#  Created: $Date
+#
+# Modified: $Date: 2004/10/14 21:40:01 $
+# Revision: $Id: bii4p.mrl,v 1.13 2004/10/14 21:40:01 jezhou Exp $
+#
+
+
+
+
+
+################################################################################
+#
+# update duplicates: after pes rules but before other rules...
+#
+################################################################################
+
+
+# note we close instead of drop_new so we can see the events that came in and
+# were duplicated. This should be changed to drop_new once it's verified that
+# the dup_detect slots really are working (ie: make sure events that were
+# duplicated really were duplicates)
+
+new patrol_duplicates : 
+    PATROL_EV ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    updates duplicate ($dup) where [ $dup.status != CLOSED AND $dup.status != BLACKOUT ]
+	{
+		$dup.p_diary		= $EV.p_diary;
+		$dup.p_status		= $EV.p_status;
+		$dup.repeat_count 	= $dup.repeat_count + 1;
+		drop_new;
+	}
+END
+
+
+################################################################################
+#######################
+## mcxp adapt_param_status 
+######################
+### new adapt_param_status : PATROL_EV($NEW) where [
+###		p_catalog:	within [0,STD,STANDARD],
+###		p_class: 	within [9,11,16,39,UpdParState]
+###	]
+###	updates ALL PATROL_EV($OLD) where [
+###		p_origin:		equals $NEW.p_origin,
+###		p_class:		within [9,11,16,39,UpdParState],
+###		mc_host_address:	equals $NEW.mc_host_address,
+###		status:			not_equals CLOSED,
+###		p_catalog:		within [0,STD,STANDARD]
+###		#severity:		greater_than $NEW.severity
+###	]
+###	{
+###		$OLD.status	= CLOSED ;
+###		#drop_new ;
+###	}
+###END
+
+#######################
+## Indexed adapt_param_status 
+######################
+
+new adapt_param_status : 
+    PATROL_EV($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.p_class_group == "param_group" AND 
+		        $NEW.p_catalog == "STD" ]
+	using ALL 
+	{ 
+	    PATROL_IDX ($IDX) 
+	        where [ $IDX.p_origin == $NEW.p_origin AND 
+	                $IDX.p_agent_port == $NEW.p_agent_port AND
+	                $IDX.mc_host_address ==$NEW.mc_host_address ]
+        PATROL_EV ($OLD) 
+            where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+                    $OLD.mc_ueid == $IDX.patrol_ueid AND
+                    $OLD.p_class within [9,10, 11,12,16,39,UpdParState] AND 
+                    $OLD.p_catalog == "STD" ]
+    }
+triggers
+	{
+		$OLD.status	= CLOSED ;
+	}
+END
+
+################
+### new adapt_instance_status : PATROL_EV($NEW) where [
+###		p_class: equals UpdInstState
+###	]
+###	updates ALL PATROL_EV($OLD) where [
+###		p_origin:		equals $NEW.p_origin,
+###		p_class:		equals UpdInstState,
+###		mc_host_address:	equals $NEW.mc_host_address,
+###		status:			not_equals CLOSED,
+###		p_catalog:		within [0,STD,STANDARD]
+###		#severity:		greater_than $NEW.severity
+###	]
+###	{
+###		$OLD.status	= CLOSED ;
+###		$OLD.p_status = 1;
+###		#drop_new ;
+###	}
+###END
+new adapt_instance_status : 
+    PATROL_EV($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.p_class == "UpdInstState" ]
+	using ALL 
+	{ 
+	    PATROL_IDX ($IDX) 
+	        where [ $IDX.p_origin == $NEW.p_origin AND 
+	                $IDX.p_agent_port == $NEW.p_agent_port AND
+	                $IDX.mc_host_address ==$NEW.mc_host_address ]
+        PATROL_EV ($OLD) 
+            where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+                    $OLD.mc_ueid == $IDX.patrol_ueid AND
+                    $OLD.p_class == "UpdInstState" AND 
+                    $OLD.p_catalog == "STD" ]
+    }
+triggers
+	{
+		$OLD.status	= CLOSED ;
+	}
+END
+
+###############################
+### new adapt_application_status : PATROL_EV($NEW) where [
+### 		p_class: equals UpdAppState
+### 	]
+### 	updates ALL PATROL_EV($OLD) where [
+### 		p_origin:		equals $NEW.p_origin,
+### 		p_class:		within [WorstApp, UpdAppState],
+### 		mc_host_address:	equals $NEW.mc_host_address,
+### 		status:			not_equals CLOSED,
+### 		p_catalog:		within [0,STD,STANDARD]
+### 		#severity:		greater_than $NEW.severity
+### 	]
+### 	{
+### 		$OLD.status	= CLOSED ;
+### 		$OLD.p_status = 1;
+### 		#drop_new ;
+### 	}
+### END
+new adapt_application_status : 
+    PATROL_EV($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.p_class == "UpdAppState" ]
+	using ALL 
+	{ 
+	    PATROL_IDX ($IDX) 
+	        where [ $IDX.p_origin == $NEW.p_origin AND 
+	                $IDX.p_agent_port == $NEW.p_agent_port AND
+	                $IDX.mc_host_address ==$NEW.mc_host_address ]
+        PATROL_EV ($OLD) 
+            where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+                    $OLD.mc_ueid == $IDX.patrol_ueid AND
+                    $OLD.p_class == "UpdAppState" AND 
+                    $OLD.p_catalog == "STD" ]
+    }
+triggers
+	{
+		$OLD.status	= CLOSED ;
+	}
+END
+
+#######################
+## mcxp adapt_host_status 
+######################
+### new adapt_host_status : PATROL_EV($NEW) where [
+### 		p_class: equals UpdMachineState
+### 	]
+### 	updates ALL PATROL_EV($OLD) where [
+### 		p_origin:		equals $NEW.p_origin,
+### 		p_class:		equals UpdMachineState,
+### 		mc_host_address:	equals $NEW.mc_host_address,
+### 		status:			not_equals CLOSED,
+### 		p_catalog:		within [0,STD,STANDARD]
+### 		#severity:		greater_than $NEW.severity
+### 	]
+### 	{
+### 		$OLD.status	= CLOSED ;
+### 		$OLD.p_status = 1;
+### 		#drop_new ;
+### }
+### END
+new adapt_host_status : 
+    PATROL_EV($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.p_class == "UpdMachineState" ]
+	using ALL 
+	{ 
+	    PATROL_IDX ($IDX) 
+	        where [ $IDX.p_origin == $NEW.p_origin AND 
+	                $IDX.p_agent_port == $NEW.p_agent_port AND
+	                $IDX.mc_host_address ==$NEW.mc_host_address ]
+        PATROL_EV ($OLD) 
+            where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+                    $OLD.mc_ueid == $IDX.patrol_ueid AND
+                    $OLD.p_class == "UpdMachineState" AND 
+                    $OLD.p_catalog == "STD" ]
+    }
+triggers
+	{
+		$OLD.status	= CLOSED ;
+	}
+END
+
+refine adapt_mc_tool :
+    PATROL_EV($EV) 
+        where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+	{
+		#$EV.mc_tool_class	= $EV.mc_origin_class;
+		$EV.mc_tool      = $EV.mc_origin;
+		$EV.mc_tool_key  = $EV.mc_origin_key; # WARNING !!!!!!!!!!!!!! #
+		$EV.mc_tool_sev  = $EV.mc_origin_sev; # WARNING !!!!!!!!!!!!!! #
+	}
+END
+
+
+################################################################################
+
+### correlate alarm_and_ra : 
+###     PATROL_EV($PE_EFFECT) 
+###         where [ $PE_EFFECT.status != BLACKOUT AND 
+### 		        $PE_EFFECT.status != CLOSED AND
+### 		        $PE_EFFECT.p_class within [10,12,40] AND
+### 		        $PE_EFFECT.p_catalog == "STD" ]
+### 	with PATROL_EV($PE_CAUSE) 
+### 	    where [ $PE_CAUSE.status != BLACKOUT AND
+### 			    $PE_CAUSE.p_origin == $PE_EFFECT.p_origin AND
+### 			    $PE_CAUSE.mc_host_address == $PE_EFFECT.mc_host_address AND
+### 			    $PE_CAUSE.p_class within [11,39] AND
+### 			    $PE_CAUSE.p_catalog == "STD" ]
+### 		within 10 m
+### 		when $PE_CAUSE.status == CLOSED 
+### 		{
+### 			$PE_EFFECT.status = CLOSED ;
+### 		}
+### END
+
+
+################################################################################
+#
+# MC_ADAPTER_ rules
+#
+################################################################################
+
+
+# up agent closes down agent
+
+# This rule must be disabled until mc_tool and mc_object are available in EVENT
+
+new agent_up_closes_down : 
+    MC_ADAPTER_CONTROL ($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.mc_tool within ['P_AGENT_UP', 'P_AGENT_DOWN'] ]
+	updates MC_ADAPTER_CONTROL ($OLD)
+        where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+		        $OLD.adapter_host == $NEW.adapter_host AND
+		        $OLD.mc_object == $NEW.mc_object AND
+		        $OLD.mc_tool_class == $NEW.mc_tool_class AND
+		        $OLD.mc_origin == $NEW.mc_origin AND
+		        $OLD.mc_tool within ['P_AGENT_UP', 'P_AGENT_DOWN'] ]
+	{
+		$OLD.status = CLOSED;
+	}
+END
+
+new agent_up_closes_unreachable : 
+    MC_ADAPTER_CONTROL ($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.mc_tool within ['P_AGENT_UP', 'P_AGENT_UNREACHABLE'] ]
+	updates MC_ADAPTER_CONTROL ($OLD)
+        where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+		        $OLD.adapter_host == $NEW.adapter_host AND
+		        $OLD.mc_object == $NEW.mc_object AND
+		        $OLD.mc_tool_class == $NEW.mc_tool_class AND
+		        $OLD.mc_origin == $NEW.mc_origin AND
+		        $OLD.mc_tool within ['P_AGENT_UP', 'P_AGENT_UNREACHABLE'] ]
+	{
+		$OLD.status = CLOSED;
+	}
+END
+
+new agent_resume_closes_blackout : 
+    MC_ADAPTER_CONTROL ($NEW) 
+        where [ $NEW.status != CLOSED AND $NEW.status != BLACKOUT AND
+		        $NEW.mc_tool within ['P_AGENT_RESUME', 'P_AGENT_BLACKOUT'] ]
+	updates MC_ADAPTER_CONTROL ($OLD)
+        where [ $OLD.status != CLOSED AND $OLD.status != BLACKOUT AND
+		        $OLD.adapter_host == $NEW.adapter_host AND
+		        $OLD.mc_object == $NEW.mc_object AND
+		        $OLD.mc_tool_class == $NEW.mc_tool_class AND
+		        $OLD.mc_origin == $NEW.mc_origin AND
+		        $OLD.mc_tool within ['P_AGENT_RESUME', 'P_AGENT_BLACKOUT'] ]
+	{
+		$OLD.status = CLOSED;
+	}
+END
+
+execute add_to_patrol_idx : PATROL_EV($PE)
+when $PE.status == OPEN
+{
+    new_data($D, PATROL_IDX, [p_origin = $PE.p_origin, 
+                              p_agent_port = $PE.p_agent_port,
+                              mc_host_address = $PE.mc_host_address,
+                              patrol_ueid = $PE.mc_ueid]);
+}
+END
+
+execute remove_from_patrol_idx : PATROL_EV($PE)
+using { PATROL_IDX ($D) where [$D.patrol_ueid == $PE.mc_ueid]}
+when $PE.status == CLOSED
+{
+	remove_data($D);
+}
+END
+
+delete delete_from_patrol_idx : PATROL_EV($PE) where [$PE.status == OPEN]
+using { PATROL_IDX ($D) where [$D.patrol_ueid == $PE.mc_ueid]}
+{
+	remove_data($D);
+}
+END
+
+#Refine rule specifically needed for AO (ESX w/f)
+refine esx_event_for_mc_host : PATROL_EV($NEW) where [ $NEW.status != CLOSED AND  $NEW.mc_object_class == "VSM_VC" ] 
+{
+	$P_INST=$NEW.p_instance;
+	$NEW.mc_host = $P_INST;
+##$NEW.mc_host = substring($NEW.p_instance,0,strpart($P_INST,"@") - 1);
+}
+END

@@ -1,0 +1,12 @@
+#
+# File name: di_notification_services.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+IM_NOTIFICATION_SERVICE;
+	name='BASIC_EMAIL';
+	description='Basic SMTP based e-mail';
+	type=SERVICE_TYPE_COMMAND;
+	service='mc_sendmail';
+	available_targets=[];
+END

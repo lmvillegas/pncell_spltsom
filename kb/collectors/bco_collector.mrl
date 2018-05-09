@@ -1,0 +1,41 @@
+#
+# File name: bco_collector.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: bco_collector.mrl
+# Version: 
+# Copyright 1998-2009 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+#
+# BPPM Event Integration with BCO
+#
+# Date     : Oct, 2011
+#
+#################################################################################
+#  Author: Nitin Rathod
+#  Created: $Date
+#
+#
+
+collector 'Capacity Events' :
+{
+        r['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        w['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        x['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+}
+END
+
+# Currently there are 4 types of metric defined for a BCO event
+# FILESYSTEM, MEMORY, CPU and DATASTORE
+collector 'Capacity Events'.* :
+BCO_EV
+create $THIS.metric
+END
+
+################################################################################

@@ -1,0 +1,24 @@
+#
+# File name: pom_activeevents_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+collector 'All Active Events':
+{
+        r['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        w['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        x['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+}
+END
+
+collector 'All Active Events'.'Active Events':
+EVENT
+where [
+	$THIS.status within [OPEN,ACK,ASSIGNED]
+]
+END

@@ -1,0 +1,16 @@
+#
+# File name: annotation_attach.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#ANNOTATION_ATTACH_EV extends the event structure of PATROL_EV
+#This is used to raise a new event and update the data under the slot an_annotation_data 
+#into the slot mc_notes of the already existing event under Cell Service
+
+MC_EV_CLASS :
+	ANNOTATION_ATTACH_EV ISA PATROL_EV
+	DEFINES 
+	{
+		an_annotation_data: STRING;
+	};
+END

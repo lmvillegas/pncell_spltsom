@@ -1,0 +1,174 @@
+#
+# File name: monitor_resources.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#refine rule to store resource monitoring history.
+refine refine_propagate_monitor_ev : MC_RESOURCE_MONITOR_EV($EV) 
+{
+	$notes = 'Used units= '|| $EV.used_units ||', Total units= '|| $EV.total_units;
+	ntadd($EV,$notes);
+}
+END
+
+#When MC_CELL_RESOURCE_EXPANSION event generates fro a resource and if we have enabled monitoring of that resource
+# check for total  units and used units count of that resource against the upper limit of that resource, if required MC_RESOURCE_MONITORED_EV event.
+new  monitored_resource_expanded : MC_CELL_RESOURCE_EXPANSION($RES_EV)
+using ALL
+{
+   MC_RESOURCE_MONITOR($RM)
+   where [ (touppercase( $RES_EV.resource_name)  == touppercase($RM.resource_name))   AND   $RES_EV.resource_type == $RM.resource_type]					
+}
+triggers
+{
+	#Calculate actual limits using upper limit and event severities in percentage format. 
+	
+	$upperLimit = $RM.resource_upper_limit;
+	
+	$warningLimit= $upperLimit * $RM.resource_warning_prct;
+	$warningLimit = $warningLimit/ 100;
+	
+	$majorLimit= $upperLimit * $RM.resource_major_prct;
+	$majorLimit = $majorLimit / 100;
+	
+	$criticalLimit= $upperLimit * $RM.resource_critical_prct;
+	$criticalLimit = $criticalLimit / 100;
+
+	#If resource used units are greater than warning limit, consider this event for further processing
+	if ($RES_EV.used_units >= $warningLimit ) then 
+	{			
+		$org_sev=$RES_EV.severity;
+		
+		if ($RES_EV.used_units >= $criticalLimit) then
+		{
+			$RES_EV.severity= CRITICAL;			
+		}
+		else
+		{
+			if (($RES_EV.used_units < $criticalLimit) AND ( $RES_EV.used_units >= $majorLimit )) then
+			{
+				$RES_EV.severity= MAJOR;				
+			}
+			else
+			{
+				if (($RES_EV.used_units < $majorLimit) AND ( $RES_EV.used_units >= $warningLimit )) then
+				{
+					$RES_EV.severity= WARNING;					
+				}
+			};		
+		};	
+
+		if ($RES_EV.used_units > $upperLimit) then
+		{
+			#msg: Resource type {0}- {1} : size increased, crossed upper limit.
+			$msg =localize(kb,['BMC_TS-IMC000020I','s', $RES_EV.resource_type,'s', $RES_EV.resource_name]);
+		}
+		else
+		{
+			#msg: Resource type {0}- {1} : size increased, not crossed upper limit.
+			$msg =localize(kb,['BMC_TS-IMC000021I','s', $RES_EV.resource_type, 's', $RES_EV.resource_name]);
+		};
+		
+		generate_event(MC_RESOURCE_MONITOR_EV, [msg = $msg, resource_name= $RES_EV.resource_name, resource_type= $RES_EV.resource_type, resource=$RES_EV.resource,severity= $RES_EV.severity, used_units= $RES_EV.used_units, total_units= $RES_EV.total_units]);		
+		
+		#$RES_EV.severity=$org_sev;		
+		#As we are generating MC_RESOURCE_MONITOR_EV for resource expansion, drop this event
+		drop_new;
+	};
+}
+END
+
+
+#When MC_CELL_RESOURCE_REDUCTION event generates fro a resource and if we have enabled monitoring of that resource
+# check for total  units and used units count of that resource against the upper limit of that resource, if required MC_RESOURCE_MONITORED_EV event.
+
+new  monitored_buffer_reduced : MC_CELL_RESOURCE_REDUCTION($RES_EV)
+using ALL
+{
+   MC_RESOURCE_MONITOR($RM)  MC_RESOURCE_MONITOR_EV($BUF_SIZE_CHANGE_EV)
+   where [  (touppercase( $RES_EV.resource_name)  == touppercase($RM.resource_name))   AND ( $RES_EV.resource_type  == $RM.resource_type) AND
+					($BUF_SIZE_CHANGE_EV.resource_type == $RES_EV.resource_type) AND (touppercase($BUF_SIZE_CHANGE_EV.resource_name) == touppercase($RES_EV. resource_name)) AND 
+					$BUF_SIZE_CHANGE_EV.status == OPEN]
+}
+triggers
+{
+		
+		#Calculate actual limits using upper limit and event severities in percentage format. 
+		
+		$upperLimit = $RM.resource_upper_limit;
+		$warningLimit= $upperLimit * $RM.resource_warning_prct;
+		$warningLimit = $warningLimit/ 100;
+		
+		$majorLimit= $upperLimit * $RM.resource_major_prct;
+		$majorLimit = $majorLimit / 100;
+		
+		$criticalLimit= $upperLimit * $RM.resource_critical_prct;
+		$criticalLimit = $criticalLimit / 100;
+	
+
+		if ($RES_EV.used_units >= $criticalLimit) then
+		{
+			$RES_EV.severity= CRITICAL;
+		}
+		else
+		{
+			if (($RES_EV.used_units < $criticalLimit) AND ( $RES_EV.used_units >= $majorLimit )) then
+			{
+				$RES_EV.severity= MAJOR;
+			}
+			else
+			{
+				if (($RES_EV.used_units < $majorLimit) AND ( $RES_EV.used_units >= $warningLimit )) then
+				{
+					$RES_EV.severity= WARNING;
+				}
+				else
+				{
+					#If used units are in normal range,set severity to OK.
+					$RES_EV.severity= OK;
+				};
+			};
+		};	
+    	
+		#msg: Resource type {0}- {1} : size reduced.
+		$msg= localize(kb,['BMC_TS-IMC000022I','s', $RES_EV.resource_type,'s', $RES_EV.resource_name]);
+		generate_event(MC_RESOURCE_MONITOR_EV, [msg = $msg, resource_name=  $RES_EV.resource_name, resource_type= $RES_EV.resource_type,resource=$RES_EV.resource, severity= $RES_EV.severity,used_units= $RES_EV.used_units, total_units= $RES_EV.total_units]);	
+		
+		#$RES_EV.severity=$org_sev;
+		
+		#As we are generating MC_RESOURCE_MONITOR_EV for resource reduction, drop this event
+		drop_new;
+}
+END
+
+
+#For the given resource to monitor there will be only one MC_RESOURCE_MONITOR_EV event,
+#don't update existing CLOSED event.
+
+new  propagate_buffer_size_changed : MC_RESOURCE_MONITOR_EV($BM_EV)
+updates duplicate($ORG)
+where [ $ORG. status != CLOSED]
+{
+	#Update original slots using new events slot values
+	
+	$ORG.msg= $BM_EV.msg;
+	$ORG.severity=$BM_EV.severity;	
+	#Update Repeat count	
+	$ORG.repeat_count = $ORG.repeat_count + 1;
+	
+	$ORG.used_units = $BM_EV.used_units;
+	$ORG.total_units = $BM_EV.total_units;
+	$ORG.resource = $BM_EV.resource;
+	
+	ntget($BM_EV,0,$TIME,$AUTHOR,$Note);
+	ntadd($ORG,$Note);			
+	
+	if ($BM_EV.severity == OK) then
+	{
+		$ORG.status=CLOSED;
+	};	
+	drop_new;	
+}
+END
+

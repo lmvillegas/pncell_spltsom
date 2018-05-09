@@ -1,0 +1,106 @@
+#
+# File name: mcxp.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+################################################################################
+#
+# BMC Impact Integration for PATROL
+#
+# Date     : January 29th, 2003
+# Revision : August 24th, 2004
+#
+#
+################################################################################
+
+################################################################################
+#
+# New EVENT slots
+#
+################################################################################
+
+#MC_EV_CLASS :
+#	EVENTX ISA EVENT
+#	DEFINES 
+#	{
+#		mc_host:	STRING;
+#		mc_host_class:	STRING;
+#		mc_host_address:	STRING;
+#		mc_itm_mgmt_process:	STRING;
+#		mc_location:	STRING;
+#		mc_object:	STRING;
+#		mc_parameter:	STRING;
+#		mc_parameter_value:	STRING;
+#		mc_tool:	STRING;
+#		mc_tool_class:	STRING;
+#		mc_tool_key:	STRING;
+#		mc_tool_sev:	STRING;
+#	};
+#END
+
+################################################################################
+#
+# PATROL class
+#
+################################################################################
+
+MC_EV_CLASS :
+	PATROL_EV ISA EVENT
+	DEFINES 
+	{
+		mc_tool:	default="PATROL Agent";
+		mc_host_address:	dup_detect=yes;
+		mc_origin_key:		dup_detect=yes;
+
+		p_agent:	STRING;
+		p_agent_address:	STRING;
+		p_agent_port:	INTEGER;
+		p_agent_version:	STRING;
+		p_application:	STRING;
+		p_catalog:	STRING;
+		p_class:	STRING;
+		p_diary:	STRING;
+		p_expectancy:	STRING;
+		p_handler:	STRING;
+		p_instance:	STRING;
+		p_node:		STRING;
+		p_origin:	STRING, dup_detect=yes;
+		p_owner:	STRING;
+		p_source_id:	STRING;
+		p_status:	STRING;
+		p_type:		STRING;
+
+		p_args:		LIST_OF STRING;
+
+		pes:	INTEGER;
+
+		pes_tcp_port:	INTEGER;
+		pes_udp_port:	INTEGER;
+		pes_icon_name:	STRING;
+		pes_parent_instance:	STRING;
+		pes_param_status:	STRING;
+		pes_alert_date:	STRING;
+		pes_alert_time:	STRING;
+		pes_tz:	STRING;
+		pes_last10:	STRING;
+		pes_ave10:	STRING;
+		pes_last10_ts:	STRING;
+		pes_last10_tp:	REAL;
+		pes_user_defined:	STRING;
+		pes_alarm_min:	STRING;
+		pes_alarm_max:	STRING;
+		pes_patrol_home:	STRING;
+		pn_object_id : INTEGER, hidden=no, default = 0;
+		pn_object_class_id : INTEGER, hidden=no, default = 0; 
+	};
+END
+
+MC_DATA_CLASS:
+	PATROL_IDX ISA DATA DEFINES
+	{
+		p_origin:	STRING,	key = yes;  
+		p_agent_port:	STRING,	key=yes;       
+		mc_host_address:	STRING,	key = yes;
+		patrol_ueid:	STRING,	key = yes;
+	};
+END

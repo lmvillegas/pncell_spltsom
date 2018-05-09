@@ -1,0 +1,37 @@
+#
+# File name: bem_match_table.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#     1=BMC_SIM_MATCH_TABLE
+#
+#-----+------------------------+---------------------
+# 1   | name                   | name of the entry in the match table (not mandatory)
+#     | tag                    | In the case of the alias mechanism tag must be 'alias'
+#     | input_match            | list of patterns 
+#     | ref_instances_classes  | list of classes corresponding to the objects that 
+#     |                        | will be passed as fourth argument of find_match primitive
+#     |  output_expressions    | list of string containing valid string expressions
+#----------------------------------------------------
+# notes: 
+# 1) patterns must be either
+#        '*'          matching any string
+#        <pattern>    matching exactly pattern
+#        <pattern>*   matching strings with prefix pattern
+#        *<pattern>   matching strings with suffix pattern
+#        *<pattern>*  matching strings containing pattern
+# 2) output_expression can refer to objects passed as the fourth argument to find_match
+#    with variable $1, $2,...
+#    They can also have reference to the input string (third argument of find_match)
+#    with $V1, $V2,...
+
+MC_DATA_CLASS : BEM_MATCH_TABLE ISA DATA
+   DEFINES {
+      name : STRING ;
+      tag : STRING , key=yes, read_only=yes;
+      input_match : LIST_OF STRING , key=yes;
+      ref_instances_classes : LIST_OF STRING ;
+      output_expressions : LIST_OF STRING ;
+   };
+END
+

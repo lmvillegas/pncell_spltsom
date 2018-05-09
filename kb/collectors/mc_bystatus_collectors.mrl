@@ -1,0 +1,52 @@
+#
+# File name: mc_bystatus_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+collector 'By Status':
+{
+        r['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+          'Service Administrators','Service Operators - Senior']
+        w['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+          'Service Administrators','Service Operators - Senior']
+        x['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+          'Service Administrators','Service Operators - Senior']
+}
+END
+
+collector 'By Status'.Open:
+EVENT 
+where [
+	$THIS.status == OPEN 
+]
+END
+
+collector 'By Status'.Acknowledged:
+EVENT 
+where [
+	$THIS.status == ACK 
+]
+END
+
+collector 'By Status'.Assigned:
+EVENT 
+where [
+	$THIS.status == ASSIGNED 
+]
+END
+
+
+collector 'By Status'.Closed:
+EVENT 
+where [
+	$THIS.status == CLOSED 
+]
+END
+
+collector 'By Status'.Blackout:
+EVENT 
+where [
+	$THIS.status == BLACKOUT 
+]
+END

@@ -1,0 +1,13 @@
+#
+# File name: ibrsd_bem_selector.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SELECTOR;
+	mc_modification_requestor='';
+	based_on='EVENT';
+	name='IBRSD.All_Critical_Events';
+	description='Selector for Critical Events';
+	ecfs=['EVENT($EV) where [$EV.severity equals CRITICAL ]'];
+	ecfs_descr=[''];
+END

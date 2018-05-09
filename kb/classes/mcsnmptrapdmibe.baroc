@@ -1,0 +1,236 @@
+#
+# File name: mcsnmptrapdmibe.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.2.2.1.7
+# ifAdminStatus OBJECT-TYPE
+#   -- FROM	IF-MIB, RFC1213-MIB
+#   SYNTAX	INTEGER { up(1), down(2), testing(3) } 
+#   MAX-ACCESS	read-write
+#   STATUS	current
+#   DESCRIPTION	"The desired state of the interface.  The testing(3) state
+#             indicates that no operational packets can be passed.  When a
+#             managed system initializes, all interfaces start with
+#             ifAdminStatus in the down(2) state.  As a result of either
+#             explicit management action or per configuration information
+#             retained by the managed system, ifAdminStatus is then
+#             changed to either the up(1) or testing(3) states (or remains
+#             in the down(2) state)."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) interfaces(2) ifTable(2) ifEntry(1) 7 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_ifAdminStatus
+  1 up
+  2 down
+  3 testing
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.2.2.1.8
+# ifOperStatus OBJECT-TYPE
+#   -- FROM	IF-MIB, RFC1213-MIB
+#   SYNTAX	INTEGER { up(1), down(2), testing(3), unknown(4), dormant(5), notPresent(6), lowerLayerDown(7) } 
+#   MAX-ACCESS	read-only
+#   STATUS	current
+#   DESCRIPTION	"The current operational state of the interface.  The
+#             testing(3) state indicates that no operational packets can
+#             be passed.  If ifAdminStatus is down(2) then ifOperStatus
+#             should be down(2).  If ifAdminStatus is changed to up(1)
+#             then ifOperStatus should change to up(1) if the interface is
+#             ready to transmit and receive network traffic; it should
+#             change to dormant(5) if the interface is waiting for
+#             external actions (such as a serial line waiting for an
+#             incoming connection); it should remain in the down(2) state
+#             if and only if there is a fault that prevents it from going
+#             to the up(1) state; it should remain in the notPresent(6)
+#             state if the interface has missing (typically, hardware)
+#             components."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) interfaces(2) ifTable(2) ifEntry(1) 8 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_ifOperStatus
+  1 up
+  2 down
+  3 testing
+  4 unknown
+  5 dormant
+  6 notPresent
+  7 lowerLayerDown
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.16.3.1.1.4
+# alarmSampleType OBJECT-TYPE
+#   -- FROM	RMON-MIB
+#   SYNTAX	INTEGER { absoluteValue(1), deltaValue(2) } 
+#   MAX-ACCESS	read-create
+#   STATUS	current
+#   DESCRIPTION	"The method of sampling the selected variable and
+#         calculating the value to be compared against the
+#         thresholds.  If the value of this object is
+#         absoluteValue(1), the value of the selected variable
+#         will be compared directly with the thresholds at the
+#         end of the sampling interval.  If the value of this
+#         object is deltaValue(2), the value of the selected
+#         variable at the last sample will be subtracted from
+#         the current value, and the difference compared with
+#         the thresholds.
+# 
+#         This object may not be modified if the associated
+#         alarmStatus object is equal to valid(1)."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) rmon(16) alarm(3) alarmTable(1) alarmEntry(1) 4 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_alarmSampleType
+  1 absoluteValue
+  2 deltaValue
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.55.1.5.1.10
+# ipv6IfOperStatus OBJECT-TYPE
+#   -- FROM	IPV6-MIB
+#   SYNTAX	INTEGER { up(1), down(2), noIfIdentifier(3), unknown(4), notPresent(5) } 
+#   MAX-ACCESS	read-only
+#   STATUS	current
+#   DESCRIPTION	"The current operational state of the interface.
+#       The noIfIdentifier(3) state indicates that no valid
+#       Interface Identifier is assigned to the interface.
+#       This state usually indicates that the link-local
+#       interface address failed Duplicate Address Detection.
+#       If ipv6IfAdminStatus is down(2) then ipv6IfOperStatus
+#       should be down(2).  If ipv6IfAdminStatus is changed
+#       to up(1) then ipv6IfOperStatus should change to up(1)
+#       if the interface is ready to transmit and receive
+#       network traffic; it should remain in the down(2) or
+#       noIfIdentifier(3) state if and only if there is a
+#       fault that prevents it from going to the up(1) state;
+#       it should remain in the notPresent(5) state if
+#       the interface has missing (typically, lower layer)
+#       components."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) ipv6MIB(55) ipv6MIBObjects(1) ipv6IfTable(5) ipv6IfEntry(1) 10 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_ipv6IfOperStatus
+  1 up
+  2 down
+  3 noIfIdentifier
+  4 unknown
+  5 notPresent
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.63.1.2.1.17
+# schedLastFailure OBJECT-TYPE
+#   -- FROM	DISMAN-SCHEDULE-MIB
+#   -- TEXTUAL CONVENTION SnmpPduErrorStatus
+#   SYNTAX	INTEGER { noResponse(-1), noError(0), tooBig(1), noSuchName(2), badValue(3), readOnly(4), genErr(5), noAccess(6), wrongType(7), wrongLength(8), wrongEncoding(9), wrongValue(10), noCreation(11), inconsistentValue(12), resourceUnavailable(13), commitFailed(14), undoFailed(15), authorizationError(16), notWritable(17), inconsistentName(18) } 
+#   MAX-ACCESS	read-only
+#   STATUS	current
+#   DESCRIPTION	"The most recent error that occured during the invocation of
+#          a scheduled action. The value noError(0) is returned
+#          if no errors have occurred yet."
+#   DEFVAL	{ noError }
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) schedMIB(63) schedObjects(1) schedTable(2) schedEntry(1) 17 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_schedLastFailure
+  -1 noResponse
+  0 noError
+  1 tooBig
+  10 wrongValue
+  11 noCreation
+  12 inconsistentValue
+  13 resourceUnavailable
+  14 commitFailed
+  15 undoFailed
+  16 authorizationError
+  17 notWritable
+  18 inconsistentName
+  2 noSuchName
+  3 badValue
+  4 readOnly
+  5 genErr
+  6 noAccess
+  7 wrongType
+  8 wrongLength
+  9 wrongEncoding
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.64.1.4.2.1.7
+# smRunExitCode OBJECT-TYPE
+#   -- FROM	DISMAN-SCRIPT-MIB
+#   SYNTAX	INTEGER { noError(1), halted(2), lifeTimeExceeded(3), noResourcesLeft(4), languageError(5), runtimeError(6), invalidArgument(7), securityViolation(8), genericError(9) } 
+#   MAX-ACCESS	read-only
+#   STATUS	current
+#   DESCRIPTION	"The value of this object indicates the reason why a
+#          script finished execution. The smRunExitCode code may have
+#          one of the following values:
+# 
+#          - `noError', which indicates that the script completed
+#             successfully without errors;
+# 
+#          - `halted', which indicates that the script was halted
+#             by a request from an authorized manager;
+# 
+#          - `lifeTimeExceeded', which indicates that the script
+#             exited because a time limit was exceeded;
+# 
+#          - `noResourcesLeft', which indicates that the script
+#             exited because it ran out of resources (e.g. memory);
+# 
+#          - `languageError', which indicates that the script exited
+#             because of a language error (e.g. a syntax error in an
+#             interpreted language);
+# 
+#          - `runtimeError', which indicates that the script exited
+#             due to a runtime error (e.g. a division by zero);
+# 
+#          - `invalidArgument', which indicates that the script could
+#             not be run because of invalid script arguments;
+# 
+#          - `securityViolation', which indicates that the script
+#             exited due to a security violation;
+# 
+#          - `genericError', which indicates that the script exited
+#             for an unspecified reason.
+# 
+#          If the script has not yet begun running, or is currently
+#          running, the value will be `noError'."
+#   DEFVAL	{ noError }
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) scriptMIB(64) smObjects(1) smRunObjects(4) smRunTable(2) smRunEntry(1) 7 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_smRunExitCode
+  1 noError
+  2 halted
+  3 lifeTimeExceeded
+  4 noResourcesLeft
+  5 languageError
+  6 runtimeError
+  7 invalidArgument
+  8 securityViolation
+  9 genericError
+END
+

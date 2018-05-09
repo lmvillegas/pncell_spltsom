@@ -1,0 +1,53 @@
+#
+# File name: mc_sm_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS FILE
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE SERVICE MANAGEMENT MODEL
+#----------------------------------------------------
+#
+# COLLECTOR TREE: MC_SMC_Events.<type>
+# Used by the Services View (SV) to retrieve the events
+# of a specific component, based on its type and its
+# mc_udid.
+# Not visible from the Events View (EV)
+#
+# The query by the Services View consists in:
+#
+# select open events from collector MC_SMC_Events
+# where [ $THIS.mc_smc_id equals <component_udid> ]
+#
+# <component_udid> = value of mc_udid slot in that instance
+#
+#----------------------------------------------------
+
+collector MC_SMC_Events:
+{
+	r[ 'BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Full Access', 'Service Administrators']
+	w[ 'BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Full Access', 'Service Administrators']
+	x[ 'BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Full Access', 'Service Administrators']
+}
+END
+
+collector MC_SMC_Events.*:
+EVENT 
+where [$THIS.mc_smc_id != ""]
+create cond($THIS.mc_smc_type == '', "Unknown", $THIS.mc_smc_type)
+END
+
+collector MC_SMC_Events.*.Impacts:
+EVENT 
+where [$THIS.mc_smc_impact within [ATTACHED,IMPACTING]]
+END
+
+collector MC_SMC_Events.*.History: 
+SMC_STATE_CHANGE
+SIM_COMPONENT_CHANGE
+END

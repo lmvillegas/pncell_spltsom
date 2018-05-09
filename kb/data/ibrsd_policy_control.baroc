@@ -1,0 +1,21 @@
+#
+# File name: ibrsd_policy_control.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------
+#
+#  Description: Policy control
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Policy control data
+#---------------------------------------------------------------------
+
+POLICY_CONTROL; type=Intelligent_Incident_Service_Policy; order=80; editor=IntelligentIncidentServiceEditor; END
+
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

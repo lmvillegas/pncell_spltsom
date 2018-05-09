@@ -1,0 +1,4513 @@
+#
+# File name: timezone.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+TIME_ZONE;
+description='(UTC+01:00) Arctic/Longyearbyen';
+tzid='Arctic/Longyearbyen';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Indian/Reunion';
+tzid='Indian/Reunion';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Indian/Kerguelen';
+tzid='Indian/Kerguelen';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Indian/Mauritius';
+tzid='Indian/Mauritius';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:30) Indian/Cocos';
+tzid='Indian/Cocos';
+utc_offset=6:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Indian/Christmas';
+tzid='Indian/Christmas';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Indian/Antananarivo';
+tzid='Indian/Antananarivo';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Indian/Comoro';
+tzid='Indian/Comoro';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Indian/Mayotte';
+tzid='Indian/Mayotte';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Indian/Mahe';
+tzid='Indian/Mahe';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Indian/Maldives';
+tzid='Indian/Maldives';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Indian/Chagos';
+tzid='Indian/Chagos';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Harbin';
+tzid='Asia/Harbin';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Vientiane';
+tzid='Asia/Vientiane';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Macao';
+tzid='Asia/Macao';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Asia/Yakutsk';
+tzid='Asia/Yakutsk';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Asia/Bahrain';
+tzid='Asia/Bahrain';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Novosibirsk';
+tzid='Asia/Novosibirsk';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Asia/Yerevan';
+tzid='Asia/Yerevan';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Tel_Aviv';
+tzid='Asia/Tel_Aviv';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,4,4,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Beirut';
+tzid='Asia/Beirut';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,0,0,0];
+dst2std_date=[10,0,5,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Yekaterinburg';
+tzid='Asia/Yekaterinburg';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Karachi';
+tzid='Asia/Karachi';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Thimphu';
+tzid='Asia/Thimphu';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Kashgar';
+tzid='Asia/Kashgar';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Pontianak';
+tzid='Asia/Pontianak';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Asia/Baku';
+tzid='Asia/Baku';
+utc_offset=4;
+dst_offset=1;
+std2dst_date=[3,0,5,4,0,0];
+dst2std_date=[10,0,5,5,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Nicosia';
+tzid='Asia/Nicosia';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Hong_Kong';
+tzid='Asia/Hong_Kong';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Asia/Aden';
+tzid='Asia/Aden';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Phnom_Penh';
+tzid='Asia/Phnom_Penh';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Saigon';
+tzid='Asia/Saigon';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Chongqing';
+tzid='Asia/Chongqing';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Asia/Tbilisi';
+tzid='Asia/Tbilisi';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Asia/Sakhalin';
+tzid='Asia/Sakhalin';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:30) Asia/Kabul';
+tzid='Asia/Kabul';
+utc_offset=4:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Kuala_Lumpur';
+tzid='Asia/Kuala_Lumpur';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Ulan_Bator';
+tzid='Asia/Ulan_Bator';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Asia/Kuwait';
+tzid='Asia/Kuwait';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Amman';
+tzid='Asia/Amman';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,4,5,24,0,0];
+dst2std_date=[10,5,5,1,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Asia/Baghdad';
+tzid='Asia/Baghdad';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Ulaanbaatar';
+tzid='Asia/Ulaanbaatar';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Asia/Anadyr';
+tzid='Asia/Anadyr';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Asia/Pyongyang';
+tzid='Asia/Pyongyang';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Dacca';
+tzid='Asia/Dacca';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Istanbul';
+tzid='Asia/Istanbul';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Choibalsan';
+tzid='Asia/Choibalsan';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Dhaka';
+tzid='Asia/Dhaka';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Chungking';
+tzid='Asia/Chungking';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Ujung_Pandang';
+tzid='Asia/Ujung_Pandang';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Jerusalem';
+tzid='Asia/Jerusalem';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,4,4,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Urumqi';
+tzid='Asia/Urumqi';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Thimbu';
+tzid='Asia/Thimbu';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Ashgabat';
+tzid='Asia/Ashgabat';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Aqtau';
+tzid='Asia/Aqtau';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Oral';
+tzid='Asia/Oral';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:30) Asia/Rangoon';
+tzid='Asia/Rangoon';
+utc_offset=6:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Damascus';
+tzid='Asia/Damascus';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,5,5,0,0,0];
+dst2std_date=[10,5,5,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+05:30) Asia/Colombo';
+tzid='Asia/Colombo';
+utc_offset=5:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Ho_Chi_Minh';
+tzid='Asia/Ho_Chi_Minh';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Aqtobe';
+tzid='Asia/Aqtobe';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Makassar';
+tzid='Asia/Makassar';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Asia/Tokyo';
+tzid='Asia/Tokyo';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Hebron';
+tzid='Asia/Hebron';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,4,5,24,0,0];
+dst2std_date=[9,6,3,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Macau';
+tzid='Asia/Macau';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Asia/Ust-Nera';
+tzid='Asia/Ust-Nera';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Asia/Riyadh';
+tzid='Asia/Riyadh';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Asia/Khandyga';
+tzid='Asia/Khandyga';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Asia/Seoul';
+tzid='Asia/Seoul';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Shanghai';
+tzid='Asia/Shanghai';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Almaty';
+tzid='Asia/Almaty';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Singapore';
+tzid='Asia/Singapore';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Brunei';
+tzid='Asia/Brunei';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Asia/Qatar';
+tzid='Asia/Qatar';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:30) Asia/Kolkata';
+tzid='Asia/Kolkata';
+utc_offset=5:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Asia/Jayapura';
+tzid='Asia/Jayapura';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Asia/Gaza';
+tzid='Asia/Gaza';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,4,5,24,0,0];
+dst2std_date=[9,6,3,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Asia/Magadan';
+tzid='Asia/Magadan';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Qyzylorda';
+tzid='Asia/Qyzylorda';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Hovd';
+tzid='Asia/Hovd';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Asia/Vladivostok';
+tzid='Asia/Vladivostok';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Tashkent';
+tzid='Asia/Tashkent';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Asia/Kamchatka';
+tzid='Asia/Kamchatka';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Novokuznetsk';
+tzid='Asia/Novokuznetsk';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Omsk';
+tzid='Asia/Omsk';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Manila';
+tzid='Asia/Manila';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Jakarta';
+tzid='Asia/Jakarta';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Asia/Bangkok';
+tzid='Asia/Bangkok';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:45) Asia/Kathmandu';
+tzid='Asia/Kathmandu';
+utc_offset=5:45;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Dushanbe';
+tzid='Asia/Dushanbe';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Asia/Bishkek';
+tzid='Asia/Bishkek';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:30) Asia/Calcutta';
+tzid='Asia/Calcutta';
+utc_offset=5:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Asia/Irkutsk';
+tzid='Asia/Irkutsk';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Kuching';
+tzid='Asia/Kuching';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:45) Asia/Katmandu';
+tzid='Asia/Katmandu';
+utc_offset=5:45;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Asia/Muscat';
+tzid='Asia/Muscat';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Samarkand';
+tzid='Asia/Samarkand';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Asia/Ashkhabad';
+tzid='Asia/Ashkhabad';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Asia/Dili';
+tzid='Asia/Dili';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Krasnoyarsk';
+tzid='Asia/Krasnoyarsk';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Asia/Dubai';
+tzid='Asia/Dubai';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Asia/Taipei';
+tzid='Asia/Taipei';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) Mexico/BajaNorte';
+tzid='Mexico/BajaNorte';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Mexico/General';
+tzid='Mexico/General';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) Mexico/BajaSur';
+tzid='Mexico/BajaSur';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-02:00) Brazil/DeNoronha';
+tzid='Brazil/DeNoronha';
+utc_offset=-2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) Brazil/East';
+tzid='Brazil/East';
+utc_offset=-3;
+dst_offset=1;
+std2dst_date=[10,0,3,0,0,0];
+dst2std_date=[2,0,3,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) Brazil/West';
+tzid='Brazil/West';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) Brazil/Acre';
+tzid='Brazil/Acre';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Monrovia';
+tzid='Africa/Monrovia';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Kampala';
+tzid='Africa/Kampala';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Cairo';
+tzid='Africa/Cairo';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[4,5,5,0,0,0];
+dst2std_date=[9,4,5,24,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Malabo';
+tzid='Africa/Malabo';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Asmera';
+tzid='Africa/Asmera';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Nouakchott';
+tzid='Africa/Nouakchott';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Freetown';
+tzid='Africa/Freetown';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Accra';
+tzid='Africa/Accra';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Lome';
+tzid='Africa/Lome';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Algiers';
+tzid='Africa/Algiers';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Brazzaville';
+tzid='Africa/Brazzaville';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Dakar';
+tzid='Africa/Dakar';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Ceuta';
+tzid='Africa/Ceuta';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Kinshasa';
+tzid='Africa/Kinshasa';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Lusaka';
+tzid='Africa/Lusaka';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Banjul';
+tzid='Africa/Banjul';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Addis_Ababa';
+tzid='Africa/Addis_Ababa';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Bamako';
+tzid='Africa/Bamako';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Mogadishu';
+tzid='Africa/Mogadishu';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Ouagadougou';
+tzid='Africa/Ouagadougou';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Bissau';
+tzid='Africa/Bissau';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Tunis';
+tzid='Africa/Tunis';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Timbuktu';
+tzid='Africa/Timbuktu';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Khartoum';
+tzid='Africa/Khartoum';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Gaborone';
+tzid='Africa/Gaborone';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Mbabane';
+tzid='Africa/Mbabane';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Blantyre';
+tzid='Africa/Blantyre';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Maseru';
+tzid='Africa/Maseru';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Douala';
+tzid='Africa/Douala';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Tripoli';
+tzid='Africa/Tripoli';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/El_Aaiun';
+tzid='Africa/El_Aaiun';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Niamey';
+tzid='Africa/Niamey';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Bangui';
+tzid='Africa/Bangui';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Conakry';
+tzid='Africa/Conakry';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Asmara';
+tzid='Africa/Asmara';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Sao_Tome';
+tzid='Africa/Sao_Tome';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Windhoek';
+tzid='Africa/Windhoek';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[9,0,1,2,0,0];
+dst2std_date=[4,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Ndjamena';
+tzid='Africa/Ndjamena';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Nairobi';
+tzid='Africa/Nairobi';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Abidjan';
+tzid='Africa/Abidjan';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Juba';
+tzid='Africa/Juba';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Kigali';
+tzid='Africa/Kigali';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Libreville';
+tzid='Africa/Libreville';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Johannesburg';
+tzid='Africa/Johannesburg';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Lubumbashi';
+tzid='Africa/Lubumbashi';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Maputo';
+tzid='Africa/Maputo';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Africa/Casablanca';
+tzid='Africa/Casablanca';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Lagos';
+tzid='Africa/Lagos';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Porto-Novo';
+tzid='Africa/Porto-Novo';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Harare';
+tzid='Africa/Harare';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Africa/Bujumbura';
+tzid='Africa/Bujumbura';
+utc_offset=2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Africa/Luanda';
+tzid='Africa/Luanda';
+utc_offset=1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Dar_es_Salaam';
+tzid='Africa/Dar_es_Salaam';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Africa/Djibouti';
+tzid='Africa/Djibouti';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/Belfast';
+tzid='Europe/Belfast';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Vaduz';
+tzid='Europe/Vaduz';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Tallinn';
+tzid='Europe/Tallinn';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Uzhgorod';
+tzid='Europe/Uzhgorod';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Rome';
+tzid='Europe/Rome';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Malta';
+tzid='Europe/Malta';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Europe/Simferopol';
+tzid='Europe/Simferopol';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Bucharest';
+tzid='Europe/Bucharest';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Europe/Volgograd';
+tzid='Europe/Volgograd';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Vilnius';
+tzid='Europe/Vilnius';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Nicosia';
+tzid='Europe/Nicosia';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Europe/Moscow';
+tzid='Europe/Moscow';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Vienna';
+tzid='Europe/Vienna';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Skopje';
+tzid='Europe/Skopje';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Sarajevo';
+tzid='Europe/Sarajevo';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Amsterdam';
+tzid='Europe/Amsterdam';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Europe/Minsk';
+tzid='Europe/Minsk';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+04:00) Europe/Samara';
+tzid='Europe/Samara';
+utc_offset=4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/Guernsey';
+tzid='Europe/Guernsey';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Busingen';
+tzid='Europe/Busingen';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Istanbul';
+tzid='Europe/Istanbul';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Vatican';
+tzid='Europe/Vatican';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Podgorica';
+tzid='Europe/Podgorica';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Zaporozhye';
+tzid='Europe/Zaporozhye';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Tiraspol';
+tzid='Europe/Tiraspol';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Berlin';
+tzid='Europe/Berlin';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Prague';
+tzid='Europe/Prague';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Budapest';
+tzid='Europe/Budapest';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/London';
+tzid='Europe/London';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Tirane';
+tzid='Europe/Tirane';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Mariehamn';
+tzid='Europe/Mariehamn';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Riga';
+tzid='Europe/Riga';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Kiev';
+tzid='Europe/Kiev';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Chisinau';
+tzid='Europe/Chisinau';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Ljubljana';
+tzid='Europe/Ljubljana';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Copenhagen';
+tzid='Europe/Copenhagen';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Belgrade';
+tzid='Europe/Belgrade';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Gibraltar';
+tzid='Europe/Gibraltar';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Stockholm';
+tzid='Europe/Stockholm';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Warsaw';
+tzid='Europe/Warsaw';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Sofia';
+tzid='Europe/Sofia';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Paris';
+tzid='Europe/Paris';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/Lisbon';
+tzid='Europe/Lisbon';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/Dublin';
+tzid='Europe/Dublin';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/Isle_of_Man';
+tzid='Europe/Isle_of_Man';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Madrid';
+tzid='Europe/Madrid';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Europe/Jersey';
+tzid='Europe/Jersey';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Zurich';
+tzid='Europe/Zurich';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Helsinki';
+tzid='Europe/Helsinki';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+02:00) Europe/Athens';
+tzid='Europe/Athens';
+utc_offset=2;
+dst_offset=1;
+std2dst_date=[3,0,5,3,0,0];
+dst2std_date=[10,0,5,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Monaco';
+tzid='Europe/Monaco';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Oslo';
+tzid='Europe/Oslo';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Bratislava';
+tzid='Europe/Bratislava';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Andorra';
+tzid='Europe/Andorra';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Europe/Kaliningrad';
+tzid='Europe/Kaliningrad';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Zagreb';
+tzid='Europe/Zagreb';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/San_Marino';
+tzid='Europe/San_Marino';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Brussels';
+tzid='Europe/Brussels';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Europe/Luxembourg';
+tzid='Europe/Luxembourg';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Guyana';
+tzid='America/Guyana';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Antigua';
+tzid='America/Antigua';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:30) America/Caracas';
+tzid='America/Caracas';
+utc_offset=-4:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Catamarca';
+tzid='America/Catamarca';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Recife';
+tzid='America/Recife';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Creston';
+tzid='America/Creston';
+utc_offset=-7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Lower_Princes';
+tzid='America/Lower_Princes';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Boa_Vista';
+tzid='America/Boa_Vista';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Monterrey';
+tzid='America/Monterrey';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Barbados';
+tzid='America/Barbados';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Regina';
+tzid='America/Regina';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Lima';
+tzid='America/Lima';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Metlakatla';
+tzid='America/Metlakatla';
+utc_offset=-8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/St_Barthelemy';
+tzid='America/St_Barthelemy';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) America/Atka';
+tzid='America/Atka';
+utc_offset=-10;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Vancouver';
+tzid='America/Vancouver';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Hermosillo';
+tzid='America/Hermosillo';
+utc_offset=-7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Grand_Turk';
+tzid='America/Grand_Turk';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Tortola';
+tzid='America/Tortola';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Chicago';
+tzid='America/Chicago';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Martinique';
+tzid='America/Martinique';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Knox_IN';
+tzid='America/Knox_IN';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Porto_Acre';
+tzid='America/Porto_Acre';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Managua';
+tzid='America/Managua';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/El_Salvador';
+tzid='America/El_Salvador';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Bogota';
+tzid='America/Bogota';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Kralendijk';
+tzid='America/Kralendijk';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) America/Juneau';
+tzid='America/Juneau';
+utc_offset=-9;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Edmonton';
+tzid='America/Edmonton';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Kentucky/Monticello';
+tzid='Kentucky/Monticello';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Kentucky/Louisville';
+tzid='Kentucky/Louisville';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Fort_Wayne';
+tzid='America/Fort_Wayne';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Shiprock';
+tzid='America/Shiprock';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) America/Adak';
+tzid='America/Adak';
+utc_offset=-10;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Petersburg';
+tzid='Indiana/Petersburg';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Knox';
+tzid='Indiana/Knox';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Winamac';
+tzid='Indiana/Winamac';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Vincennes';
+tzid='Indiana/Vincennes';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Marengo';
+tzid='Indiana/Marengo';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Vevay';
+tzid='Indiana/Vevay';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Indianapolis';
+tzid='Indiana/Indianapolis';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Indiana/Tell_City';
+tzid='Indiana/Tell_City';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Swift_Current';
+tzid='America/Swift_Current';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Panama';
+tzid='America/Panama';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Thunder_Bay';
+tzid='America/Thunder_Bay';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Fortaleza';
+tzid='America/Fortaleza';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Mendoza';
+tzid='America/Mendoza';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Campo_Grande';
+tzid='America/Campo_Grande';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[10,0,3,0,0,0];
+dst2std_date=[2,0,3,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Curacao';
+tzid='America/Curacao';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) America/Yakutat';
+tzid='America/Yakutat';
+utc_offset=-9;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Rosario';
+tzid='America/Rosario';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) America/Danmarkshavn';
+tzid='America/Danmarkshavn';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Mexico_City';
+tzid='America/Mexico_City';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Denver';
+tzid='America/Denver';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Los_Angeles';
+tzid='America/Los_Angeles';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Miquelon';
+tzid='America/Miquelon';
+utc_offset=-3;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Montevideo';
+tzid='America/Montevideo';
+utc_offset=-3;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[3,0,2,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Cancun';
+tzid='America/Cancun';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Guayaquil';
+tzid='America/Guayaquil';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Cayenne';
+tzid='America/Cayenne';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Tegucigalpa';
+tzid='America/Tegucigalpa';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Cayman';
+tzid='America/Cayman';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Grenada';
+tzid='America/Grenada';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-02:00) America/Noronha';
+tzid='America/Noronha';
+utc_offset=-2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Cuiaba';
+tzid='America/Cuiaba';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[10,0,3,0,0,0];
+dst2std_date=[2,0,3,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Whitehorse';
+tzid='America/Whitehorse';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Guadeloupe';
+tzid='America/Guadeloupe';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Belize';
+tzid='America/Belize';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Toronto';
+tzid='America/Toronto';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Asuncion';
+tzid='America/Asuncion';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[10,0,1,0,0,0];
+dst2std_date=[3,0,4,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Jujuy';
+tzid='America/Jujuy';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Rankin_Inlet';
+tzid='America/Rankin_Inlet';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/San_Luis';
+tzid='Argentina/San_Luis';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Catamarca';
+tzid='Argentina/Catamarca';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/ComodRivadavia';
+tzid='Argentina/ComodRivadavia';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/La_Rioja';
+tzid='Argentina/La_Rioja';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Salta';
+tzid='Argentina/Salta';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Tucuman';
+tzid='Argentina/Tucuman';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Mendoza';
+tzid='Argentina/Mendoza';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Jujuy';
+tzid='Argentina/Jujuy';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/San_Juan';
+tzid='Argentina/San_Juan';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Buenos_Aires';
+tzid='Argentina/Buenos_Aires';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Cordoba';
+tzid='Argentina/Cordoba';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Ushuaia';
+tzid='Argentina/Ushuaia';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Argentina/Rio_Gallegos';
+tzid='Argentina/Rio_Gallegos';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/St_Kitts';
+tzid='America/St_Kitts';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Montreal';
+tzid='America/Montreal';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-01:00) America/Scoresbysund';
+tzid='America/Scoresbysund';
+utc_offset=-1;
+dst_offset=1;
+std2dst_date=[3,0,5,0,0,0];
+dst2std_date=[10,0,5,1,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) America/Anchorage';
+tzid='America/Anchorage';
+utc_offset=-9;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Santarem';
+tzid='America/Santarem';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Aruba';
+tzid='America/Aruba';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Winnipeg';
+tzid='America/Winnipeg';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Puerto_Rico';
+tzid='America/Puerto_Rico';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Pangnirtung';
+tzid='America/Pangnirtung';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Santa_Isabel';
+tzid='America/Santa_Isabel';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/St_Vincent';
+tzid='America/St_Vincent';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Goose_Bay';
+tzid='America/Goose_Bay';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Buenos_Aires';
+tzid='America/Buenos_Aires';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Rainy_River';
+tzid='America/Rainy_River';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Havana';
+tzid='America/Havana';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,0,0,0];
+dst2std_date=[11,0,1,1,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/St_Lucia';
+tzid='America/St_Lucia';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Cordoba';
+tzid='America/Cordoba';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Blanc-Sablon';
+tzid='America/Blanc-Sablon';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) America/Nome';
+tzid='America/Nome';
+utc_offset=-9;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Bahia';
+tzid='America/Bahia';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Santiago';
+tzid='America/Santiago';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[9,6,1,24,0,0];
+dst2std_date=[4,6,4,24,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Costa_Rica';
+tzid='America/Costa_Rica';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Jamaica';
+tzid='America/Jamaica';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Resolute';
+tzid='America/Resolute';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Port-au-Prince';
+tzid='America/Port-au-Prince';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) North_Dakota/New_Salem';
+tzid='North_Dakota/New_Salem';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) North_Dakota/Beulah';
+tzid='North_Dakota/Beulah';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) North_Dakota/Center';
+tzid='North_Dakota/Center';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Nassau';
+tzid='America/Nassau';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Dawson_Creek';
+tzid='America/Dawson_Creek';
+utc_offset=-7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Rio_Branco';
+tzid='America/Rio_Branco';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Santo_Domingo';
+tzid='America/Santo_Domingo';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Detroit';
+tzid='America/Detroit';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Ensenada';
+tzid='America/Ensenada';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/St_Thomas';
+tzid='America/St_Thomas';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Belem';
+tzid='America/Belem';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Yellowknife';
+tzid='America/Yellowknife';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Paramaribo';
+tzid='America/Paramaribo';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Manaus';
+tzid='America/Manaus';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/New_York';
+tzid='America/New_York';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Thule';
+tzid='America/Thule';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Menominee';
+tzid='America/Menominee';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Mazatlan';
+tzid='America/Mazatlan';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Bahia_Banderas';
+tzid='America/Bahia_Banderas';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Porto_Velho';
+tzid='America/Porto_Velho';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Anguilla';
+tzid='America/Anguilla';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Boise';
+tzid='America/Boise';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Eirunepe';
+tzid='America/Eirunepe';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Louisville';
+tzid='America/Louisville';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Marigot';
+tzid='America/Marigot';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Nipigon';
+tzid='America/Nipigon';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Iqaluit';
+tzid='America/Iqaluit';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Guatemala';
+tzid='America/Guatemala';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Chihuahua';
+tzid='America/Chihuahua';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Cambridge_Bay';
+tzid='America/Cambridge_Bay';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Tijuana';
+tzid='America/Tijuana';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Coral_Harbour';
+tzid='America/Coral_Harbour';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Halifax';
+tzid='America/Halifax';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Maceio';
+tzid='America/Maceio';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Glace_Bay';
+tzid='America/Glace_Bay';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/La_Paz';
+tzid='America/La_Paz';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Ojinaga';
+tzid='America/Ojinaga';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) America/Sitka';
+tzid='America/Sitka';
+utc_offset=-9;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:30) America/St_Johns';
+tzid='America/St_Johns';
+utc_offset=-3:30;
+dst_offset=0:30;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Atikokan';
+tzid='America/Atikokan';
+utc_offset=-5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Sao_Paulo';
+tzid='America/Sao_Paulo';
+utc_offset=-3;
+dst_offset=1;
+std2dst_date=[10,0,3,0,0,0];
+dst2std_date=[2,0,3,0,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Port_of_Spain';
+tzid='America/Port_of_Spain';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Inuvik';
+tzid='America/Inuvik';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Merida';
+tzid='America/Merida';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[4,0,1,2,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Virgin';
+tzid='America/Virgin';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Dominica';
+tzid='America/Dominica';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Godthab';
+tzid='America/Godthab';
+utc_offset=-3;
+dst_offset=1;
+std2dst_date=[3,0,5,-2,0,0];
+dst2std_date=[10,0,5,-1,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) America/Indianapolis';
+tzid='America/Indianapolis';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) America/Matamoros';
+tzid='America/Matamoros';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Moncton';
+tzid='America/Moncton';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) America/Dawson';
+tzid='America/Dawson';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) America/Phoenix';
+tzid='America/Phoenix';
+utc_offset=-7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) America/Araguaina';
+tzid='America/Araguaina';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) America/Montserrat';
+tzid='America/Montserrat';
+utc_offset=-4;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:30) Australia/Lord_Howe';
+tzid='Australia/Lord_Howe';
+utc_offset=10:30;
+dst_offset=11;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+9:30) Australia/Yancowinna';
+tzid='Australia/Yancowinna';
+utc_offset=9:30;
+dst_offset=1:30;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Currie';
+tzid='Australia/Currie';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Sydney';
+tzid='Australia/Sydney';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Lindeman';
+tzid='Australia/Lindeman';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:30) Australia/Adelaide';
+tzid='Australia/Adelaide';
+utc_offset=9:30;
+dst_offset=1:30;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:30) Australia/LHI';
+tzid='Australia/LHI';
+utc_offset=10:30;
+dst_offset=11;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Melbourne';
+tzid='Australia/Melbourne';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Hobart';
+tzid='Australia/Hobart';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+08:45) Australia/Eucla';
+tzid='Australia/Eucla';
+utc_offset=8:45;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/ACT';
+tzid='Australia/ACT';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Tasmania';
+tzid='Australia/Tasmania';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+9:30) Australia/Broken_Hill';
+tzid='Australia/Broken_Hill';
+utc_offset=9:30;
+dst_offset=1:30;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Australia/Perth';
+tzid='Australia/Perth';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Canberra';
+tzid='Australia/Canberra';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Queensland';
+tzid='Australia/Queensland';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:30) Australia/South';
+tzid='Australia/South';
+utc_offset=9:30;
+dst_offset=1:30;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/NSW';
+tzid='Australia/NSW';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+9:30) Australia/Darwin';
+tzid='Australia/Darwin';
+utc_offset=9:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:30) Australia/North';
+tzid='Australia/North';
+utc_offset=9:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Australia/West';
+tzid='Australia/West';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Victoria';
+tzid='Australia/Victoria';
+utc_offset=10;
+dst_offset=1;
+std2dst_date=[10,0,1,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Australia/Brisbane';
+tzid='Australia/Brisbane';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Canada/East-Saskatchewan';
+tzid='Canada/East-Saskatchewan';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-03:30) Canada/Newfoundland';
+tzid='Canada/Newfoundland';
+utc_offset=-3:30;
+dst_offset=0:30;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) Canada/Eastern';
+tzid='Canada/Eastern';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) Canada/Mountain';
+tzid='Canada/Mountain';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) Canada/Pacific';
+tzid='Canada/Pacific';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) Canada/Atlantic';
+tzid='Canada/Atlantic';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) Canada/Yukon';
+tzid='Canada/Yukon';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Canada/Saskatchewan';
+tzid='Canada/Saskatchewan';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Canada/Central';
+tzid='Canada/Central';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Fiji';
+tzid='Pacific/Fiji';
+utc_offset=12;
+dst_offset=1;
+std2dst_date=[10,1,3,2,0,0];
+dst2std_date=[1,4,3,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Pacific/Guam';
+tzid='Pacific/Guam';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Wallis';
+tzid='Pacific/Wallis';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Pacific/Guadalcanal';
+tzid='Pacific/Guadalcanal';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+9:00) Pacific/Palau';
+tzid='Pacific/Palau';
+utc_offset=9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) Pacific/Rarotonga';
+tzid='Pacific/Rarotonga';
+utc_offset=-10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Pacific/Kosrae';
+tzid='Pacific/Kosrae';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:30) Pacific/Norfolk';
+tzid='Pacific/Norfolk';
+utc_offset=11:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Nauru';
+tzid='Pacific/Nauru';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+14:00) Pacific/Kiritimati';
+tzid='Pacific/Kiritimati';
+utc_offset=14;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-11:00) Pacific/Samoa';
+tzid='Pacific/Samoa';
+utc_offset=-11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Pacific/Noumea';
+tzid='Pacific/Noumea';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Pacific/Ponape';
+tzid='Pacific/Ponape';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Pacific/Pohnpei';
+tzid='Pacific/Pohnpei';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Wake';
+tzid='Pacific/Wake';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Auckland';
+tzid='Pacific/Auckland';
+utc_offset=12;
+dst_offset=1;
+std2dst_date=[9,0,5,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-11:00) Pacific/Midway';
+tzid='Pacific/Midway';
+utc_offset=-11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Pacific/Chuuk';
+tzid='Pacific/Chuuk';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-11:00) Pacific/Pago_Pago';
+tzid='Pacific/Pago_Pago';
+utc_offset=-11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:45) Pacific/Chatham';
+tzid='Pacific/Chatham';
+utc_offset=12:45;
+dst_offset=1:45;
+std2dst_date=[9,0,5,2,45,0];
+dst2std_date=[4,0,1,3,45,0];
+END;
+
+TIME_ZONE;
+description='(UTC+13:00) Pacific/Fakaofo';
+tzid='Pacific/Fakaofo';
+utc_offset=13;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Majuro';
+tzid='Pacific/Majuro';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Tarawa';
+tzid='Pacific/Tarawa';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) Pacific/Pitcairn';
+tzid='Pacific/Pitcairn';
+utc_offset=-8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Pacific/Port_Moresby';
+tzid='Pacific/Port_Moresby';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+13:00) Pacific/Tongatapu';
+tzid='Pacific/Tongatapu';
+utc_offset=13;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) Pacific/Gambier';
+tzid='Pacific/Gambier';
+utc_offset=-9;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Funafuti';
+tzid='Pacific/Funafuti';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Pacific/Easter';
+tzid='Pacific/Easter';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[9,6,1,22,0,0];
+dst2std_date=[4,6,4,22,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) Pacific/Tahiti';
+tzid='Pacific/Tahiti';
+utc_offset=-10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Pacific/Efate';
+tzid='Pacific/Efate';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Pacific/Galapagos';
+tzid='Pacific/Galapagos';
+utc_offset=-6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-09:30) Pacific/Marquesas';
+tzid='Pacific/Marquesas';
+utc_offset=-9:30;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+13:00) Pacific/Apia';
+tzid='Pacific/Apia';
+utc_offset=13;
+dst_offset=1;
+std2dst_date=[9,0,5,3,0,0];
+dst2std_date=[4,0,1,4,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Pacific/Kwajalein';
+tzid='Pacific/Kwajalein';
+utc_offset=12;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) Pacific/Honolulu';
+tzid='Pacific/Honolulu';
+utc_offset=-10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+13:00) Pacific/Enderbury';
+tzid='Pacific/Enderbury';
+utc_offset=13;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Pacific/Yap';
+tzid='Pacific/Yap';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-11:00) Pacific/Niue';
+tzid='Pacific/Niue';
+utc_offset=-11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Pacific/Saipan';
+tzid='Pacific/Saipan';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Pacific/Truk';
+tzid='Pacific/Truk';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) Pacific/Johnston';
+tzid='Pacific/Johnston';
+utc_offset=-10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+08:00) Antarctica/Casey';
+tzid='Antarctica/Casey';
+utc_offset=8;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+06:00) Antarctica/Vostok';
+tzid='Antarctica/Vostok';
+utc_offset=6;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) Antarctica/Palmer';
+tzid='Antarctica/Palmer';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[9,6,1,24,0,0];
+dst2std_date=[4,6,4,24,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Antarctica/South_Pole';
+tzid='Antarctica/South_Pole';
+utc_offset=12;
+dst_offset=1;
+std2dst_date=[9,0,5,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Antarctica/Troll';
+tzid='Antarctica/Troll';
+utc_offset=0;
+dst_offset=2;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+07:00) Antarctica/Davis';
+tzid='Antarctica/Davis';
+utc_offset=7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+05:00) Antarctica/Mawson';
+tzid='Antarctica/Mawson';
+utc_offset=5;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+11:00) Antarctica/Macquarie';
+tzid='Antarctica/Macquarie';
+utc_offset=11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+12:00) Antarctica/McMurdo';
+tzid='Antarctica/McMurdo';
+utc_offset=12;
+dst_offset=1;
+std2dst_date=[9,0,5,2,0,0];
+dst2std_date=[4,0,1,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) Antarctica/Rothera';
+tzid='Antarctica/Rothera';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+10:00) Antarctica/DumontDUrville';
+tzid='Antarctica/DumontDUrville';
+utc_offset=10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+03:00) Antarctica/Syowa';
+tzid='Antarctica/Syowa';
+utc_offset=3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Atlantic/Canary';
+tzid='Atlantic/Canary';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-03:00) Atlantic/Stanley';
+tzid='Atlantic/Stanley';
+utc_offset=-3;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Atlantic/Reykjavik';
+tzid='Atlantic/Reykjavik';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Atlantic/Faeroe';
+tzid='Atlantic/Faeroe';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-02:00) Atlantic/South_Georgia';
+tzid='Atlantic/South_Georgia';
+utc_offset=-2;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Atlantic/Faroe';
+tzid='Atlantic/Faroe';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC) Atlantic/St_Helena';
+tzid='Atlantic/St_Helena';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC) Atlantic/Madeira';
+tzid='Atlantic/Madeira';
+utc_offset=0;
+dst_offset=1;
+std2dst_date=[3,0,5,1,0,0];
+dst2std_date=[10,0,5,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) Atlantic/Bermuda';
+tzid='Atlantic/Bermuda';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-01:00) Atlantic/Cape_Verde';
+tzid='Atlantic/Cape_Verde';
+utc_offset=-1;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+01:00) Atlantic/Jan_Mayen';
+tzid='Atlantic/Jan_Mayen';
+utc_offset=1;
+dst_offset=1;
+std2dst_date=[3,0,5,2,0,0];
+dst2std_date=[10,0,5,3,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-01:00) Atlantic/Azores';
+tzid='Atlantic/Azores';
+utc_offset=-1;
+dst_offset=1;
+std2dst_date=[3,0,5,0,0,0];
+dst2std_date=[10,0,5,1,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-04:00) Chile/Continental';
+tzid='Chile/Continental';
+utc_offset=-4;
+dst_offset=1;
+std2dst_date=[9,6,1,24,0,0];
+dst2std_date=[4,6,4,24,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) Chile/EasterIsland';
+tzid='Chile/EasterIsland';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[9,6,1,22,0,0];
+dst2std_date=[4,6,4,22,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-11:00) US/Samoa';
+tzid='US/Samoa';
+utc_offset=-11;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) US/Hawaii';
+tzid='US/Hawaii';
+utc_offset=-10;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) US/East-Indiana';
+tzid='US/East-Indiana';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) US/Indiana-Starke';
+tzid='US/Indiana-Starke';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) US/Eastern';
+tzid='US/Eastern';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-10:00) US/Aleutian';
+tzid='US/Aleutian';
+utc_offset=-10;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) US/Mountain';
+tzid='US/Mountain';
+utc_offset=-7;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) US/Pacific';
+tzid='US/Pacific';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-08:00) US/Pacific-New';
+tzid='US/Pacific-New';
+utc_offset=-8;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-09:00) US/Alaska';
+tzid='US/Alaska';
+utc_offset=-9;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-07:00) US/Arizona';
+tzid='US/Arizona';
+utc_offset=-7;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC-06:00) US/Central';
+tzid='US/Central';
+utc_offset=-6;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC-05:00) US/Michigan';
+tzid='US/Michigan';
+utc_offset=-5;
+dst_offset=1;
+std2dst_date=[3,0,2,2,0,0];
+dst2std_date=[11,0,1,2,0,0];
+END;
+
+TIME_ZONE;
+description='(UTC+00:00) UTC';
+tzid='UTC';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;
+
+TIME_ZONE;
+description='(UTC+00:00) GMT';
+tzid='GMT';
+utc_offset=0;
+dst_offset=0;
+std2dst_date=[];
+dst2std_date=[];
+END;

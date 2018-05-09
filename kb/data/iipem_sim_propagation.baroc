@@ -1,0 +1,24 @@
+#
+# File name: iipem_sim_propagation.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SELECTOR;
+	based_on='SMC_STATE_CHANGE';
+	name='IIPEM.SMC_STATE_CHANGE_Events';
+	description='All SMC_STATE_CHANGE Events';
+	ecfs=[SMC_STATE_CHANGE];
+	ecfs_descr=['All SMC_STATE_CHANGE Events'];
+END
+IM_PROPAGATION_POLICY;
+	name='IIPEM_SIM_PROPAGATION';
+	description='Propagate SMC_STATE_CHANGE Events to PATROL EM';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='IIPEM.SMC_STATE_CHANGE_Events';
+	selector_class='SMC_STATE_CHANGE';
+	selector_ecf=*IIPEM.SMC_STATE_CHANGE_Events ($EV);
+	all_of_propagation_list=[jServer];
+	one_of_propagation_list=[];
+END

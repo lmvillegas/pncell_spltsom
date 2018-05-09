@@ -1,0 +1,1561 @@
+#
+# File name: patrol_event_categorization_policy.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------------
+# Next Generation Platform
+# Copyright 2009 BMC Software, Inc.  All rights reserved.
+# Filename :    patrol_event_categorization_policy
+# Author   :    Nitin Rathod
+#----------------------------------------------------------
+#
+#  Used for Next Generation Platform [NGP]
+
+SELECTOR;
+	based_on='PATROL_EV';
+	name='PATROL_Event';
+	description='';
+	ecfs=[PATROL_EV];
+	ecfs_descr=[''];
+END
+IM_DDEN_POLICY;
+	name='PATROL_EVENT';
+	description='';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='PATROL_Event';
+	selector_class='PATROL_EV';
+	selector_ecf=*PATROL_Event ($EV);
+	ordinal=0;
+	execution_order=7;
+	event_class='PATROL_EV';
+	lookup_table='DDEN_MATCH_TABLE';
+	lookup_table_tag='enrich-tag_7';
+	match_fields=['mc_object_class'];
+	output_fields=['mc_event_subcategory'];
+	trace=NO;
+	data_file='etc/samples/PATROL_P7_Category_Table.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_1_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_AD_Connection>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_2_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_AD_Replication>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_3_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Address_List>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_4_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Cluster_Container>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_5_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Cluster_Resources>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_6_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Database>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_7_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_DB_Private>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_8_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_DB_Public>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_9_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_DSAccess_Cache>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_10_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_DSAccess_Contexts>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_11_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_DSAccess_Processes>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_12_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_ExIPC>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_13_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_HTTP_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_14_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_IMAP4_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_15_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_IS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_16_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_MonitoredServers>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_17_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_MTA>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_18_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_MTA_Connections>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_19_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_MTA_PC>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_20_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Network>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_21_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_NSPI_Proxy>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_22_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Performance>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_23_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_POP3_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_24_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Queue_Protocols>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_25_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Queues>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_26_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Roundtrip_Client>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_27_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Roundtrip_Container>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_28_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Roundtrip_InetServer>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_29_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Roundtrip_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_30_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Sent_Mail>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_31_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Sent_Mail_Containers>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_32_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_33_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Server_Health_Container>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_34_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_SMTP_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_35_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Storage_Group>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_36_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Storage_Group_Container>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_37_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Store_Driver>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_38_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Top_Folders>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_39_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Top_Mailboxes>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_40_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Top_Receivers>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_41_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Top_Senders>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_42_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Virtual_Server_Health>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_43_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Watched_Users>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_44_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Watched_Users_Container>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_45_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<MSEXCH_Web_Mail>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_46_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPER-V>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_47_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_HYPERVISOR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_48_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_LOGICAL_PROCESSOR_CONT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_49_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_LOGICAL_PROCESSOR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_50_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_PARTITION_CONT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_51_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_PARTITION>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_52_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_PART_VIRTUAL_PRCR_CONT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_53_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_PART_VIRTUAL_PRCR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_54_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_PARTITION_VHD_CONT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_55_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HYPERV_PARTITION_VHD>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_56_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_57_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_OS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_58_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_CACHE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_59_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_CPU>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_60_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_CPU_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_61_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_MEMORY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_62_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PAGEFILE_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_63_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PAGEFILE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_64_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_SYSTEM>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_65_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_LOGICAL_DISKS_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_66_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_LOGICAL_DISKS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_67_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NTFS_MOUNT_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_68_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NTFS_MOUNT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_69_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NTFS_QUOTA_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_70_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NTFS_QUOTA>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_71_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_HEALTH>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_72_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<PATROL_NT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	tag='enrich-tag_7';
+	input_match=['<NT_BSK>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_74_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_Composites>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_75_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_CompositesColl>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_76_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_EventLog>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_77_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_EVENTSTUB_TESTAPP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_78_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_EVENTS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_79_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_EVLOGFILES>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_80_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_FTP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_81_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_FTP_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_82_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_ICMP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_83_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_IP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_84_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_IPX>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_85_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_IPX_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_86_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_JOBS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_87_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_JOBS_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_88_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_JOBS_PROCESS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_89_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_JOBS_PROCESS_GROUP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_90_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_LOAD>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_91_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NETBEUI>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_92_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NETBEUI_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_93_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NETBIOS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_94_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NETBIOS_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_95_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NETWORK>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_96_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NETWORK_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_97_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_NET_PROTOCOLS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_98_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PHYSICAL_DISKS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_99_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PHYSICAL_DISKS_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_100_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PROCESS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_101_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PROCESS_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_102_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PROCESS_GROUP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_103_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_REGISTRY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_104_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_REGISTRY_KEYINST>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_105_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_SAP_QUERY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_106_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_SECURITY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_107_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_SERVER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_108_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_SERVICES>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_109_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_SERVICES_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_110_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_TCP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_111_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_UDP>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_112_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PRINTERJOB>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_113_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PRINTERJOBS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_114_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PRINTER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_115_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<NT_PRINTER_CONTAINER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_116_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Services>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_117_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Servers>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_118_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_119_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_Application>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_120_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Ftp_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_121_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Mail_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_122_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Mail_Remote>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_123_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Pop3_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_124_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_News_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_125_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Ldap_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_126_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Proxy_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_127_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Process>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_128_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Protocol_Tcp>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_129_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Dns_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_130_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Dns_Remote>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_131_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Dns_Application>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_132_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Dns_Domain>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_133_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Imap_Server>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_134_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Container>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_135_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Portmon_Top>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_136_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Portmon_Inst>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_137_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_AccLog>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_138_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_AccLogStat>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_139_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_ClientHost>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_140_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_ErrLog>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_141_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_ErrLogStat>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_142_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_Url>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_143_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_User>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_144_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Web_VirtualServer>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_145_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Websvc_Inst>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_146_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Websvc_Operation>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_147_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<INET_Websvc_Top>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_148_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_149_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DISCOVERY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_150_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_SQL_SERVER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_151_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_ADMIN>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_152_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_APPL_QUEUE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_153_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_AVAILABILITY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_154_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_CAPACITY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_155_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_SERVER_LOGIN_MGMT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_156_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_COLLECTORS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_157_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DATABASE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_158_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DATACACHE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_159_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DATACACHE_INST>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_160_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DISK>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_161_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DISK_DETAIL>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_162_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_DISK_STD>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_163_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_INDEX>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_164_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_KERNEL>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_165_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_KERNEL_DETAIL>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_166_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_LOCKS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_167_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_MEMORY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_168_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_METADATA>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_169_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_NETWORK>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_170_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_NETWORK_STD>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_171_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_OBJECTS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_172_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_PARALLEL_QUERY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_173_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_PERFORMANCE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_174_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_PROCCACHE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_175_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_RECOVERY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_176_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_SEGMENT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_177_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_TASKS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_178_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_TRANS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_179_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_TRANS_MGMT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_180_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_USERS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_181_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBASE_WORKER_PROCS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_182_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBIQ_SERVER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_183_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBIQ_AVAILABILITY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_184_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBIQ_COLLECTORS>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_185_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBMON_SVR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_186_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBMON_CACHE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_187_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBMON_DEV>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_188_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBMON_ENG>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_189_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBMON_PROC>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_190_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBRS_DISCOVERY>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_191_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBRS_SERVER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_192_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBRS_LTM>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_193_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBRS_PARTITION>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_194_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBRS_QUEUE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_195_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<SYBRS_REPAGENT>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_196_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_197_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_CNTR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_198_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_DATACENTER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_199_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_FOLDER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_200_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_RESOURCE_POOL>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_201_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_CLUSTER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_202_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_CPU>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_203_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_CPU_CNTR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_204_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_CPU_VM>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_205_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_DISK>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_206_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_DISK_CNTR>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_207_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_DISK_PERF>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_208_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_HOST>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_209_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_MEMORY_V2>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_210_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_DATASTORE>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_211_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_VC>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_212_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_VM>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_213_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_VNET_PERF>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_214_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_VMOTION_CLUSTER>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_215_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_VMOTION_HOST>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_7_216_2009_5_22_6:12:27PM';
+	tag='enrich-tag_7';
+	input_match=['<VSM_VMOTION_VM>'];
+	ref_instances_classes=['PATROL_EV'];
+	output_expressions=['SYSTEM'];
+END
+

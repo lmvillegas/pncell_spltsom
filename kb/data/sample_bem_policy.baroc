@@ -1,0 +1,30 @@
+#
+# File name: sample_bem_policy.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SELECTOR;
+	based_on='EVENT';
+	name='BSR_Events';
+	description='All Events';
+	ecfs=['EVENT ($EV) where [$EV.CLASS != IBRSD_SM_INCIDENT]'];
+	ecfs_descr=['All Events'];
+END
+
+IM_PROPAGATION_POLICY;
+	name='Event_Propagation_To_Service_Desk';
+	description='Sample policy for propagating events to Service Desk';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name=All_Events;
+	selector_class=EVENT;
+	selector_ecf='*BSR_Events ($EV)';
+	all_of_propagation_list=[];
+	one_of_propagation_list=['ibrsd'];
+	when_slot=severity;
+	when_operator=equals;
+	when_value=CRITICAL;
+END

@@ -1,0 +1,65 @@
+#
+# File name: mc_evr_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS FILE
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE EVENT RELATIONS FEATURE
+#----------------------------------------------------
+#
+# COLLECTOR TREE: MC_Related_Events.<class>
+# Used by the Event Relations feature to retrieve the 
+# events related to a specific event, based on the mc_ueid
+# and its related event type.
+#
+# The query :
+# select open events from collector MC_Related_Events
+# where [ $THIS.mc_ueid equals <related-ueid> AND 
+#         $THIS.CLASS equals <related-event-class> ]
+#
+# <related-ueid> = value of mc_ueid parsed from the 
+# mc_event_relations slot in that instance. The slot
+# may have multiple mc_ueid values.
+#
+# <related-event-class> = event class for the related
+# events
+#
+# Alternate query :
+#
+# select open events from collector MC_Related_Events
+# where [ $THIS.mc_ueid equals <related-ueid> OR ... ]
+#
+# The relation type of the result is not controlled by
+# the query this time, rather the caller filters the 
+# mc_ueid  values by type while parsing the 
+# mc_event_relations  slot for the where clause.
+#
+#----------------------------------------------------
+
+collector MC_Related_Events:
+{
+	r['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Service Administrators']
+	w['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Service Administrators']
+	x['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Service Administrators']
+}
+END
+
+collector MC_Related_Events.*:
+{
+	r['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Service Administrators']
+	w['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Service Administrators']
+	x['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+	'Service Administrators']
+}:
+EVENT
+where [mc_relation_source: != '']
+create $THIS.CLASS
+END

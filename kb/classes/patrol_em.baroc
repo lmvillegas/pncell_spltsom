@@ -1,0 +1,24 @@
+#
+# File name: patrol_em.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description : This file defines an event class used for propagating 
+#               PATROL EM alerts to a Cell
+#--------------------------------------------------------
+
+MC_EV_CLASS:
+   PEM_EV ISA EVENT
+   DEFINES
+   {
+        pem_operator            : STRING, default="--";
+        pem_supervisor          : STRING, default="--";
+        pem_filter              : STRING, default="--";
+        pem_path                : STRING, default="--";
+        pem_alert_type          : STRING, default="--";
+        pem_priority            : INTEGER, default=7;
+        pem_category            : STRING, default="--";
+        pem_service             : STRING, default="--";
+    };
+END

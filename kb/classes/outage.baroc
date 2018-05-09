@@ -1,0 +1,52 @@
+#
+# File name: outage.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: outage.baroc
+# Version: main
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+
+MC_EV_CLASS:
+   SM_OUTAGE ISA EVENT
+   DEFINES
+   {
+		# Slots populated from the component
+		comp_id 					: STRING;
+		comp_name 					: STRING;
+		comp_class 					: STRING;
+		comp_category 				: STRING;
+		comp_type 					: STRING;
+		comp_item					: STRING;
+		comp_status 				: SIM_NOTIFICATION_STATUS;
+		comp_priority 				: MC_PRIORITY;
+		root_causes					: LIST_OF STRING;
+		
+		# Slots populated from the policy
+		outage_for					: STRING;		
+		status_outage 				: STRING;
+		prop_destination        				: LIST_OF STRING;
+		cell_name					: STRING;
+		policy_name					: STRING;
+		company_name				: STRING;
+		site						: STRING;
+		
+		# Slots populated from the causal event and root cause CI
+		causal_mc_ueid				: STRING;
+		causal_mc_udid				: STRING;
+		
+		# If event is for causal CI then value will be 1
+		isCausal					: INTEGER, default=0;
+		outage_id					: STRING;
+    };
+END
+
+MC_EV_CLASS :
+	SM_OUTAGE_CLOSE ISA EVENT
+	DEFINES
+	{
+		comp_id 					: STRING;
+	};
+END

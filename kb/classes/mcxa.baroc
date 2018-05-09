@@ -1,0 +1,524 @@
+#
+# File name: mcxa.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+################################################################################
+#
+# BMC Impact Event Adapters events and mposter events
+#
+# Date     : February 25th, 2002
+# Revision : June 16th, 2004
+#
+#
+################################################################################
+
+
+################################################################################
+#
+# mposter/mc-client base classes
+#
+################################################################################
+
+MC_EV_CLASS : MC_CLIENT_BASE ISA EVENT
+   DEFINES
+    {
+     severity : default = OK;
+    };
+END
+
+MC_EV_CLASS : MC_CLIENT_CONTROL ISA MC_CLIENT_BASE;
+END
+
+MC_EV_CLASS : MC_CLIENT_ERROR ISA MC_CLIENT_BASE
+   DEFINES
+    {
+     severity : default = CRITICAL;
+    };
+END
+
+MC_EV_CLASS : MC_CLIENT_START ISA MC_CLIENT_CONTROL;
+END
+
+MC_EV_CLASS : MC_CLIENT_STOP ISA MC_CLIENT_CONTROL;
+END
+
+MC_EV_CLASS : MC_CLIENT_PAUSE ISA MC_CLIENT_CONTROL;
+END
+
+MC_EV_CLASS : MC_CLIENT_UNPAUSE ISA MC_CLIENT_CONTROL;
+END
+
+MC_EV_CLASS : MC_CLIENT_HEARTBEAT ISA MC_CLIENT_CONTROL
+   DEFINES
+    {
+     next_heartbeat : INTEGER, representation = date;
+    };
+END
+
+
+################################################################################
+#
+# Adapter base classes
+#
+################################################################################
+
+MC_EV_CLASS : MC_ADAPTER_BASE ISA EVENT
+   DEFINES
+    {
+     severity    : default = OK;
+     mc_object  : default = "adapter", dup_detect = yes;
+    };
+END
+
+MC_EV_CLASS : MC_ADAPTER_CONTROL ISA MC_ADAPTER_BASE;
+END
+
+MC_EV_CLASS : MC_ADAPTER_ERROR ISA MC_ADAPTER_CONTROL
+   DEFINES
+    {
+     severity : default = CRITICAL;
+    };
+END
+
+MC_EV_CLASS : MC_ADAPTER_START ISA MC_ADAPTER_CONTROL;
+END
+
+MC_EV_CLASS : MC_ADAPTER_STOP ISA MC_ADAPTER_CONTROL
+   DEFINES
+    {
+     severity : default = WARNING;
+    };
+END
+
+
+################################################################################
+#
+# BMC Impact Event Adapters base classes
+#
+################################################################################
+
+
+################################################################################
+#
+# NT/2000 Eventlog classes
+
+MC_EV_CLASS : WIN_EVENTLOG ISA MC_ADAPTER_BASE   
+   DEFINES 
+    {
+     mc_tool_class      : default = "WINEventLog", dup_detect = yes;
+     el_category        : STRING;
+     el_closing_record_number : INTEGER;
+     el_computer        : STRING;
+     el_eventid         : INTEGER;
+     el_event_type_str  : STRING;
+     el_id32            : INT32, dup_detect = yes;
+     el_length          : INTEGER;
+     el_record_number   : INTEGER;
+     el_severity_str    : STRING;
+     el_source          : STRING;
+     el_time_generated  : INTEGER, representation = date;
+     el_time_written    : INTEGER, representation = date;
+     el_user_domain     : STRING;
+     el_user_name       : STRING;
+     el_user_type_str   : STRING;
+     el_data            : STRING;
+
+     el_strings         : LIST_OF STRING;
+    };
+END
+
+MC_EV_CLASS : WIN_EL_APPLICATION ISA WIN_EVENTLOG
+   DEFINES 
+    {
+     mc_tool : default = "Application";
+    };
+END
+
+MC_EV_CLASS : WIN_EL_SECURITY ISA WIN_EVENTLOG
+   DEFINES 
+    {
+     mc_tool : default = "Security";
+    };
+END
+
+MC_EV_CLASS : WIN_EL_SYSTEM ISA WIN_EVENTLOG
+   DEFINES 
+    {
+     mc_tool : default = "System";
+    };
+END
+
+MC_EV_CLASS : WIN_EL_DIRECTORY_SERVICE ISA WIN_EVENTLOG
+   DEFINES 
+    {
+     mc_tool : default = "Directory Service";
+    };
+END
+
+MC_EV_CLASS : WIN_EL_DNS_SERVER ISA WIN_EVENTLOG
+   DEFINES 
+    {
+     mc_tool : default = "DNS Server";
+    };
+END
+
+MC_EV_CLASS : WIN_EL_FILE_REPLICATION_SERVICE ISA WIN_EVENTLOG
+   DEFINES 
+    {
+     mc_tool : default = "File Replication Service";
+    };
+END
+
+
+
+################################################################################
+#
+# Logfile classes
+
+MC_EV_CLASS :
+   LOGFILE_BASE ISA MC_ADAPTER_BASE
+   DEFINES
+    {
+     logfile       : STRING;
+     mc_tool_class : default = "Logfile";
+    };
+END
+
+MC_EV_CLASS : SYSLOG_BASE ISA LOGFILE_BASE
+   DEFINES
+    {
+     pid : INTEGER;
+    };
+END
+
+# Special classes (not based on a process)
+
+MC_EV_CLASS : SYSLOG_REPEATMSG ISA SYSLOG_BASE
+   DEFINES 
+    {
+     repeat_msg: INTEGER;
+    };
+END
+
+################################################################################
+#
+# Specific classes based on the source (a program/daemon) 
+#
+################################################################################
+
+# automounter
+MC_EV_CLASS : SYSLOG_AUTOMOUNTER ISA SYSLOG_BASE;
+END
+# bootpd
+MC_EV_CLASS : SYSLOG_BOOTPD ISA SYSLOG_BASE;
+END
+# comsat
+MC_EV_CLASS : SYSLOG_COMSAT ISA SYSLOG_BASE;
+END
+# cron
+MC_EV_CLASS : SYSLOG_CRON ISA SYSLOG_BASE;
+END
+# date
+MC_EV_CLASS : SYSLOG_DATE ISA SYSLOG_BASE;
+END
+# ebbackupd
+MC_EV_CLASS : SYSLOG_EBBACKUPD ISA SYSLOG_BASE;
+END
+# ebcatcomp
+MC_EV_CLASS : SYSLOG_EBCATCOMP ISA SYSLOG_BASE;
+END
+# fsck
+MC_EV_CLASS : SYSLOG_FSCK ISA SYSLOG_BASE;
+END
+# ftp
+MC_EV_CLASS : SYSLOG_FTP ISA SYSLOG_BASE;
+END
+# ftpd
+MC_EV_CLASS : SYSLOG_FTPD ISA SYSLOG_BASE;
+END
+# gated
+MC_EV_CLASS : SYSLOG_GATED ISA SYSLOG_BASE;
+END
+# getty
+MC_EV_CLASS : SYSLOG_GETTY ISA SYSLOG_BASE;
+END
+# halt
+MC_EV_CLASS : SYSLOG_HALT ISA SYSLOG_BASE;
+END
+# idi
+MC_EV_CLASS : SYSLOG_IDI ISA SYSLOG_BASE;
+END
+# inetd
+MC_EV_CLASS : SYSLOG_INETD ISA SYSLOG_BASE;
+END
+# init
+MC_EV_CLASS : SYSLOG_INIT ISA SYSLOG_BASE;
+END
+# innd
+MC_EV_CLASS : SYSLOG_INND ISA SYSLOG_BASE;
+END
+# kernel
+MC_EV_CLASS : SYSLOG_KERNEL ISA SYSLOG_BASE;
+END
+# login
+MC_EV_CLASS : SYSLOG_LOGIN ISA SYSLOG_BASE;
+END
+# lpd 
+MC_EV_CLASS : SYSLOG_LPD ISA SYSLOG_BASE;
+END
+# Mosaic
+MC_EV_CLASS : SYSLOG_MOSAIC ISA SYSLOG_BASE;
+END
+# mountd
+MC_EV_CLASS : SYSLOG_MOUNTD ISA SYSLOG_BASE;
+END
+# named
+MC_EV_CLASS : SYSLOG_NAMED ISA SYSLOG_BASE;
+END
+# nfsd
+MC_EV_CLASS : SYSLOG_NFSD ISA SYSLOG_BASE;
+END
+# nnrpd
+MC_EV_CLASS : SYSLOG_NNRPD ISA SYSLOG_BASE;
+END
+# oserv
+MC_EV_CLASS : SYSLOG_OSERV ISA SYSLOG_BASE;
+END
+# passwd
+MC_EV_CLASS : SYSLOG_PASSWD ISA SYSLOG_BASE;
+END
+# pcnfsd
+MC_EV_CLASS : SYSLOG_PCNFSD ISA SYSLOG_BASE;
+END
+# printer 
+MC_EV_CLASS : SYSLOG_PRINTER ISA SYSLOG_BASE;
+END
+# rarpd
+MC_EV_CLASS : SYSLOG_RARPD ISA SYSLOG_BASE;
+END
+# reboot
+MC_EV_CLASS : SYSLOG_REBOOT ISA SYSLOG_BASE;
+END
+# rexecd
+MC_EV_CLASS : SYSLOG_REXECD ISA SYSLOG_BASE;
+END
+# rquotad
+MC_EV_CLASS : SYSLOG_RQUOTAD ISA SYSLOG_BASE;
+END
+# rlogind
+MC_EV_CLASS : SYSLOG_RLOGIND ISA SYSLOG_BASE;
+END
+# rftp
+MC_EV_CLASS : SYSLOG_RFTP ISA SYSLOG_BASE;
+END
+# rstatd
+MC_EV_CLASS : SYSLOG_RSTATD ISA SYSLOG_BASE;
+END
+# routed
+MC_EV_CLASS : SYSLOG_ROUTED ISA SYSLOG_BASE;
+END
+# rshd
+MC_EV_CLASS : SYSLOG_RSHD ISA SYSLOG_BASE;
+END
+# rtelnet
+MC_EV_CLASS : SYSLOG_RTELNET ISA SYSLOG_BASE;
+END
+# rwhod
+MC_EV_CLASS : SYSLOG_RWHOD ISA SYSLOG_BASE;
+END
+# sendmail
+MC_EV_CLASS : SYSLOG_SENDMAIL ISA SYSLOG_BASE;
+END
+# sockd
+MC_EV_CLASS : SYSLOG_SOCKD ISA SYSLOG_BASE;
+END
+# snmpd
+MC_EV_CLASS : SYSLOG_SNMPD ISA SYSLOG_BASE;
+END
+# strerr
+MC_EV_CLASS : SYSLOG_STRERR ISA SYSLOG_BASE;
+END
+# su
+MC_EV_CLASS : SYSLOG_SU ISA SYSLOG_BASE;
+END
+# syslogd
+MC_EV_CLASS : SYSLOG_SYSLOGD ISA SYSLOG_BASE;
+END
+# talkd
+MC_EV_CLASS : SYSLOG_TALKD ISA SYSLOG_BASE;
+END
+# telnetd
+MC_EV_CLASS : SYSLOG_TELNETD ISA SYSLOG_BASE;
+END
+# tftpd
+MC_EV_CLASS : SYSLOG_TFTPD ISA SYSLOG_BASE;
+END
+# xntpd
+MC_EV_CLASS : SYSLOG_XNTPD ISA SYSLOG_BASE;
+END
+
+
+################################################################################
+#
+# SNMP trap classes
+
+MC_EV_CLASS : SNMP_TRAP ISA MC_ADAPTER_BASE
+   DEFINES {
+      mc_tool_class:     default = "SnmpTrap";
+
+      snmp_community:      STRING;
+      snmp_enterprise:     STRING,  default = "Unknown";
+      snmp_enterprise_str: STRING,  default = "Unknown";
+      snmp_error_index:    INTEGER, default = 0;
+      snmp_error_status:   INTEGER, default = 0;
+      snmp_request_id:     INTEGER, default = 0;
+      snmp_source_addr:    STRING,  default = "Unknown";
+      snmp_specific:       INTEGER, default = 0;
+      snmp_time_ticks:     INTEGER, default = 0;
+      snmp_trap_type:      INTEGER, default = 0;
+      snmp_trap_type_str:  STRING,  default = "N/A";
+      snmp_version:        INTEGER;
+
+      snmp_oids:         LIST_OF STRING;
+      snmp_oidst:        LIST_OF STRING;
+      snmp_vals:         LIST_OF STRING;
+      snmp_contextEngineID:     STRING,  default = "N/A";
+      snmp_contextName:         STRING,  default = "N/A";
+      snmp_securityEngineID:	STRING,  default = "N/A";
+      snmp_securityLevel: 	STRING,  default = "N/A";
+      snmp_securityModel: 	STRING,  default = "N/A";
+      snmp_securityName: 	STRING,  default = "N/A";
+   
+   };
+END
+
+MC_EV_CLASS : SNMP_GENERIC ISA SNMP_TRAP;
+END
+
+MC_EV_CLASS : SNMP_COLD_START ISA SNMP_GENERIC
+   DEFINES 
+    {
+     snmp_trap_type:     default = 0;
+     snmp_trap_type_str: default = "coldStart";
+    };
+END
+
+MC_EV_CLASS : SNMP_WARM_START ISA SNMP_GENERIC
+   DEFINES 
+    {
+     snmp_trap_type:     default = 1;
+     snmp_trap_type_str: default = "warmStart";
+    };
+END
+
+MC_EV_CLASS : SNMP_LINK_DOWN ISA SNMP_GENERIC
+   DEFINES 
+    {
+     snmp_trap_type:     default = 2;
+     snmp_trap_type_str: default = "linkDown";
+    };
+END
+
+MC_EV_CLASS : SNMP_LINK_UP ISA SNMP_GENERIC
+   DEFINES 
+    {
+     snmp_trap_type:     default = 3;
+     snmp_trap_type_str: default = "linkUp";
+    };
+END
+
+MC_EV_CLASS : SNMP_AUTHENTICATION_FAILURE ISA SNMP_GENERIC
+   DEFINES 
+    {
+     snmp_trap_type:     default = 4;
+     snmp_trap_type_str: default = "authenticationFailure";
+    };
+END
+
+MC_EV_CLASS : SNMP_EGP_NEIGHBOR_LOSS ISA SNMP_GENERIC
+   DEFINES 
+    {
+     snmp_trap_type:     default = 5;
+     snmp_trap_type_str: default = "egpNeighborLoss";
+    };
+END
+
+MC_EV_CLASS : SNMP_ENTERPRISE ISA SNMP_TRAP
+   DEFINES 
+    {
+     snmp_trap_type:     default = 6;
+     snmp_trap_type_str: default = "enterpriseSpecific";
+    };
+END
+
+
+################################################################################
+#
+# PATROL Express classes
+
+# ENUMERATIONS -----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.1031.5.1.8
+# peParameterState OBJECT-TYPE
+#   -- FROM	BMCPATROLEXPRESS-MIB
+#   SYNTAX	INTEGER { ok(0), warning(1), noncriticalalarm(2), criticalalarm(3) } 
+#   MAX-ACCESS	accessible-for-notify
+#   STATUS	current
+#   DESCRIPTION	"Parameter state."
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) bmc(1031) peMIB(5) peObjects(1) 8 }
+# 
+# ------------------------------------------------------------------------------
+
+ENUMERATION SNMPENUM_peParameterState
+  0 ok
+  1 warning
+  2 noncriticalalarm
+  3 criticalalarm
+END
+
+
+# CLASSES ----------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.1031.5.0
+# peNotifications OBJECT-TYPE
+#   -- FROM	BMCPATROLEXPRESS-MIB
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) bmc(1031) peMIB(5) 0 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_peNotifications ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.1031.5.0.1
+# peParameterStateChange NOTIFICATION-TYPE
+#   -- FROM	BMCPATROLEXPRESS-MIB
+#   OBJECTS	{ peAccountName, peElementName, peApplicationName, peApplicationInstanceName, peParameterName, peParameterValue, peParameterState, peParameterTime, peServiceName }
+#   DESCRIPTION	"Parameter state change notification."
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) bmc(1031) peMIB(5) peNotifications(0) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_peParameterStateChange ISA SNMP_peNotifications
+DEFINES
+ {
+  snmpv_peAccountName : STRING;
+  snmpv_peElementName : STRING;
+  snmpv_peApplicationName : STRING;
+  snmpv_peApplicationInstanceName : STRING;
+  snmpv_peParameterName : STRING;
+  snmpv_peParameterValue : STRING;
+  snmpv_peParameterState : SNMPENUM_peParameterState;
+  snmpv_peParameterTime : STRING;
+  snmpv_peServiceName : STRING;
+};
+END
+
+

@@ -1,0 +1,54 @@
+#
+# File name: blackout_conf.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+# Description	: Class information for Blackout configuration through event.
+
+ENUMERATION BLACKOUT_CONF_STATUS
+    0   PASS
+   10   REJECTED   
+END
+
+#Base class for Cell operations through KB 
+MC_EV_CLASS : 
+	MC_KB_CONTROL ISA CORE_EVENT
+	 DEFINES {
+		severity : default = INFO;		
+	};
+END
+
+MC_EV_CLASS	: BLACKOUT_EV	ISA MC_KB_CONTROL DEFINES
+{
+blackout_name : STRING,dup_detect=yes ,key=yes;
+description : STRING;
+enabled : INTEGER, default = 1; 
+blackout_duration : STRING;
+
+#Selector details
+selector_name: STRING;
+#based_on_class : ECF CORE_EVENT, default='EVENT';
+based_on_class : ECF CORE_EVENT;
+selector_ecf: STRING, parse= no;
+
+#Actions
+start_action : BLACKOUT_START_ACTION;
+end_action : BLACKOUT_END_ACTION;
+during_schedule_op : BLACKOUT_DURING_SCHEDULE_OP , default=BLACKOUT ;
+
+#slot to store blackout policy udid 
+blackout_policy_udid : STRING, parse = no;
+
+#slots for time frame 
+include_time_frames : LIST_OF STRING;		
+exclude_time_frames:  LIST_OF STRING;	
+include_time_frame_udid: LIST_OF STRING, parse = no,hidden=yes ;
+exclude_time_frame_udid: LIST_OF STRING, parse = no,hidden=yes ;	
+
+#slot to delete existing blackout
+delete_blackout: MC_YESNO, default = NO;
+#Internal slots for blackout implementation
+operation_status : BLACKOUT_CONF_STATUS, parse = no;
+};
+END
+

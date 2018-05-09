@@ -1,0 +1,233 @@
+#
+# File name: basicsolution_actions.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+#
+# This file used to define the actions available to BMC Impact Explorer
+# dependent on the User Groups assigned the operator and the class of the
+# current event selection and conditions of the Event slots.  Following is the formation of an action
+# definition
+# --------------------------------------------------------------------
+#
+# action <Action Name>
+#    { [ UserGroup1, UserGroup2,... ] }
+#    : ClassName($EV) where [$EV.mc_host == 'gnagarka-pun-01']
+#    {
+#	action_requestor($UID,$PWD);
+#	admin_execute(<ias name from mcell.dir>,$UID,$PWD,$EV,<actionid of action in IAS",[<arguments to the action>],<create the action result event>);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+#	e.g. admin_execute(ias,$UID,$PWD,$EV,sample_runtask_task,["true","UserDefinedActions"],YES);
+#    }
+# END
+#
+#
+action 'Sample'.'Sample - ipconfig command on IAS':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV) where [$EV.msg contains 'sample ipconfig command']
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,sample_runtask_task,["false","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,sample_runtask_task,["false","UserDefinedActions"],YES);
+	} 
+}
+END
+
+action 'Sample'.'Sample - ipconfig command on remote host':
+{
+      ['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV) where [$EV.msg contains 'sample remote ipconfig command']
+{
+	action_requestor($UID,$PWD,$RLT);
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,sample_runremotetask_task,["true","UserDefinedActions","all"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,sample_runremotetask_task,["true","UserDefinedActions","all"],YES);
+	} 
+}
+END
+
+
+action 'Sample'.'Sample - command using Tectia':
+{
+      ['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV) where [$EV.msg contains 'tectia']
+{
+      action_requestor($UID,$PWD,$RLT);
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,sample_runtask_using_tectia,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,sample_runtask_using_tectia,["true","UserDefinedActions"],YES);
+	} 
+
+}
+END
+
+
+action 'create_action_xml_mrl':
+{ ['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators'] }
+['Action Group':STRING($GROUP),'Action Label':STRING($LABEL),'Action ID(With no space)':STRING($ID),'Access Groups (e.g.\'BPPM Administrators\',\'Administrators\',\'BPPM Monitoring Administrators\',\'Monitoring Administrators\',\'BPPM Model Administrators\',\'Model Administrators\',\'Cloud Administratros\',\'Service Administrators\',\'Full Access\')':STRING($ACCESS),'ECF (e.g. EVENT($EV) where [$EV.mc_host = \'punsun09\'])':STRING($ECF),'Look Up in CR(true/false)':STRING($LOOKUPINCR),'Command (e.g. ping {$mc_host})':STRING($COMMAND),'RunRemoteTask or RunTask':STRING($TASK), 'Machine OS where task is run (valid values: windows/SOLARIS/HPUX/AIX)':STRING($OS), 'IAS Name(default ias_Admin)':STRING($IASNAME), 'Impact Manager Name':STRING($IM),'Time Out millisecs':STRING($TIMEOUT),'Deploy (true/false)':STRING($DEPLOY),'Script Name':STRING($SCRIPTNAME),'Script Deploy Path':STRING($SCRIPTDEPLOYPATH),'Action in MRL':STRING($APPENDSTRING),'ActionXML':STRING($ACTIONXML)]
+:EVENT($EV) 
+{
+            action_requestor($UID,$PWD);
+            #ID is used as the context as well for the action.
+            #First argument to determine if to be searched in Credential Repository. Valid values are true/false
+            #Second argument is context name
+            admin_execute($IASNAME,$UID,$PWD,$EV,create_action_xml,["false","UserDefinedActions",$ID,$ACTIONXML ],YES);
+            #Update the mrl in cell
+            #file_append("%C/kb/bin/basicsolution_actions.mrl",$APPENDSTRING);
+            opadd($EV, concat(["Dynamic Data Instance for Remote Action: ",$ID, " is added successfully"]) , "");
+
+}
+END
+
+action 'Windows Sample'.'Show Running Processes':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV)
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,windows_running_processes,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,windows_running_processes,["true","UserDefinedActions"],YES);
+	} 
+}
+END
+
+#action 'Windows Sample'.'Show Top 10 Memory Using Processes':
+#{
+#	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+#}
+#:EVENT($EV)
+#{
+#	action_requestor($UID,$PWD,$RLT);
+#	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+#	if ( $RLT == '' ) then # called from IX  
+#	{ 
+#		admin_execute(ias_Admin,$UID,$PWD,$EV,top10_mem_using_processes,["true","UserDefinedActions"],YES);
+#	} 
+#	else 
+#	{ 
+#		admin_execute(ias_Admin,$EV,top10_mem_using_processes,["true","UserDefinedActions"],YES);
+#	} 
+#}
+#END
+
+action 'Unix Samples'.'Show top 10 CPU using processes (Solaris,AIX,Linux)':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV)
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,unix_top10_cpu_using_processes,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,unix_top10_cpu_using_processes,["true","UserDefinedActions"],YES);
+	} 
+}
+END
+
+action 'Unix Samples'.'Show top 10 Memory using processes (Solaris,AIX,Linux)':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV)
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,unix_top10_mem_using_processes,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,unix_top10_mem_using_processes,["true","UserDefinedActions"],YES);
+	} 
+}
+END
+
+action 'Unix Samples'.'Show top 10 CPU using processes (HP)':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV)
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,hpUx_top10_cpu_using_processes,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,hpUx_top10_cpu_using_processes,["true","UserDefinedActions"],YES);
+	} 
+}
+END
+
+action 'Unix Samples'.'Show top 10 Memory using processes (HP)':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV)
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,hpUx_top10_mem_using_processes,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,hpUx_top10_mem_using_processes,["true","UserDefinedActions"],YES);
+	} 
+}
+END
+
+action 'Unix Samples'.'Show Running Processes':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators']
+}
+:EVENT($EV)
+{
+	action_requestor($UID,$PWD,$RLT);
+	#First argument of action to determine if to be searched in Credential Repository. Valid values are true/false
+	if ( $RLT == '' ) then # called from IX  
+	{ 
+		admin_execute(ias_Admin,$UID,$PWD,$EV,unix_running_processes,["true","UserDefinedActions"],YES);
+	} 
+	else 
+	{ 
+		admin_execute(ias_Admin,$EV,unix_running_processes,["true","UserDefinedActions"],YES);
+	} 
+}
+END

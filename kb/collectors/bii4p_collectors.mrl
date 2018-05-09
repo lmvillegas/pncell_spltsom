@@ -1,0 +1,58 @@
+#
+# File name: bii4p_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+#
+# BMC Impact Integration for PATROL
+#
+# Date     : March , 2004
+#
+#################################################################################
+#  Author: Jean Zhou
+#  Created: $Date
+#
+# Modified: $Date: 2004/05/17 18:22:46 $
+# Revision: $Id: bii4p_collectors.mrl,v 1.7 2004/05/17 18:22:46 jezhou Exp $
+#
+
+collector PATROL :
+{
+        r['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        w['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        x['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+}
+END
+
+collector PATROL.* :
+PATROL_EV
+create $THIS.mc_host
+END
+
+################################################################################
+#
+# Generic/Dynamic collectors (put them at the *end* of file)
+#
+################################################################################
+collector PATROL.*.* :
+PATROL_EV where [p_application: not_equals '']
+create $THIS.p_application
+END
+
+######################################################################
+# NOTE: As default, No instance level collectors created.
+# To create instance level collectors:
+# 1. uncomment the following rule and save the file
+# 2. recompile the KB.
+######################################################################
+## collector PATROL.*.*.* :
+## PATROL_EV  where [p_instance: not_equals '']
+## create $THIS.p_instance
+## END
+
+
+################################################################################

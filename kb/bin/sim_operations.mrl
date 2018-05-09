@@ -1,0 +1,176 @@
+#
+# File name: sim_operations.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#-------------------------------------------------------------------------------
+# This file used to define the operations available to the Impact Consoles
+# dependent on the User Groups assigned the operator and the class of the
+# current event selection.  Following is the formation of an operation
+# definition
+# ------------------------------------------------------------------------------
+#
+# action <Operation_Name>:
+#    { [ UserGroup1, UserGroup2,... ] }
+#    <Action> ['arg1', 'arg2', ...] :
+#    ClassName ($<Var>)
+#    { <CallList> }
+# END
+#
+#-------------------------------------------------------------------------------
+
+action sim_operations.set_manual_status: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['Manual status': MC_SM_COMPONENT_STATUS($MANUAL_STATUS),
+       'Comment': STRING($COMMENT)] :
+    MC_SM_COMPONENT ($A)
+    {
+	smc_set_manual_status($A, $MANUAL_STATUS, $COMMENT, action_requestor(), $RET);
+	
+        if ($RET == 2) then
+        {
+                action_return(2, 'Asset is in maintenance mode, manual status setting refused');
+        }
+        else 
+        {
+            if ($RET == 1) then
+            {
+                action_return(1, "Comment is mandatory, manual status setting refused");
+            }
+            else
+            {
+		action_return(0, "");
+            }
+        }
+    }
+END
+
+action sim_operations.clear_manual_status: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } [] :
+    MC_SM_COMPONENT ($A) where [$A.maintenance_mode == NO]
+    {
+	smc_clear_manual_status($A);
+	action_return(0, "");
+    }
+END
+
+action sim_operations.set_maintenance_mode: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['Manual status': MC_SM_COMPONENT_STATUS($MANUAL_STATUS),
+       'Comment': STRING($COMMENT)] :
+    MC_SM_COMPONENT ($A)
+    {
+	smc_set_maintenance_mode($A, $MANUAL_STATUS, $COMMENT, action_requestor(), $RET);
+	
+        if ($RET == 1) then
+        {
+            action_return(1, "Comment is mandatory, manual status setting refused");
+        }
+        else
+        {
+	    action_return(0, "");
+        }
+    }
+END
+
+
+action sim_operations.clear_maintenance_mode: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } [] :
+    MC_SM_COMPONENT ($A)
+    {
+	smc_clear_maintenance_mode($A);
+	action_return(0, "");
+    }
+END
+
+action sim_operations.set_business_data: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['business_data': STRING($business_data)] :
+    MC_SM_COMPONENT ($A)
+    {
+	$A.business_data=$business_data;
+    }
+END
+
+action sim_operations.set_comment: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['comment': STRING($comment)] :
+    MC_SM_COMPONENT ($A)
+    {
+	$A.comment=$comment;
+    }
+END
+
+action sim_operations.set_DeviceID: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['DeviceID': INTEGER($id)] :
+    MC_SM_COMPONENT ($A)
+    {
+     $A.DeviceID=$id;
+    }
+END
+
+action sim_operations.set_relationship_state: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['Relationship state': MC_SM_RELATIONSHIP_STATE($STATE)] :
+    MC_SM_RELATIONSHIP ($A)
+    {
+	smc_set_relationship_state($A, $STATE);
+	action_return(0, "");
+    }
+END
+
+action sim_operations.register_all_notifications: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } [Clients:  LIST_OF STRING($clients) ] 
+    {
+ 	smc_register_notifications($clients, $ret_code, $ret_string);
+	action_return($ret_code, $ret_string);
+    }
+END
+
+action sim_operations.register_notifications: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['Clients': LIST_OF STRING($clients),
+       'Notification types': LIST_OF SIM_NOTIFICATION_TYPE($ntypes)] 
+    {
+ 	smc_register_notifications($clients, $ntypes, $ret_code, $ret_string);
+	action_return($ret_code, $ret_string);
+     }
+END
+
+
+action sim_operations.unregister_notifications: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['registration_id':  STRING($reg_id)] 
+    {
+ 	smc_unregister_notifications($reg_id, $ret_code, $ret_string);
+	action_return($ret_code, $ret_string);
+    }
+END
+
+action sim_operations.update_notification_clients: 
+    {
+        ['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators','BPPM Model Administrators', 'Model Administrators', 'Service Administrators','Service Operators - Senior','Service Operators']
+    } ['registration_id':  STRING($reg_id),
+	'Clients': LIST_OF STRING($clients)] 
+    {
+ 	smc_update_notifications_clients($reg_id, $clients, $ret_code, $ret_string);
+	action_return($ret_code, $ret_string);
+    }
+END
+

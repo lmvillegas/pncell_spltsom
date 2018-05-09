@@ -1,0 +1,28 @@
+#
+# File name: app_impact_ev.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#---------------------------------------------------------------------
+# Description: Application impact event for CI
+#				These events will get created once the Application context changes.
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+
+
+MC_EV_CLASS:
+   APP_IMPACT_EV ISA EVENT
+   DEFINES
+   {
+		app_ID	:	INTEGER, dup_detect=yes, read_only = yes;
+        app_severity : APM_APP_SEVERITY;
+		app_importance	: APM_APP_IMPORTANCE;
+		app_description : STRING, read_only = yes;
+		app_type : APM_APP_TYPE, read_only = yes;
+		app_tenant_id : STRING, read_only = yes;
+    };
+END

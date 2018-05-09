@@ -1,0 +1,28 @@
+#
+# File name: ibrsd_admin_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+# Description: Events related to Integration for Remedy Service Desk
+#----------------------------------------------------
+
+MC_EV_CLASS :
+   IBRSD_ADMIN_EVENT ISA EVENT
+   DEFINES {
+      mc_event_category : default = OPERATIONS_MANAGEMENT;
+      mc_object_class : default = "iBRSD";
+      mc_tool_class : default = "iBRSD";
+      severity : default = "OK";
+   };
+END
+
+# -- event for ibrsd start information --
+MC_EV_CLASS :
+   IBRSD_START ISA IBRSD_ADMIN_EVENT;
+END
+
+# -- event for ibrsd stop information --
+MC_EV_CLASS :
+   IBRSD_STOP ISA IBRSD_ADMIN_EVENT;
+END

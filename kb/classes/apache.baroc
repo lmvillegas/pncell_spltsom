@@ -1,0 +1,41 @@
+#
+# File name: apache.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+MC_EV_CLASS:
+        APACHE_ERROR_BASE ISA LOGFILE_BASE DEFINES
+        {
+             type : STRING;
+        };
+END
+
+MC_EV_CLASS:
+        APACHE_ERROR ISA APACHE_ERROR_BASE DEFINES
+        {
+             severity : default = MINOR;
+        };
+END
+
+MC_EV_CLASS:
+        APACHE_NOTICE ISA APACHE_ERROR_BASE DEFINES
+        {
+             severity : default = OK;
+        };
+END
+
+
+MC_EV_CLASS:
+        APACHE_FILE_NOT_FOUND ISA APACHE_ERROR_BASE DEFINES
+        {
+             file : STRING;
+        };
+END
+MC_EV_CLASS:
+	APACHE_LOGIN_FAILED ISA APACHE_ERROR_BASE DEFINES
+	{
+		user : STRING;
+		file : STRING;
+	};
+END

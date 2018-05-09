@@ -1,0 +1,9 @@
+#
+# File name: outage_event_association.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+MC_EVENT_RELATION;
+	class=CI_OUTAGE_INFO;
+	type=sdig_event_association;
+END

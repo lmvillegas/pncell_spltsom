@@ -1,0 +1,31 @@
+#
+# File name: apm_incident.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------
+#This rule is defined to update the original Application Event for any
+#context change in the applications. Also once the severity of the 
+#Application is OK, the event associated to that application should get
+#CLOSED
+#---------------------------------------------------------------------
+
+new apm_incident_duplicates : APM_INCIDENT_EV ($EV) updates duplicate ($dup) 
+where [ $dup.status != CLOSED ]
+	{
+		$dup.app_importance		= $EV.app_importance;
+		$dup.app_severity		= $EV.app_severity;
+		$dup.severity 			= $EV.severity;
+		$dup.status				= $EV.status;
+		$dup.repeat_count 		= $dup.repeat_count + 1;
+		
+		if ($EV.severity == 'OK') then
+		{
+			$dup.status = CLOSED;
+		};
+		
+		drop_new;
+	}
+END
+
+ 

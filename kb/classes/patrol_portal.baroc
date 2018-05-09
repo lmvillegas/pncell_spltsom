@@ -1,0 +1,78 @@
+#
+# File name: patrol_portal.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+################################################################################
+#
+# BMC Impact Event Adapters events and mposter events
+#
+# Date     : March 5, 2005
+#
+#
+################################################################################
+
+# ------------------------------------------------------------------------------
+# 
+# PATROL_PORTAL_EVENT - Base Event
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : PATROL_PORTAL_EVENT ISA EVENT
+DEFINES
+{
+    patrolAccountName : STRING;
+    mc_host_class : STRING, dup_detect=yes;
+    mc_host : STRING, dup_detect=yes;
+    mc_object_class : STRING, dup_detect=yes;
+    mc_object : STRING, dup_detect=yes;
+    mc_parameter : STRING, dup_detect=yes;
+    mc_tool_class : STRING, dup_detect=yes;
+    mc_tool : STRING, dup_detect=yes;
+};
+END
+
+# ------------------------------------------------------------------------------
+# 
+# sendTestNotification - Test Event
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : sendTestNotification ISA PATROL_PORTAL_EVENT
+DEFINES
+{
+    severity : default = OK;
+    patrolParameterErrorCode : STRING;
+};
+END
+
+# ------------------------------------------------------------------------------
+# 
+# PORTAL_RSM_STATE_CHANGE - RSM State Change Event
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : PORTAL_RSM_STATE_CHANGE ISA PATROL_PORTAL_EVENT;
+END
+
+# ------------------------------------------------------------------------------
+# 
+# PORTAL_PARAMETER_STATE_CHANGE - Parameter State Change Event
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : PORTAL_PARAMETER_STATE_CHANGE ISA PATROL_PORTAL_EVENT
+DEFINES
+{
+    patrolGroupNames         : LIST_OF STRING;
+    patrolElementName        : STRING;
+    patrolParameterErrorCode : STRING;
+    patrolParameterThreshold : STRING;
+};
+END
+
+MC_EV_CLASS : PORTAL_PARAMETER_STATE_CHANGE_OFFLINE ISA PORTAL_PARAMETER_STATE_CHANGE;
+END
+
+MC_EV_CLASS : PORTAL_PARAMETER_STATE_CHANGE_BLACKOUT ISA PORTAL_PARAMETER_STATE_CHANGE;
+END

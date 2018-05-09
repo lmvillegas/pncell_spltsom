@@ -1,0 +1,21 @@
+#
+# File name: ao_actions.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+ENUMERATION MC_TRUEFALSE
+    0	false
+    1	true
+END
+
+ENUMERATION MC_CHANGEREQUESTTYPE
+    0	normal
+    1	'pre-approved'
+END
+
+
+ENUMERATION MC_SERVICEACTIONS
+    0          restart 
+    1          start
+    2          stop
+END

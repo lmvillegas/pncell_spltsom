@@ -1,0 +1,15 @@
+#
+# File name: smc_notification_register.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#--------------------------------------------------------------
+#           Register to receive SMC_STATE_CHANGE events
+#--------------------------------------------------------------
+
+SIM_NOTIFICATION_REGISTRY;
+	clients=[cellname];
+	requested_notifications=[COMPONENT_CHANGE,COMPONENT_DELETE];
+	notification_mode=FULL;
+	notifications_at_registration=YES;
+END

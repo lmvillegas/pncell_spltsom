@@ -1,0 +1,29 @@
+#
+# File name: mc_deprecated_propagation.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#
+# 1=PROPAGATION_POLICY
+#
+#-----+---------------------+------------------------
+# 1   | schedule_name       | name of schedule used by policy
+#     | sched_invert        | if NO : use schedule as is
+#     |                     | if YES: use invert of schedule
+#     | dest_cell           | cell the event must be propagted to
+#     | one_of_dest_cells   | list of cells the event may be propagated to
+#     | all_dest_cells      | list of cells the event must be propagated to
+#-----+---------------------+------------------------
+
+MC_DATA_CLASS:
+	PROPAGATION_POLICY ISA DEPRECATED_POLICY DEFINES
+	{
+		schedule_name: STRING;
+		sched_invert: MC_YESNO, default = NO;
+		dest_cell: STRING;
+		one_of_dest_cells: LIST_OF STRING;
+		all_dest_cells: LIST_OF STRING;
+	};
+END
+

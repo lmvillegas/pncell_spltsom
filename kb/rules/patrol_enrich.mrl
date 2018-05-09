@@ -1,0 +1,20 @@
+#
+# File name: patrol_enrich.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+index patrol_enrichment_index : PATROL_ENRICHMENT hashed [mc_object,mc_object_class,p_agent,p_agent_port] END
+
+refine patrol_enrichment: PATROL_EV($E)
+   using
+   {
+      index patrol_enrichment_index[$E.mc_object,$E.mc_object_class,$E.p_agent,$E.p_agent_port]($D) 
+   }
+   {
+      $E.pn_object_id=$D.pn_object_id;
+      $E.pn_object_class_id=$D.pn_object_class_id;
+      $E.mc_smc_alias=$D.mc_smc_alias;
+   }
+END
+ 

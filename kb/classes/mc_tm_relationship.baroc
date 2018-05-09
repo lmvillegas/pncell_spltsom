@@ -1,0 +1,74 @@
+#
+# File name: mc_tm_relationship.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#--------------------------------------------------------
+# Topology Model Atrium core/BMC CDM Relationship classes
+#--------------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS : BMC_BaseRelationship ISA MC_TM_RELATIONSHIP
+   DEFINES {
+      ShortDescription : STRING, default = 'na';
+      Name	       : STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Component ISA BMC_BaseRelationship;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ApplicationSystemServices ISA BMC_Component;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ContractComponent ISA BMC_Component;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_HostedSystemComponents ISA BMC_Component;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_OfferingMeasuredBy ISA BMC_Component;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ServiceRealizedByOffering ISA BMC_Component;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SettingsOf ISA BMC_Component;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Dependency ISA BMC_BaseRelationship;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_AccountOnSystem ISA BMC_Dependency;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_HostedAccessPoint ISA BMC_Dependency;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_HostedService ISA BMC_Dependency;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ElementLocation ISA BMC_BaseRelationship;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Genealogy ISA BMC_BaseRelationship;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_MemberOfCollection ISA BMC_BaseRelationship;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_InIPSubnet ISA BMC_MemberOfCollection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_InSegment ISA BMC_MemberOfCollection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LNsInCollection ISA BMC_MemberOfCollection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_IPSubnetsInCollection ISA BMC_LNsInCollection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SegmentsInCollection ISA BMC_LNsInCollection;
+END
+

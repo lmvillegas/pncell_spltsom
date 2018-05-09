@@ -1,0 +1,83 @@
+#
+# File name: mc_sm_event_mapping.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# Data classes provided in the default KB
+# and supporting the Service Management Model
+#
+# The parent classes are system defined (internal classes)
+#
+#====================================================
+# MAPPING CLASSES
+#====================================================
+#
+#	1=SLOT_FORMULAS
+#       2=BMC_SIM_MATCH_TABLE
+#
+#-----+------------------------+---------------------
+# 1   | event_class            | [super-]class of the raw event
+#     | alias_computing_formula| formula used by mapslots to obtain the 
+#     |                        | alias of a component
+# Note:
+# This table is used to map raw event values to
+# component data slots
+# The 'event_class' should be a super-class whenever possible
+#-----+------------------------+---------------------
+# 2   | name                   | name of the entry in the match table (not mandatory)
+#     | tag                    | In the case of the alias mechanism tag must be 'alias'
+#     | input_match            | list of patterns 
+#     |                        | in case of the alias there must be 7 patterns corresponding to
+#     |                        | characteristic of the incomming event 
+#     |                        | [ class, 
+#     |                        |   mc_host_class,
+#     |                        |   mc_host,
+#     |                        |   mc_host_address,
+#     |                        |   mc_object_class,
+#     |                        |   mc_object,
+#     |                        |   mc_parameter ]
+#     | ref_instances_classes  | list of classes corresponding to the objects that 
+#     |                        | will be passed as fourth argument of find_match primitive
+#     |                        | In case of alias this list must have one argument
+#     |                        | equals to the first element of input_match
+#     |  output_expressions    | list of string containing valid string expressions
+#--------------------------------------------------------------------------------
+# notes: 
+# 1) patterns must be either
+#        '*'          matching any string
+#        <pattern>    matching exactly pattern
+#        <pattern>*   matching strings with prefix pattern
+#        *<pattern>   matching strings with suffix pattern
+#        *<pattern>*  matching strings containing pattern
+# 2) output_expression can refer to objects passed as the fourth argument to find_match
+#    with variable $1, $2,... (incase of alias only $1)
+#    They can also have reference to the input string (third argument of find_match)
+#    with $V1, $V2,... (up to $V7 in case of alias)
+# 3)  see how it is used mc_sm_associate.mrl
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	SLOT_FORMULAS ISA BMC_SIM_DATA DEFINES
+	{
+		event_class: STRING, key = yes;
+		alias_computing_formula: LIST_OF STRING;
+	};
+END
+
+MC_PUBLISH_DATA_CLASS:
+	BMC_SLOT_FORMULAS ISA SLOT_FORMULAS;
+END
+
+
+MC_PUBLISH_DATA_CLASS : BMC_SIM_MATCH_TABLE ISA BMC_SIM_DATA
+   DEFINES {
+      name : STRING ;
+      tag : STRING , key=yes, read_only=yes, default=alias;
+      input_match : LIST_OF STRING , key=yes;
+      ref_instances_classes : LIST_OF STRING ;
+      output_expressions : LIST_OF STRING ;
+   };
+END

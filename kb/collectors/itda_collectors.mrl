@@ -1,0 +1,30 @@
+#
+# File name: itda_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#-------------------------------------------------------------------------------------
+#
+#      " IT Data Analytics.ITDA Events" Collector for class definition "ITDA_Event" .  
+#      An event tree will have a parent folder labelled "IT Data Analytics" with
+#      a child folder labelled "ITDA Events" which will contain all events of "ITDA_Event" class
+#
+#-------------------------------------------------------------------------------------
+#
+
+collector 'IT Data Analytics' :
+{
+        r['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+          'Service Administrators','Service Operators - Senior']
+        w['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+          'Service Administrators','Service Operators - Senior']
+        x['BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators','BPPM Model Administrators', 'Model Administrators',
+          'Service Administrators','Service Operators - Senior']
+}
+END
+
+
+collector 'IT Data Analytics'.'ITDA Events':  
+ITDA_Event
+END
+

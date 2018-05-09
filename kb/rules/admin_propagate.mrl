@@ -1,0 +1,332 @@
+#
+# File name: admin_propagate.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------
+#
+#  Administration Cell Propgation Rules
+#
+#  These rules propagate events to the Admin
+#  cell for display in the Administration Tab.
+#
+#
+#----------------------------------------------------
+
+# generate a config info event for standalone and primary servers
+new admin_send_configuration_info_on_start:
+MC_CELL_ACTIVITY_CHANGED ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES' AND
+            $EV.active_server != 2 AND
+            $EV.paused == NO]
+using
+    {
+        ADMIN_PLATFORM_LOOKUP ($PLATFORM) where [$MC_CELL_INFO.platform == $PLATFORM.platform]
+    }
+triggers
+    {
+
+    # determine if it is a BEM or SIM server
+    cellinfo(ServiceModelEnabled,$SME);
+        if ( $SME == "Yes" ) then
+        {
+            $OBJECT_CLASS='SIM_Cell_Server_1';
+        $KB_TYPE = ADMIN_CELL_TYPE.SERVICE_IMPACT_MANGAEMENT
+        }
+        else
+        {
+        $OBJECT_CLASS='EM_Cell_Server_1';
+        $KB_TYPE = ADMIN_CELL_TYPE.EVENT_MANAGEMENT
+        };
+
+    # determine if this is a standalone or primary cell server
+    if($MC_CELL_INFO.ha_failover == 'NO') then
+        {
+        $ROLE=ADMIN_ROLES.STANDALONE;
+        }
+    else
+        {
+        $ROLE=ADMIN_ROLES.PRIMARY;
+        };
+
+    # make the bin dir
+    concat([$MC_CELL_INFO.home_dir, '/bin/'], $BIN_DIR);
+
+    #make a new config info event
+    generate_event(ADMIN_CONFIG_INFO,
+                [ mc_host = $EV.mc_host,
+                  port = $MC_CELL_INFO.service_port,
+                  version = $MC_CELL_INFO.cell_release,
+                  build_number = stringtoint($MC_CELL_INFO.cell_build),
+                  home_dir = $MC_CELL_INFO.home_dir,
+                  bin_dir = $BIN_DIR,
+                  msg = concat(['Configuration information for ',$OBJECT_CLASS,'_',$EV.mc_object]),
+                  conf_files = [cellinfo(ConfigFile)],
+                  dir_file = cellinfo(DirFile),
+                  kb_dir = cellinfo(KBDir),
+                  trace_conf_file = cellinfo(TraceConfigFile),
+                  trace_files = cellinfo(TraceDestination),
+                  os_class = $PLATFORM.os_class,
+                  product_type = 'SIM_GROUP',
+                  role=$ROLE,
+                  service_name=concat(['mcell_', $MC_CELL_INFO.cell_name]),
+                  mc_object = $MC_CELL_INFO.cell_name,
+                  mc_tool = $MC_CELL_INFO.cell_name,
+                  mc_origin = $MC_CELL_INFO.cell_name,
+                  mc_object_class =$OBJECT_CLASS ,
+                  mc_tool_class = $OBJECT_CLASS,
+                  mc_origin_class =$OBJECT_CLASS,
+                  mc_host_address=$EV.mc_host_address,
+                  tool_host=$EV.mc_host,
+                  server_1_host = $MC_CELL_INFO.service_address,
+                  server_1_port = $MC_CELL_INFO.service_port,
+                  server_2_host = $MC_CELL_INFO.alternate_address,
+                  server_2_port = $MC_CELL_INFO.alternate_port,
+                  extra_support_files=[cellinfo(KBDir), cellinfo(LogDir)],
+                  kb_type = $KB_TYPE
+                  ]);
+
+     # set the platform for later use
+     $ADMIN_OPTIONS.os_class = $PLATFORM.os_class;
+     # set the object class
+    $ADMIN_OPTIONS.object_type = $OBJECT_CLASS;
+    }
+END
+
+
+# generate a config info event if this is a secondary and activated
+new admin_send_configuration_info_on_activity:
+MC_CELL_ACTIVITY_CHANGED ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES' AND
+            $EV.active_server == 2 AND
+            $EV.paused == NO]
+    using
+        {
+        ADMIN_PLATFORM_LOOKUP ($PLATFORM) where [$MC_CELL_INFO.platform == $PLATFORM.platform]
+        }
+triggers
+    {
+
+    # determine if it is a BEM or SIM server
+    cellinfo(ServiceModelEnabled,$SME);
+        if ( $SME == "Yes" ) then
+        {
+            $OBJECT_CLASS='SIM_Cell_Server_1';
+        $KB_TYPE = ADMIN_CELL_TYPE.SERVICE_IMPACT_MANGAEMENT
+        }
+        else
+        {
+        $OBJECT_CLASS='EM_Cell_Server_1';
+        $KB_TYPE = ADMIN_CELL_TYPE.EVENT_MANAGEMENT
+        };
+
+    # make the bin dir
+    concat([$MC_CELL_INFO.home_dir, '/bin/'], $BIN_DIR);
+
+    #make a new config info event
+    generate_event(ADMIN_CONFIG_INFO,
+                [ mc_host = $EV.mc_host,
+                  port = $MC_CELL_INFO.service_port,
+                  version = $MC_CELL_INFO.cell_release,
+                  build_number = stringtoint($MC_CELL_INFO.cell_build),
+                  home_dir = $MC_CELL_INFO.home_dir,
+                  bin_dir = $BIN_DIR,
+                  msg = concat(['Configuration information for cell ',$OBJECT_CLASS,'_',$EV.mc_object]),
+                  conf_files = [cellinfo(ConfigFile)],
+                  dir_file = cellinfo(DirFile),
+                  kb_dir = cellinfo(KBDir),
+                  trace_conf_file = cellinfo(TraceConfigFile),
+                  trace_files = cellinfo(TraceDestination),
+                  os_class = $PLATFORM.os_class,
+                  product_type = 'SIM_GROUP',
+                  role=ADMIN_ROLES.FAILOVER,
+                  service_name=concat(['mcell_', $MC_CELL_INFO.cell_name]),
+                  mc_object = $MC_CELL_INFO.cell_name,
+                  mc_tool = $MC_CELL_INFO.cell_name,
+                  mc_origin = $MC_CELL_INFO.cell_name,
+                  mc_object_class =$OBJECT_CLASS ,
+                  mc_tool_class = $OBJECT_CLASS,
+                  mc_origin_class =$OBJECT_CLASS,
+                  mc_host_address=$EV.mc_host_address,
+                  tool_host=$EV.mc_host,
+                  server_1_host = $MC_CELL_INFO.alternate_address,
+                  server_1_port = $MC_CELL_INFO.alternate_port,
+                  server_2_host = $MC_CELL_INFO.service_address,
+                  server_2_port = $MC_CELL_INFO.service_port,
+                  extra_support_files=[cellinfo(KBDir), cellinfo(LogDir)],
+                  kb_type = $KB_TYPE
+                  ]);
+
+     # set the platform for later use
+     $ADMIN_OPTIONS.os_class = $PLATFORM.os_class;
+    # set the object class
+    $ADMIN_OPTIONS.object_type = $OBJECT_CLASS;
+    }
+END
+
+
+# cell events
+propagate admin_propagate_cell_IAC_start:
+MC_CELL_START ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+       when $EV.status != CLOSED
+END
+
+propagate admin_propagate_cell_IAC_stop:
+MC_CELL_STOP ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+
+propagate admin_propagate_cell_IAC_activity:
+MC_CELL_ACTIVITY_CHANGED ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+
+propagate admin_propagate_cell_IAC_log:
+MC_CELL_LOG_CHANGED ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+
+propagate admin_propagate_cell_IAC_unreachable:
+MC_CELL_DESTINATION_UNREACHABLE ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+propagate admin_propagate_cell_IAC_heartbeat:
+MC_CELL_HEARTBEAT_FAILURE ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+
+propagate admin_propagate_cell_IAC_resource:
+MC_CELL_RESOURCE ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+
+# cell process error
+propagate admin_propagate_cell_error_IAC:
+MC_CELL_PROCESS_ERROR ($EV)
+    where [ NOT cellinfo(POMEnabled) AND
+            $ADMIN_OPTIONS.IAC_enabled == 'YES' ]
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+        when $EV.status != CLOSED
+END
+
+
+#-------------------------------------------------------------------------------
+#                        External admin events
+#-------------------------------------------------------------------------------
+
+# admin registration events
+propagate admin_propagate_registration_IAC:
+    ADMIN_EVENT ($EV)
+    where [ $ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# iBrsd error events
+propagate admin_propagate_ibrsd_IAC:
+    IBRSD_ADMIN_EVENT ($EV)
+    where [ $EV.status != CLOSED AND $ADMIN_OPTIONS.IAC_enabled == 'YES']
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# adapter events
+propagate admin_propagate_adapters_IAC:
+    MC_ADAPTER_CONTROL ($EV)
+    where [$ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# client events
+propagate admin_propagate_clients_IAC:
+    MC_CLIENT_BASE ($EV)
+    where [$ADMIN_OPTIONS.IAC_enabled == 'YES' AND
+           ($EV.CLASS == 'MC_CLIENT_START' OR
+           $EV.CLASS == 'MC_CLIENT_STOP' OR
+           $EV.CLASS == 'MC_CLIENT_ERROR')]
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# IAS events
+propagate admin_propagate_ias_IAC:
+    IAS_EVENT ($EV)
+    where [$ADMIN_OPTIONS.IAC_enabled == 'YES']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# Publish Server events
+propagate admin_propagate_ps_IAC:
+    IPS_EVENT ($EV)
+    where [$ADMIN_OPTIONS.IAC_enabled == 'YES' AND
+           ($EV.CLASS == 'IPS_START' OR
+           $EV.CLASS == 'IPS_STOP' OR
+           $EV.CLASS == 'IPS_ERROR' OR
+           $EV.CLASS == 'IPS_CONFIG')]
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# SNMP events
+propagate admin_propagate_snmp_IAC:
+    SNMP_GENERIC ($EV)
+    where [$ADMIN_OPTIONS.IAC_enabled == 'YES' AND
+           $EV.CLASS subclass_of 'SNMP_GENERIC']
+
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+
+
+# AAO/BIIZ events
+propagate admin_propagate_aao_biiz:
+	MV_ADMIN ($EV)
+	where [$ADMIN_OPTIONS.IAC_enabled == 'YES']
+  
+    to all $ADMIN_OPTIONS.all_of_propagation_list
+END
+

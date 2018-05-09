@@ -1,0 +1,47 @@
+#
+# File name: apm_event_managment.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: apm_event_mamagment.mrl
+# Version: 10.0.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#-----------------------------------------------------------------------------
+# modify event message to contain names instead of ids
+#-----------------------------------------------------------------------------
+
+
+refine modify_message : PATROL_EV($EV)  
+	where [$EV.mc_object_class == 'APM_Synthetic_EP' OR $EV.mc_object_class == 'APM_Synthetic_Timer_Custom' OR $EV.mc_object_class == 'APM_Synthetic_Timer_Page']
+	{
+		if ($EV.mc_object_class == 'APM_Synthetic_EP') then
+		{
+			strmatch($EV.mc_long_msg, 'SYN_OBJ=%sSYN_ERR=%s',[$FLD1,$FLD2]);
+			if (($FLD2 != '')) then
+			{
+				if( $FLD2 == '-' ) then
+				{
+					$EV.mc_long_msg = '';
+				}
+				else
+				{
+					$EV.mc_long_msg = $FLD2;
+				};
+
+				if ( ($FLD1 != '') AND has_substring( $EV.msg, $EV.mc_object ) ) then
+				{
+					$EV.msg = strreplace($EV.msg, $EV.mc_object, $FLD1);	
+				}	
+			}
+		}
+		else
+		{
+			if ( ($EV.mc_long_msg != '') AND has_substring( $EV.msg, $EV.mc_object ) ) then
+			{
+				$EV.msg = strreplace($EV.msg, $EV.mc_object, $EV.mc_long_msg);
+			}	
+		};
+	}
+END

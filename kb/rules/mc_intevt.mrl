@@ -1,0 +1,240 @@
+#
+# File name: mc_intevt.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+# 
+# These rule work on open events. This insures that
+# one event will be open, where the repeat count
+# will be incremented
+#
+new RepeatTicks : MC_CELL_TICK($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status == OPEN]
+        {
+                $OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+				$OLD_EV.time_to_next=$EV.time_to_next;
+				drop_new;
+        }
+END
+
+new RepeatDBClean : MC_CELL_DB_CLEANUP($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status == OPEN]
+        {
+                $OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+				$OLD_EV.nr_closed_events_before=$EV.nr_closed_events_before;
+				$OLD_EV.nr_non_closed_events_before=$EV.nr_non_closed_events_before;
+				$OLD_EV.nr_closed_events_after=$EV.nr_closed_events_after;
+				$OLD_EV.nr_non_closed_events_after=$EV.nr_non_closed_events_after;
+				
+                drop_new;
+        }
+END
+
+new StbldStart : MC_CELL_STATBLD_START($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status == OPEN]
+        {
+                $OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+				$OLD_EV.pid=$EV.pid;
+                drop_new;
+        }
+END
+
+new StbldStop : MC_CELL_STATBLD_STOP($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status == OPEN]
+        {
+                $OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+				$OLD_EV.pid=$EV.pid;
+				$OLD_EV.exit_status=$EV.exit_status;
+                drop_new;
+        }
+END
+
+#
+# This rule is used to close out older MC_CELL_STOP
+# events when a cell is restarted
+#
+new StartClosesStop : MC_CELL_START($EV)
+        where [$EV.status != CLOSED]
+        updates MC_CELL_STOP($OLD)
+        where [$OLD.status != CLOSED,
+				$EV.mc_object == $OLD.mc_object]
+        {
+                $OLD.status=CLOSED;
+        }
+END
+
+#
+# This rule is used to close out older MC_CELL_START
+# events when a cell is restarted
+#
+new CloseStart : MC_CELL_START($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status != CLOSED]
+        {
+                $OLD_EV.status=CLOSED;
+        }
+END
+
+#
+# This rule is used to close out older MC_CELL_STOP
+# events when a cell is restarted
+#
+new CloseStop : MC_CELL_STOP($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status != CLOSED]
+        {
+                $OLD_EV.status=CLOSED;
+        }
+END
+
+#
+# This rule is used to close older MC_CELL_ACTIVITY_CHANGED
+#
+new CloseActivityChange : MC_CELL_ACTIVITY_CHANGED($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status != CLOSED]
+        {
+                $OLD_EV.status=CLOSED;
+        }
+END
+
+#
+# When a disconnect event is generated, the assocated
+# connect event is closed along with the disconnect
+# event.  This will leave events showing which connection
+# exist
+#
+new UpdateConnect : MC_CELL_DISCONNECT($DIS)
+	where [$DIS.status == OPEN]
+	updates MC_CELL_ALLOWED_CONNECT($CON)
+	where [$CON.status == OPEN,
+	       $DIS.client_location == $CON.client_location]
+	{
+		$DIS.status=CLOSED;
+		$CON.status=CLOSED;
+	}
+END
+
+
+###########################################################################################################################
+#
+# The following rule will close all the older PUBLISH events for severity OK and only keep one new event.
+#
+###########################################################################################################################
+
+new ClosePublishPerformInfo : MC_CELL_PUBLISH_RESULT ($CON)
+	where [$CON.status == OPEN]
+	updates ALL duplicate($OLD_EV)
+    where [$OLD_EV.status != CLOSED AND $OLD_EV.publish_env_id == $CON.publish_env_id AND $OLD_EV.requestor == $CON.requestor]
+    {
+        $OLD_EV.status=CLOSED;
+    }
+END
+
+new DedupUnallowedConnect : MC_CELL_UNALLOWED_CONNECT($E) where [$E.status == OPEN]
+   updates MC_CELL_UNALLOWED_CONNECT($D) where [$D.status == OPEN AND 
+      $D.client_type == $E.client_type AND $D.client_name == $E.client_name ]
+   {
+      $D.repeat_count = $D.repeat_count + 1;
+      $D.client_location = $E.client_location;
+	  $D.severity = $E.severity;
+	  $D.reason = $E.reason;
+      drop_new;
+   }
+END
+
+new CloseUnallowedConnect : MC_CELL_ALLOWED_CONNECT($E) where [$E.status == OPEN]
+   updates MC_CELL_UNALLOWED_CONNECT($U) where [$U.status == OPEN AND 
+      $U.client_type == $E.client_type AND $U.client_name == $E.client_name ]
+   {
+      $U.status = CLOSED;
+   }
+END
+
+#
+# Close MC_CELL_RELOADED that are not already closed.
+#
+new CloseCellReloaded : MC_CELL_RELOADED($EV)
+	where [$EV.status == OPEN]
+	updates ALL duplicate($OLD_EV)
+    where [$OLD_EV.status != CLOSED AND $OLD_EV.category == $EV.category]
+    {
+        $OLD_EV.status=CLOSED;
+    }
+END
+
+#
+# As events are generated due to actions run either by the
+# consoles or rules, the severity is set based on the global
+# record slots: EM_KB_OPTIONS.action_result_set_severity and
+# EM_KB_OPTIONS.action_result_severity_value. By default, the
+# severity is set to minor if the action did not complete
+# successfully.
+# Similarly, the priority is set based on the global record
+# slots: EM_KB_OPTIONS.action_result_set_priority and
+# EM_KB_OPTIONS.action_result_priority_value. By default, the
+# priority is assigned the Lowest priority (PRIORITY_5).
+#
+execute UpdateActionResults : MC_CELL_ACTION_RESULT($AR)
+#       when $AR.exit == 0
+#		 {
+#		      $AR.status=CLOSED;
+#		 } 
+       when $AR.exit > 0
+		{
+		    if ($EM_KB_OPTIONS.action_result_set_severity == YES) then
+			{
+               $AR.severity = $EM_KB_OPTIONS.action_result_severity_value;
+			};
+			if ($EM_KB_OPTIONS.action_result_set_priority == YES) then
+			{
+               $AR.mc_priority = $EM_KB_OPTIONS.action_result_priority_value;
+			};
+        }
+		when $AR.failure != ""
+		{
+		    if ($EM_KB_OPTIONS.action_result_set_severity == YES) then
+			{
+               $AR.severity = $EM_KB_OPTIONS.action_result_severity_value;
+			};
+			if ($EM_KB_OPTIONS.action_result_set_priority == YES) then
+			{
+               $AR.mc_priority = $EM_KB_OPTIONS.action_result_priority_value;
+			};
+        }
+END
+
+#
+# When a Heatbeat-On event is generated, the associated
+# Heartbeat failure event is closed
+#
+new CloseHBFail : MC_CELL_HEARTBEAT_ON($EV)
+        updates ALL MC_CELL_HEARTBEAT_FAILURE($HF)
+        where [$HF.status within [ACK,OPEN], $HF.cell == $EV.cell]
+        {
+                $HF.status=CLOSED;
+        }
+END
+
+#
+# When a Duplicate-On event is generated, the associated
+# Duplicate failure event is closed
+#
+new CloseDuplicateFail : MC_CELL_DUPLICATE_ON($EV)
+        updates ALL MC_CELL_DUPLICATE_FAILURE($DF)
+        where [$DF.status within [ACK,OPEN], $DF.cell_name == $EV.cell_name]
+        {
+                $DF.status=CLOSED;
+        }
+END

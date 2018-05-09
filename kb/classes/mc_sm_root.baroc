@@ -1,0 +1,837 @@
+#
+# File name: mc_sm_root.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+#  root service classes with staging area attributes
+
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+
+ENUMERATION MC_SM_COMPONENT_SCOPE
+	10	LOCAL		     # Local impact,   local instance, default value
+	20	SHADOW_PENDING	     # Shadow component created locally but not yet synchronized with the original one
+	30	SHADOW_INVALID 	     # an (invalid) shadow, its description should contain the diagnostic
+	40	SHADOW	             # a valid and synchronized shadow component
+	50	SHADOW_DELETED	     # a logically deleted shadow component
+END
+
+ENUMERATION MC_SM_RELATIONSHIP_STATE
+	10	INACTIVE
+#-------------
+# insert custom values here
+#-------------
+	90	ACTIVE
+END
+
+ENUMERATION MC_SM_COMPONENT_STATUS	# equivalent to:
+	01	NONE			# --> means: no sub-status
+	10	BLACKOUT		# -> INFO
+	20	UNKNOWN			# <-> UNKNOWN
+	30	OK			# <-> OK
+	40	INFO			# <-> INFO
+	50	WARNING			# <-> WARNING
+	60	MINOR			# <-> MINOR
+	70	IMPACTED		# <-> MAJOR
+	80	UNAVAILABLE		# <-> CRITICAL
+END
+
+ENUMERATION MC_SM_IMPACT_FUNCTION
+	10	HIGHEST_VAL
+	20	AVERAGE
+	30	QUORUM
+	40	WEIGHTED
+	50	EXTERNAL
+END
+
+ENUMERATION MC_SM_SELF_FUNCTION
+	10	HIGHEST_VAL
+END
+
+ENUMERATION MC_SM_CO_FUNCTION
+	10	HIGHEST_VAL
+	20	SELF_PREFERRED
+END
+
+ENUMERATION MC_SM_SLM_SLA_STATUS
+	0	NO_SLAS
+	10	COMPLIANT
+	20	AT_RISK
+	30	BREACHED
+END
+
+ENUMERATION MC_SM_PRIORITY_FUNCTION
+        10        BASE_PRIORITY
+        20        COST
+        30        WORST_SLA_STATE
+END
+
+
+#----------------------------------------------------
+# Impact Priority calculation method enumeration
+#----------------------------------------------------
+# WEIGHTED   weighted self priority of all impacts
+# HIGHEST    highest self priority of all impacts
+#----------------------------------------------------
+ENUMERATION PRIORITY_FORMULA
+   10   WEIGHTED
+   20   HIGHEST
+END
+
+#----------------------------------------------------
+# Service Schedule status enumeration
+#----------------------------------------------------
+# IN   in schedule
+# OUT  out of schedule
+#----------------------------------------------------
+ENUMERATION MC_SM_SCHEDULE_STATUS
+        10	IN
+        20	OUT
+END
+#----------------------------------------------------
+# Predicted priority
+#----------------------------------------------------
+
+ENUMERATION PREDICTED_SEVERITY
+    0   ''
+   10   MINOR
+   20   MAJOR
+   30   CRITICAL
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS		Service Management base class
+##----------------------------------------------------
+
+MC_DATA_CLASS:
+	MC_SM_DATA ISA CORE_DATA;
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS			Service Management Component
+# component_scope	scope of the component (local, shadow,...)
+# status		main status of the component = computed_status unless manual_status is set
+# manual_status		manual status of the component (NONE if not set)
+# manual_status_comment comment associated to the manual status setting (not null if manual status set)
+# manual_status_requestor requestor of the manual status 
+# manual_status_providers list of direct and indirect providers mc_udids whose manual_status is set (may contain duplicate entries)
+# manual_status_providers_count number of the direct and inderect providers  whose manual_status is set (may contain duplicate entries)
+# computed_status	status of the component computed from self and sub statuses
+# sub_status		derived status of the component
+# HomeCell		name of the parent cell for the component
+# maintenance_mode	operational switch used to drop events when UM
+# direct_events_count	count of events coming from instrumentation
+# impact_status		status computed by impact_function
+# self_status		status computed by self_function
+# last_status_modification	last time status/sub_status was changed (to be used by GUI)
+# StatusModel		name of the status model
+# consumer_num		number of consumers
+# shadow_cells		list of cells that contains shadow of this component
+# Priority		priority
+# ScheduleId           reference to schedule id (BMC_TIME_SCHEDULE.mc_udid)
+# PriorityOut          out-of-schedule base priority
+# ImpactCostPerSecOut  out-of-schedule cost
+# PriorityWatchdog     important component flag
+# self_priority        self priority
+# raw_impact_priority  raw impact priority
+# impact_priority      impact priority
+# computed_priority    computed priority
+# schedule_status      service schedule status (IN/OUT)
+# #Priority            existing slot used to store in-schedule base priority
+# #ImpactCostPerSec    existing slot used to store in-schedule cost
+# publish_providers_cis lists the mc_udids of the cis selected by "With Providers" publication filters (usually top node cis) of the service impact models this ci is in
+# Company              Required by iBRSD; Only in Atrium CMDB when ITSM is installed.
+# Site                 Required by iBRSD; Only in Atrium CMDB when ITSM is installed.
+
+#----------------------------------------------------
+# Note:
+# This class represents the components super-type
+# The core sub-classes are defined in mc_sm_main.baroc
+#
+# The self_function is triggered by one the following primitives:
+# smc_attach_event($EV, $DATA)  with:  $EV=pointer on event
+# smc_detach_event($EV, $DATA)       $DATA=pointer on component
+# smc_update_selfstatus($EV)
+# The attach primitive must be called for a newly received/generated
+# event that has a match with a component. The detach primitive must
+# be called when the event turns EOL (by default: status is CLOSED).
+# The update primitive should be called whenever the severity of the
+# event changes.
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	MC_SM_COMPONENT ISA MC_SM_DATA DEFINES
+	{
+		ComponentAliases: 		LIST_OF STRING;
+		HomeCell: 			STRING, read_only=yes;
+		Priority:				MC_PRIORITY, default=PRIORITY_5;
+		StatusModel: 			STRING, default = 'STANDARD';
+		business_data:			STRING;
+		change_number : 		INTEGER, parse=no, read_only=yes;
+		comment: 				STRING;
+		component_scope: 		MC_SM_COMPONENT_SCOPE, default = LOCAL, parse=NO, read_only = YES;
+		computed_status: 		MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = OK;
+		consolidate_function: 	MC_SM_CO_FUNCTION, parse =no, read_only=yes;
+		consumer_num: 			INTEGER, parse=NO, parse=no, read_only=yes;
+		direct_events_count: 	INTEGER, parse=no, read_only=yes;
+		impact_status: 			MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = NONE;
+		last_status_modification: 	INTEGER, parse=no, read_only=yes, representation = date;
+		maintenance_mode: 		MC_YESNO, parse = no, read_only=yes, default = NO;
+		manual_status: 			MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = NONE;
+		manual_status_comment: 	STRING, parse=no, read_only=yes;
+		manual_status_providers: 	LIST_OF STRING, parse=no, read_only=yes;
+		manual_status_providers_count: 	INTEGER, parse=no, read_only=yes;
+		manual_status_requestor: 	STRING, parse=no, read_only=yes;
+		self_status: 			MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = NONE;
+		shadow_cells: 			LIST_OF STRING, parse=NO, read_only=YES;
+		status: 				MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = OK;
+		sub_status: 			MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = NONE;
+# additional slot in 7.0
+		possible_causes: 		LIST_OF STRING, parse=no, read_only=yes;
+		root_causes: 			LIST_OF STRING, parse=no, read_only=yes;
+		all_causes: 			LIST_OF STRING, parse=no, read_only=yes;
+		sla_rollup_status: 		MC_SM_SLM_SLA_STATUS, parse=no, default=NO_SLAS;
+		impact_sla_rollup_status: 		MC_SM_SLM_SLA_STATUS, parse=no, default=NO_SLAS;
+		ScheduleId:			STRING;
+		PriorityOut:			MC_PRIORITY;
+		ImpactCostPerSec : 		REAL;	
+		ImpactCostPerSecOut : 	REAL;	
+		PriorityWatchdog:		MC_YESNO, default=NO;
+		SelfPriorityFunction:		MC_SM_PRIORITY_FUNCTION, default=BASE_PRIORITY;
+		SelfPriorityFunctionParam:	STRING;
+		self_priority: 			MC_PRIORITY, parse=no, read_only=yes, default=PRIORITY_5;
+		raw_impact_priority: 		REAL, parse=no, read_only=yes;	
+		impact_priority: 		MC_PRIORITY, parse=no, read_only=yes, default=PRIORITY_5;
+		computed_priority: 		MC_PRIORITY, parse=no, read_only=yes, default=PRIORITY_5;
+		cost:				REAL, parse=no, read_only=yes;
+		impact_cost:			REAL, parse=no, read_only=yes;
+		schedule_status:        MC_SM_SCHEDULE_STATUS, default=IN;	
+		HomePageURI:			STRING;
+		DeviceID : 			INTEGER ;
+		any_event_max_sev:		SEVERITY, default=OK, read_only=yes;
+		any_open_event_max_sev:		SEVERITY, default=OK, read_only=yes;
+		impacting_open_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		APPLICATION_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		DATABASE_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		NETWORK_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		SYSTEM_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		USER_TRANSACTIONS_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		OTHER_event_max_sev:	SEVERITY, default=OK, read_only=yes;
+		highest_pn_event_score: 	  REAL, read_only=yes;
+		highest_pn_predicted_severity : PREDICTED_SEVERITY, read_only=yes, default = '';	
+		pn_predict_to_occur_time : INTEGER, representation=date, read_only=yes;
+		UsingOrganization:             		STRING;
+		UsingOrganizationId:             	STRING, default = '-1';
+		PNReadAcl:			LIST_OF STRING, local=yes;
+		PNWriteAcl:			LIST_OF STRING, local=yes;
+		AutoDeleteDelay:		INTEGER;
+	 	publish_providers_cis:		LIST_OF STRING;
+		source:						STRING;
+     		Company :                       STRING;
+     		Site :                          STRING;
+		};
+END
+
+
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS			Relationship
+# provider_id		mc_udid of the 'effect provider' component (source/master)
+# consumer_id		mc_udid of the 'effect consumer' component (dest./slave)
+# PropagationModel	name of the propagation model
+# State			state of the relationship (active, inactive)
+# line_aspect		aspect of the graphic line representing the relationship
+# true_impact           	whether this relationship really affects impact_status of consumer
+# propagated_status     	status that is currently propagated through this relationship
+# propagated_sub_status  	max of provider sub_status and status 
+# last_status_modification	last time true_impact was changed (to be used by GUI)
+#----------------------------------------------------
+# Note:
+# A relationship links two components together.
+# Relationships are oriented: the effect goes from the
+# provider to the consumer. But the 'Services' view
+# can explore relationships boths ways (Impact/Cause).
+# This class represents the relationship super-type
+# The core sub-classes are defined in mc_sm_main.baroc
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	MC_SM_RELATIONSHIP ISA MC_SM_DATA DEFINES
+	{
+		PropagationModel: STRING;
+		consumer_home_cell: STRING, parse=no, read_only=yes;
+		provider_home_cell: STRING, read_only=yes;
+		provider_classname: STRING;
+		State: MC_SM_RELATIONSHIP_STATE, default = ACTIVE;
+		StatusWeight : INTEGER, default=100;
+		consumer_id: STRING, key = yes, read_only=yes;
+		last_status_modification: INTEGER, parse=no, read_only=yes, representation = date;
+		propagated_status: MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = UNKNOWN;	
+		propagated_sub_status: MC_SM_COMPONENT_STATUS, parse=no, read_only=yes, default = UNKNOWN;	
+		provider_id: STRING, key = yes, read_only=yes;
+		true_impact: MC_YESNO, parse=no, read_only=yes, default = NO;
+		change_number : INTEGER, parse=no, read_only=yes;
+		PreventProviderAutoDelete: MC_YESNO, default=NO;
+		source:						STRING;
+	};
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# internal base class
+#----------------------------------------------------
+
+MC_DATA_CLASS:
+	MC_SM_INTERNAL ISA CORE_DATA;
+END
+
+#----------------------------------------------------
+# MC_SM_ALIAS DATA CLASS 
+#----------------------------------------------------
+# 
+MC_DATA_CLASS: 
+	BMC_SIM_ALIAS ISA  MC_SM_INTERNAL
+	DEFINES 
+{ 
+  ComponentAlias: STRING, key=yes; 
+  ComponentID: STRING; 
+};
+
+END
+
+#
+#  root service management classes
+
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+ENUMERATION MC_SM_SLA_RESET_MODE
+	10	AUTOMATIC
+	20	AUTO_N_MINUTES
+	30	USER_ACTION
+END
+
+
+ENUMERATION MC_SM_SHADOW_REQUEST_OP
+	10 	ADD
+	20	REM
+END
+
+
+ENUMERATION MC_SM_CAUSE_TYPE
+	10	ROOT
+	20	POSSIBLE
+END
+
+
+#---------------------------------------------------------------------
+# Global Records
+#---------------------------------------------------------------------
+#
+# MC_SM_VERSION contains the current SM version
+# this record is used to to automatic upgrade of mcdb created by older
+# version of the sm system. It must not be modified by users!
+
+RECORD MC_SM_VERSION
+   DEFINES {
+      version : STRING, default='';
+}
+END
+
+
+#----------------------------------------------------
+# INTERNALDATA CLASS 
+#----------------------------------------------------
+# 
+# base class of SIM data classes
+#
+MC_PUBLISH_DATA_CLASS : BMC_SIM_DATA ISA MC_SM_DATA
+   DEFINES {
+      ReadSecurity : LIST_OF STRING;
+      WriteSecurity : LIST_OF STRING;
+   };
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS 
+#----------------------------------------------------
+# CLASS			Status Model
+# model_name		name of the status model
+# impact_function	function used to compute the impact status (from provider components)
+# self_function		function used to compute the self status (from direct events)
+# consolidate_function	function used to compute the component main status (from impact and self)
+# quorum		quorum percentage used by QUORUM impact function
+# no_alert_status	default main status when consolidate_function gets NONE as a status
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	BMC_STATUS_COMPUTATION ISA BMC_SIM_DATA DEFINES
+	{
+		model_name: STRING, key = yes;
+		impact_function: MC_SM_IMPACT_FUNCTION, default = HIGHEST_VAL;
+		ext_impact_function: LIST_OF STRING;
+		self_function: MC_SM_SELF_FUNCTION, default = HIGHEST_VAL;
+		consolidate_function: MC_SM_CO_FUNCTION, default = HIGHEST_VAL;
+		quorum: INTEGER, default = 51;
+		no_alert_status: MC_SM_COMPONENT_STATUS, default = OK;
+	};
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS			Propagation Model
+# name			propagation model name
+# provider_type		identifies valid component type(s) for 'effect provider'
+# consumer_type		identifies valid component type(s) for 'effect consumer'
+# description		description applicable to the relationships using this model
+#----------------------------------------------------
+# Note:
+# instance of this class define which relationships are allowed by the system
+# A relationship of a certain class R between a provider of class P and a consumer
+# of class C is valid if there is a instance of BMC_STATUS_PROPAGATION such that
+# P is a subclass of or is equals to provider_type
+# C is a subclass of or is equals to consumer_type
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	BMC_STATUS_PROPAGATION ISA BMC_SIM_DATA DEFINES
+	{
+		name: STRING, key = yes;
+		provider_type: STRING, key = yes;
+		consumer_type: STRING, key = yes;
+		description: STRING;
+	};
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS			Propagation Map
+# name			name of the propagation model
+# relationship_state	identifies valid relationship state
+# provider_status	status of the 'provider' component
+# propagated_status	defines the resulting severity for the consumer
+#----------------------------------------------------
+# Note:
+# A group of 'propagation map' instances sharing the same name
+# make a Propagation Model.
+#
+# A propagation map is used by the Cell each time
+# the (main) status of a component A has to
+# propagated to a component B, where A and B are resp.
+# a provider and a consumer participating in a relationship
+# that rely on the map parent model
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	BMC_PROPAGATION_MAP ISA BMC_SIM_DATA DEFINES
+	{
+		name: STRING, key = yes;
+		relationship_state: MC_SM_RELATIONSHIP_STATE, key = yes;
+		provider_status: MC_SM_COMPONENT_STATUS, key = yes;
+		propagated_status: MC_SM_COMPONENT_STATUS;
+	};
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS			severity / status map
+# severity		severity value
+# status		status value
+#----------------------------------------------------
+# Note:
+# Tables used [1] to map the severity of an 'impact' event
+# to a status value that will participate in the computation
+# of the self status for the associated component,
+# or [2] to map the (main) status of a component to the
+# severity of its new SIM_COMPONENT_CHANGE event
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	BMC_SEVERITY_TO_STATUS ISA BMC_SIM_DATA DEFINES
+	{
+		severity: SEVERITY, key = yes;
+		status: MC_SM_COMPONENT_STATUS, key = yes;
+	};
+END
+
+MC_PUBLISH_DATA_CLASS:
+	BMC_STATUS_TO_SEVERITY ISA BMC_SIM_DATA DEFINES
+	{
+		status: MC_SM_COMPONENT_STATUS, key = yes;
+		severity: SEVERITY, key = yes;
+	};
+END
+
+#----------------------------------------------------
+# Base Priority - Self Priority lookup table
+#----------------------------------------------------
+# Priority     base priority value   
+# Status       status
+# SelfPriority self priority = F(base priority, status)
+#----------------------------------------------------
+MC_PUBLISH_DATA_CLASS :
+    BMC_SELF_PRIORITY_MAPPING ISA BMC_SIM_DATA
+    DEFINES {
+       priority : 	MC_PRIORITY, key=yes;
+       status :		MC_SM_COMPONENT_STATUS, key=yes;
+       self_priority : 	MC_PRIORITY;
+    };
+ END
+
+#----------------------------------------------------
+#  Cost of downtime - Self Priority lookup table
+#----------------------------------------------------
+# name       name of the mapping
+# cost	     minimum cost for this self priority
+# SelfPriority self priority = F(cost, status)
+#----------------------------------------------------
+MC_PUBLISH_DATA_CLASS :
+    BMC_COST_OF_DOWNTIME_PRIORITY_MAPPING ISA BMC_SIM_DATA
+    DEFINES {
+       name:            STRING, key=yes;
+       cost:            REAL;
+       self_priority :         MC_PRIORITY, key=yes;
+    };
+END
+
+#----------------------------------------------------
+#  worst sla state - Self Priority lookup table
+#----------------------------------------------------
+# name       name of the mapping
+# sla_state  sla state
+# SelfPriority self priority = F(sla_state, status)
+#----------------------------------------------------MC_PUBLISH_DATA_CLASS :
+MC_PUBLISH_DATA_CLASS :
+    BMC_WORST_SLA_STATE_PRIORITY_MAPPING ISA BMC_SIM_DATA
+    DEFINES {
+       name:            STRING, key=yes;
+       sla_state:       MC_SM_SLM_SLA_STATUS, key=yes;
+       self_priority :         MC_PRIORITY;
+    };
+END
+#----------------------------------------------------
+# Down time state
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS :
+  BMC_DOWNTIME_STATUS_CONFIG ISA BMC_SIM_DATA DEFINES {
+    status : MC_SM_COMPONENT_STATUS, default = UNAVAILABLE, key=yes;
+  };
+END
+
+#----------------------------------------------------
+# Service Schedules global configuration options
+#----------------------------------------------------
+# PriorityFormula   impact priority calculation method
+#----------------------------------------------------
+MC_PUBLISH_DATA_CLASS :
+  BMC_SERVICE_SCHEDULE_CONFIG ISA BMC_SIM_DATA
+   DEFINES {
+      PriorityFormula : PRIORITY_FORMULA, default = WEIGHTED, key=yes;
+   };
+END
+
+#----------------------------------------------------
+# duplicate TIME_FRAME class
+#----------------------------------------------------
+MC_PUBLISH_DATA_CLASS : 
+   SIM_TIME_FRAME ISA BASE_TIME_FRAME
+   DEFINES {
+      ReadSecurity : LIST_OF STRING;
+      WriteSecurity : LIST_OF STRING;
+      name : STRING, key = yes;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : 
+   BMC_TIME_SCHEDULE ISA BMC_SIM_DATA
+   DEFINES {
+       Name : STRING, key = yes;
+       Description : STRING;
+       status: MC_SM_SCHEDULE_STATUS, read_only=YES,parse=NO;
+    };
+END
+#----------------------------------------------------
+# mapping between schedules and timeframes
+#----------------------------------------------------
+# Timeframe mc_udid
+# Schedule  mc_udid
+# Included  wether the time_frame is included in the 
+#           schedule or an exception
+#----------------------------------------------------
+MC_PUBLISH_DATA_CLASS :
+    BMC_TIME_FRAME_TO_SCHEDULE ISA BMC_SIM_DATA
+    DEFINES {
+       Timeframe : STRING, key=yes;
+       Schedule :  STRING, key=yes;
+       Included :  MC_YESNO, default=YES;
+    };
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+# CLASS			Event Index
+# event_ueid		ueid of an event associated to a component
+# component_udid	udid of the component the event is associated with
+# status		status value derived from the event severity
+#----------------------------------------------------
+# Note:
+# This class is to be used by the new primitives which can trigger
+# the self_function for a component when a contributing event
+# (mc_smc_id=<comp mc_udid>) appears, disappears
+# or has a severity change.
+# This private table ensures adequate performance for self_status computation
+#
+# The status slot contains a value derived from the event severity,
+# using the matching MC_SM_S2S_MAP entry
+#----------------------------------------------------
+
+MC_DATA_CLASS:
+	MC_SM_EVENT_INDEX ISA MC_SM_INTERNAL
+	DEFINES
+	{
+		event_ueid: 	STRING, key = yes;
+		component_udid: STRING, key = yes;
+		status: 	MC_SM_COMPONENT_STATUS;
+		causal:		MC_YESNO, default=NO;
+		assigned:	MC_YESNO, default=NO;
+	};
+END
+
+
+
+
+MC_DATA_CLASS:
+	MC_SM_ROOT_CAUSE ISA MC_SM_INTERNAL
+	DEFINES
+	{
+		impact_udid:    STRING, key = yes;
+		cause_cell: 	STRING, key =yes;
+		cause_udid: 	STRING, key =yes;
+		cause_type: 	MC_SM_CAUSE_TYPE;
+		cause_status: 	MC_SM_COMPONENT_STATUS;
+		cause_change_number: 	INTEGER;
+		repeat_count: 	INTEGER;
+	};
+END
+
+MC_DATA_CLASS:
+	MC_SM_IMPACTS ISA MC_SM_INTERNAL
+	DEFINES
+	{
+		cause_udid: 	STRING, key = yes;
+		impact_cell: 		STRING, key = yes;
+		impact_udid: 		STRING, key = yes;
+		impact_self_priority: 	MC_PRIORITY;
+		impact_cost:		REAL;
+		impact_sla_state: 	MC_SM_SLM_SLA_STATUS;
+	};
+END
+ 
+MC_DATA_CLASS:
+	MC_SM_SCHEDULE_COMP ISA MC_SM_INTERNAL
+	DEFINES
+	{
+		schedule_id: 	STRING, key = yes;
+		component_id:	STRING, key = yes;
+	};
+END
+
+
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS
+#----------------------------------------------------
+#
+# This class is used to store shadow request relative to a coponent
+# that has not yet been (locally) created. 
+# In the context of the publishing server it can occure that a shadow 
+# compoennt is created before the original component.
+
+MC_DATA_CLASS:
+	MC_SM_SHADOW_REQUEST_DATA ISA MC_SM_INTERNAL
+	DEFINES
+	{
+		request_ueid:	STRING;
+		cell:		STRING;
+		component_id: 	STRING;
+		class: 		STRING;
+	};
+END
+
+
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS			Service Mgmt Component Event
+# component_sub_type	sub-type of the related component (if any)
+# component_name	name of the related component
+#----------------------------------------------------
+# Note:
+# This class represents the SMC event root class
+# The core sub-classes are defined in mc_sm_main.baroc
+#----------------------------------------------------
+
+MC_EV_CLASS:
+	MC_SMC_EVENT ISA MC_CELL_EVENT DEFINES
+	{
+		mc_smc_impact: MC_SMC_IMPACT, default = ELECTED;
+		component_sub_type: STRING;
+		component_name: STRING;
+	};
+END
+
+
+
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS			Service Mgmt shadow request
+#----------------------------------------------------
+# Note: An intance of this class is send by a cell to
+# another cell to (de)register a shadow component
+# 
+#----------------------------------------------------
+
+MC_EV_CLASS:
+	MC_SM_SHADOW_REQUEST ISA MC_CELL_EVENT DEFINES
+	{
+		cell:		STRING;
+		component_id: 	STRING;
+		class: 		STRING;
+		operation:	MC_SM_SHADOW_REQUEST_OP;
+		severity:	SEVERITY,default=OK;
+	};
+END
+
+
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS			Service Mgmt shadow request
+#----------------------------------------------------
+# Note: An intance of this class is send by a (shadow) cell to
+# another cell to propagate the impacts to causes
+# 
+#----------------------------------------------------
+MC_EV_CLASS:
+	MC_SM_IMPACTS_REPORT ISA MC_CELL_EVENT DEFINES
+	{
+		impacts:               	LIST_OF STRING;
+		impacts_self_priority: 	LIST_OF STRING;
+		impacts_cost:		LIST_OF STRING;
+		impacts_sla_state: 	LIST_OF STRING;
+		severity:		SEVERITY,default=OK;
+	};
+END
+
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS			Service Mgmt shadow request error
+#----------------------------------------------------
+# Note: an instance of this class is generated when a 
+# shadow request fail. It is propagated to the requesting 
+# cell
+# 
+#----------------------------------------------------
+
+MC_EV_CLASS:
+	MC_SM_SHADOW_REQUEST_ERROR ISA MC_CELL_EVENT DEFINES
+	{
+		cell:		STRING;
+		component_id: 	STRING;
+		operation:	MC_SM_SHADOW_REQUEST_OP;
+		request_ueid:	STRING;
+	};
+END
+
+
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS			Service Mgmt shadow update
+#----------------------------------------------------
+# Note: an instance of this class is generated each time
+# the sub-status of a shadowed component changed to each
+# shadow cell. These instances are immediately dropped, hence
+# should not be visible on the console.
+# 
+#----------------------------------------------------
+MC_EV_CLASS:
+	MC_SM_SHADOW_UPDATE ISA MC_CELL_EVENT DEFINES
+	{
+		component_id: STRING;
+		maintenance_mode: MC_YESNO;
+		smc_status: MC_SM_COMPONENT_STATUS;
+		smc_sub_status: MC_SM_COMPONENT_STATUS;
+		add_manual_status_providers: LIST_OF STRING;
+		del_manual_status_providers: LIST_OF STRING;
+		root_causes: LIST_OF STRING;
+		add_root_causes: LIST_OF STRING;
+		del_root_causes: LIST_OF STRING;
+		all_causes: LIST_OF STRING;
+		add_all_causes: LIST_OF STRING;
+		del_all_causes: LIST_OF STRING;
+		severity:	SEVERITY,default=OK;
+		propagation_stack: LIST_OF STRING;
+		indicators_changes: LIST_OF STRING;
+	};
+END
+
+
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS			Service Mgmt shadow delete
+#----------------------------------------------------
+# Note: an instance of this class is generated 
+# before a shadowed component is deleted and sent 
+# to each shadow cell. 
+# 
+#----------------------------------------------------
+MC_EV_CLASS:
+	MC_SM_SHADOW_DELETE ISA MC_CELL_EVENT DEFINES
+	{
+		component_id: STRING;
+		home_cell: STRING;
+		severity:	SEVERITY,default=OK;
+	};
+END
+
+MC_EV_CLASS:
+	MC_SM_LOOP_DETECTED ISA MC_CELL_EVENT DEFINES
+	{
+		provider_id: 	STRING;
+		consumer_id:	STRING;
+		relationship_id: STRING;
+		propagation_stack: LIST_OF STRING;
+		severity: default=MAJOR;
+		mc_priority: default=PRIORITY_2;
+	};
+END
+
+#----------------------------------------------------
+# INTERNAL DATA CLASS 
+#----------------------------------------------------
+# 
+# base class of  custom data classes
+#
+MC_PUBLISH_DATA_CLASS:
+	MC_SM_CUSTOM ISA MC_SM_DATA;
+END

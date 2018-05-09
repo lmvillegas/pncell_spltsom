@@ -1,0 +1,46 @@
+#
+# File name: art_collector.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#-------------------------------------------------------------------------------------
+# BIM Essential - integration of TM ART Central incidents to BMC Impact Manager events
+#
+#      "TM ART" Collector for class definitions, "art_event" and "art_normalized_event".  
+#      An event tree will have a parent folder labelled "Transaction Management" with
+#      a child folder labelled "TM ART" which in turn has two sub-folders, "Open" and 
+#      "Closed".
+#
+#-------------------------------------------------------------------------------------
+#
+#
+
+collector 'Transaction Management':
+{
+        r['BPPM Operators', 'Operators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators','BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        w['BPPM Operators', 'Operators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators','BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        x['BPPM Operators', 'Operators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators','BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators',
+          'Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+}
+END
+
+collector 'Transaction Management'.'TM ART':
+TXM_EVENT
+END
+
+collector 'Transaction Management'.'TM ART'.Open:
+TXM_EVENT
+where [
+	$THIS.status == OPEN 
+]
+END
+
+collector 'Transaction Management'.'TM ART'.Closed:
+TXM_EVENT
+where [
+	$THIS.status == CLOSED 
+]
+END
+

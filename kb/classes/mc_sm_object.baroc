@@ -1,0 +1,567 @@
+MC_PUBLISH_DATA_CLASS : BMC_BaseElement ISA MC_SM_COMPONENT
+   DEFINES {
+      Category : STRING;
+      CityName : STRING;
+      DatasetId : STRING;
+      Description : STRING;
+      ImpactCostUnit : STRING;
+      InstanceId : STRING;
+      Item : STRING;
+      ManufacturerName : STRING;
+      Model : STRING;
+      Name : STRING;
+      Notes : LIST_OF STRING, representation = diary;
+      OwnerContact : STRING;
+      OwnerName : STRING;
+      ReadSecurity : LIST_OF STRING;
+      SerialNumber : STRING;
+      ShortDescription : STRING, default = 'n/a';
+      SystemEnvironment : STRING;
+      TokenId : STRING, default = '0';
+      Type : STRING;
+      VersionNumber : STRING;
+      WriteSecurity : LIST_OF STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Collection ISA BMC_BaseElement;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ConcreteCollection ISA BMC_Collection
+   DEFINES {
+      CollectionType : STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ConnectivityCollection ISA BMC_Collection;
+END
+
+ENUMERATION ConnectivityType
+   0   Unknown
+   1   Other
+   2   Ethernet
+   3   TokenRing
+   4   FDDI
+   5   FC
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ConnectivitySegment ISA BMC_ConnectivityCollection
+   DEFINES {
+      ConnectivityType : ConnectivityType;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_IPConnectivitySubnet ISA BMC_ConnectivityCollection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_IPXConnectivityNetwork ISA BMC_ConnectivityCollection
+   DEFINES {
+      NetworkNumber : STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LNsCollection ISA BMC_ConnectivityCollection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LAN ISA BMC_LNsCollection;
+END
+
+ENUMERATION WANType
+   0   Unknown
+   1   Other
+   2   ATM
+   3   'Frame Relay'
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_WAN ISA BMC_LNsCollection
+   DEFINES {
+      WANType : WANType;
+   };
+END
+
+ENUMERATION isTenant
+   0   No
+   1   Yes
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Organization ISA BMC_Collection
+   DEFINES {
+      isTenant : isTenant, default = 'No';
+      BusinessCategory : STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_UserCommunity ISA BMC_Collection;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LogicalEntity ISA BMC_BaseElement;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Activity ISA BMC_LogicalEntity;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_BusinessProcess ISA BMC_Activity;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Transaction ISA BMC_Activity;
+END
+
+ENUMERATION ServiceType
+   1   Unknown
+   10   BusinessService
+   20   TechnicalService
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_BusinessService ISA BMC_LogicalEntity
+   DEFINES {
+      ServiceType : ServiceType, default = 'Unknown';
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_DataBase ISA BMC_LogicalEntity;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Offering ISA BMC_LogicalEntity;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ServiceOffering ISA BMC_Offering;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_PhysicalLocation ISA BMC_LogicalEntity;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ServiceOfferingInstance ISA BMC_LogicalEntity;
+END
+
+ENUMERATION isVirtual
+   0   No
+   1   Yes
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_System ISA BMC_BaseElement
+   DEFINES {
+      isVirtual : isVirtual;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ApplicationSystem ISA BMC_System;
+END
+
+ENUMERATION ApplicationType
+   0   Other
+   1   Unknown
+   2   StandardApplication
+   3   InfrastructureApplication
+   4   ClusteredApplication
+   5   CompositeApplication
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Application ISA BMC_ApplicationSystem
+   DEFINES {
+      ApplicationType : ApplicationType;
+   };
+END
+
+ENUMERATION ApplicationInfrastructureType
+   0   Other
+   1   Unknown
+   2   ApplicationServer
+   3   SAPSystem
+   4   SiebelEnterprise
+   5   DatabaseSystem
+   6   ClusteredApplicationServer
+   7   OracleFusionFarm
+   8   OracleEBiz
+   9   SAPClient
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ApplicationInfrastructure ISA BMC_ApplicationSystem
+   DEFINES {
+      ApplicationInfrastructureType : ApplicationInfrastructureType;
+   };
+END
+
+ENUMERATION SoftwareServerType
+   0   Other
+   1   Unknown
+   2   DatabaseServer
+   3   CommunicationServer
+   4   MessageServer
+   5   PrintServer
+   6   SecurityServer
+   7   TransactionServer
+   8   ResourceServer
+   9   TelnetServer
+   10   FTPServer
+   11   MailServer
+   12   DNSServer
+   13   UDDIServer
+   14   LDAPServer
+   15   WEBServer
+   16   NewsServer
+   17   ConfigurationMngtAgent
+   18   WebServicesServer
+   19   BusinessProcessServer
+   20   SecureShellServer
+   30   J2EEServer
+   40   SAPMessageServer
+   41   SAPEnqueueServer
+   42   SAPDispatcherServer
+   43   SAPGatewayServer
+   44   SAPICMServer
+   45   SAPJ2EEDispatcher
+   46   SAPSDMServer
+   47   SAPXIIntegrationEngine
+   48   SAPXIAdapterEngine
+   60   OracleTNSListener
+   61   OracleFusionLogLoader
+   62   OracleFusionDCMDaemon
+   64   OracleFusionOHS
+   65   OracleFusionDiscoverer
+   66   OracleFusionOracleInternetDirectory
+   67   OracleFusionPortTunnel
+   68   OracleFusionWebCache
+   69   OracleFusionWireless
+   70   OracleFusionReports
+   71   OracleFusionProcessConnect
+   72   OracleFusionOPMN
+   73   OracleEBizFormsServer
+   74   OracleEBizConcurrentManagersServer
+   75   OracleEBizReportsServer
+   76   OracleEBizAdminServer
+   90   SiebelServer
+   91   SiebelGatewayServer
+   92   SiebelReportServer
+   93   SiebelChartServer
+   94   SiebelRemoteSearchServer
+   95   SiebelConfigRemoteServer
+   96   SiebelWebCollabServer
+   97   SiebelMktWorkflowServer
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SoftwareServer ISA BMC_ApplicationSystem
+   DEFINES {
+      SoftwareServerType : SoftwareServerType;
+   };
+END
+
+ENUMERATION ClusterType
+   0   'Software Cluster'
+   1   'Hardware Cluster'
+   2   SoftwareServerCluster
+   3   ApplicationInstanceCluster
+   4   J2EECluster
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Cluster ISA BMC_System
+   DEFINES {
+      ClusterType : ClusterType;
+      Interconnect : STRING;
+      InterconnectAddress : STRING;
+      MaxNumberOfNodes : INTEGER;
+      Types : STRING;
+   };
+END
+
+ENUMERATION SystemType
+   0   'X86-based PC'
+   1   'MIPS-based PC'
+   2   'Alpha-based PC'
+   3   'Power PC'
+   4   'SH-x PC'
+   5   'StrongARM PC'
+   6   '64-bit Intel PC'
+   7   '64-bit Alpha PC'
+   8   Unknown
+   9   'X86-Nec98 PC'
+   10   'IA64-Intel PC'
+END
+
+ENUMERATION PrimaryCapability
+   0   'Not Dedicated'
+   1   Unknown
+   2   Other
+   3   Storage
+   4   Router
+   5   Switch
+   6   'Layer 3 Switch'
+   7   'Central Office Switch'
+   8   Hub
+   9   'Access Server'
+   10   Firewall
+   11   Print
+   12   'I/O'
+   13   'Web Caching'
+   14   Server
+   15   Management
+   16   'Block Server'
+   17   'File Server'
+   18   'Mobile User Device'
+   19   Repeater
+   20   'Bridge/Extender'
+   21   Gateway
+   22   LoadBalancer
+   23   Mainframe
+   24   SANSwitch
+   25   SANHub
+   26   SANBridge
+   27   SANRouter
+   28   SANDirector
+   29   RAIDStorageDevice
+   30   'Virtual Tape Library'
+   31   JBOD
+   32   Workstation
+   33   StorageSubsystem
+   34   'Storage Virtualizer'
+   35   'Media Library'
+   36   ExtenderNode
+   37   'NAS Head'
+   38   'Self-contained NAS'
+   39   UPS
+   40   'IP Phone'
+   41   'Management Controller'
+   42   'Chassis Manager'
+   43   'Host-based RAID controller'
+   44   'Storage Device Enclosure'
+   45   Desktop
+   46   Laptop
+   47   'Virtual Library System'
+   48   'Blade System'
+   49   'Blade Server'
+   50   'VPN Concentrator'
+   51   'Proxy Server'
+   52   'Layer 3 Proxy Server'
+   53   'WAN Accelerator'
+   54   'SAN Processor'
+   55   'Access Point'
+   56   'Wireless LAN Controller'
+END
+
+ENUMERATION VirtualSystemType
+   0   Other
+   1   Unknown
+   2   LPAR
+   3   'VM/VM Guest'
+   4   VMware
+   20   Xen
+   25   LDOM
+   30   'Solaris Container'
+   35   'HP nPartitions'
+   40   VPar
+   45   'Microsoft Hyper-V'
+   60   KVM
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ComputerSystem ISA BMC_System
+   DEFINES {
+      CapabilityList : STRING;
+      Domain : STRING;
+      HostName : STRING;
+      PrimaryCapability : PrimaryCapability;
+      SystemType : SystemType, default = 'Unknown';
+      VirtualSystemType : VirtualSystemType;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Mainframe ISA BMC_ComputerSystem;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_StorageSubsystem ISA BMC_ComputerSystem;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SystemComponent ISA BMC_BaseElement
+   DEFINES {
+      SystemClassId : STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_HardwareSystemComponent ISA BMC_SystemComponent;
+END
+
+ENUMERATION MediaType
+   0   'Removable media'
+   1   'Fixed hard disk'
+   2   Unknown
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Media ISA BMC_HardwareSystemComponent
+   DEFINES {
+      MaxMediaSize : INTEGER;
+      MediaType : MediaType;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_CDROMDrive ISA BMC_Media;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_DiskDrive ISA BMC_Media;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_FloppyDrive ISA BMC_Media;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_TapeDrive ISA BMC_Media;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_UPS ISA BMC_HardwareSystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LogicalSystemComponent ISA BMC_SystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_DiskPartition ISA BMC_LogicalSystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_FileSystem ISA BMC_LogicalSystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_DataBaseStorage ISA BMC_FileSystem;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LocalFileSystem ISA BMC_FileSystem;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_RemoteFileSystem ISA BMC_FileSystem;
+END
+
+ENUMERATION Primordial
+   0   False
+   1   True
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ResourcePool ISA BMC_LogicalSystemComponent
+   DEFINES {
+      Type : STRING;
+      SubType : STRING;
+      Primordial : Primordial;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Software ISA BMC_LogicalSystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SystemSoftware ISA BMC_Software;
+END
+
+ENUMERATION OSType
+   0   Unknown
+   1   Other
+   2   MACOS
+   3   ATTUNIX
+   4   DGUX
+   5   DECNT
+   6   'Tru64 UNIX'
+   7   OpenVMS
+   8   HPUX
+   9   AIX
+   10   'z/OS'
+   11   OS400
+   12   'OS/2'
+   13   JavaVM
+   14   MSDOS
+   15   WIN3x
+   16   WIN95
+   17   WIN98
+   18   WINNT
+   19   WINCE
+   20   NCR3000
+   21   NetWare
+   22   OSF
+   23   'DC/OS'
+   24   'Reliant UNIX'
+   25   'SCO UnixWare'
+   26   'SCO OpenServer'
+   27   Sequent
+   28   IRIX
+   29   Solaris
+   30   SunOS
+   31   U6000
+   32   ASERIES
+   33   TandemNSK
+   34   TandemNT
+   35   BS2000
+   36   LINUX
+   37   Lynx
+   38   XENIX
+   39   VM
+   40   'Interactive UNIX'
+   41   BSDUNIX
+   42   FreeBSD
+   43   NetBSD
+   44   'GNU Hurd'
+   45   OS9
+   46   'MACH Kernel'
+   47   Inferno
+   48   QNX
+   49   EPOC
+   50   IxWorks
+   51   VxWorks
+   52   MiNT
+   53   BeOS
+   54   'HP MPE'
+   55   NextStep
+   56   PalmPilot
+   57   Rhapsody
+   58   'Windows 2000'
+   59   Dedicated
+   60   'OS/390'
+   61   VSE
+   62   TPF
+   63   'Windows (R) Me'
+   64   'Caldera Open UNIX'
+   65   OpenBSD
+   66   'Not Applicable'
+   67   'Windows XP'
+   68   'Windows 2003'
+   69   'z/Linux'
+   70   CMS
+   71   CFCP
+   72   'z/VM'
+   73   'Windows Vista'
+   74   'Microsoft Windows Server 2008'
+   75   'Microsoft Windows 7'
+   76   'VMware ESXi'
+   77   'Windows Server 2012'
+   78   'Windows 10'
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_OperatingSystem ISA BMC_SystemSoftware
+   DEFINES {
+      OSType : OSType;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_VirtualSystemEnabler ISA BMC_SystemSoftware;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_StorageExtent ISA BMC_LogicalSystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_LogicalDisk ISA BMC_StorageExtent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_StorageVolume ISA BMC_StorageExtent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SystemResource ISA BMC_LogicalSystemComponent;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_MFCouplingFacility ISA BMC_SystemResource;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_SystemService ISA BMC_BaseElement
+   DEFINES {
+      SystemClassId : STRING;
+   };
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_ApplicationService ISA BMC_SystemService;
+END
+
+MC_PUBLISH_DATA_CLASS : BMC_Impact ISA MC_SM_RELATIONSHIP
+   DEFINES {
+      ReadSecurity : LIST_OF STRING;
+      ShortDescription : STRING, default = 'na';
+      WriteSecurity : LIST_OF STRING;
+   };
+END

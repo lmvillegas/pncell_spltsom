@@ -1,0 +1,35 @@
+#
+# File name: mc_sm_elect.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# WARNING! THIS RULESET MAY BE EDITED TO PREVENT
+#          SPECIFIC EVENTS TO BE ATTACHED
+#          BY DEFAULT, ALL RAW EVENTS ARE ATTACHED
+#----------------------------------------------------
+
+#----------------------------------------------------
+# ELECT
+# Tag raw events that can participate to the
+# status/impact computation of the component they
+# are [or will be] associated to
+# Note: the event may contain a valid logical ID
+# without the component existing yet
+# An event is associated if mc_smc_type != ""
+#----------------------------------------------------
+
+new elect_any_associated_event:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_impact != NON_ELECTABLE AND
+		$RAW_EVENT.status != CLOSED AND
+		$RAW_EVENT.mc_smc_id != ""
+	]
+	triggers
+	{
+		$RAW_EVENT.mc_smc_impact = ELECTED;
+	}
+END
+

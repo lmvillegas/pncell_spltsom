@@ -1,0 +1,421 @@
+#
+# File name: mc_sm_slm.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#------------------------------------------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS RULESET
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE SERVICE MANAGEMENT MODEL
+#------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------
+# Normalize the curent compliance status
+#------------------------------------------------------------------------------------
+refine slm_normalize_status_on_associate:
+	MC_SLM_ASSOCIATE ($EV)
+    {
+		if ($EV.current_status == 'Compliant') then
+		{
+			$EV.current_status_enum = COMPLIANT;
+		}
+		else
+		{
+			if ($EV.current_status == 'At Risk') then
+			{
+				$EV.current_status_enum = AT_RISK;
+			}
+			else
+			{
+				if ($EV.current_status == 'Breached') then
+				{
+					$EV.current_status_enum = BREACHED;
+				}
+				else
+				{
+					$EV.current_status_enum = COMPLIANT;
+				};	
+			};	
+		};	
+    }
+END
+
+#------------------------------------------------------------------------------------
+# Create a new SLA tracking object when the SLA is created
+#------------------------------------------------------------------------------------
+new create_new_sla:
+	MC_SLM_ASSOCIATE ($EV)
+	unless
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency 
+		]
+	}
+	triggers
+	{
+		new_data($NEW, MC_SLM_SLA, [name = $EV.name, type = $EV.type, frequency = $EV.frequency]);
+	}
+END
+
+#------------------------------------------------------------------------------------
+# Update an existing SLA tracking object & update the component's roleup status
+#------------------------------------------------------------------------------------
+new update_sla_on_associate:
+	MC_SLM_ASSOCIATE ($EV)
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within listunion($EV.components, $SLA.components)
+		]
+	}
+	triggers
+	{
+		$SLA.type        = $EV.type;
+		$SLA.description = $EV.description;
+		$SLA.components  = $EV.components;
+		if ($EV.current_status_enum > $SLA.status) then
+		{
+			$SLA.status	= $EV.current_status_enum;
+		};
+
+		if ($COMP.mc_udid within $EV.components) then
+		{
+			if ($SLA.status > $COMP.sla_rollup_status) then
+			{
+				$COMP.sla_rollup_status = $SLA.status;
+			};
+		}
+		else
+		{
+			$COMP.sla_rollup_status = NO_SLAS;
+			add_to_list($COMP.mc_udid, $SLA.removed_components);
+		};
+		$EV.status=CLOSED;
+	}
+END
+
+#------------------------------------------------------------------------------------
+# Update each of the component's roleup status on status change, as needed
+#------------------------------------------------------------------------------------
+new rollup_sla_statuses_after_disassociate:
+	MC_SLM_ASSOCIATE ($EV)
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $SLA.removed_components
+		]
+		MC_SLM_SLA ($OTHER_SLA) where 
+		[
+			$OTHER_SLA.components contains $COMP.mc_udid
+		]
+	}
+	triggers
+	{
+		if ($OTHER_SLA.status > $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = $OTHER_SLA.status;
+		};
+		rem_from_list($COMP.mc_udid, $SLA.removed_components);
+	}
+END
+
+#------------------------------------------------------------------------------------
+# Delete the SLA tracking object when the SLA is deleted
+#------------------------------------------------------------------------------------
+new delete_sla_after_disassociate_all:
+	MC_SLM_ASSOCIATE ($EV)
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency AND
+			listlen($SLA.components) == 0
+		]
+	}
+	triggers
+	{
+		remove_data($SLA);
+		$EV.status=CLOSED;
+	}
+END
+
+
+#------------------------------------------------------------------------------------
+# Normalize the curent compliance status
+#------------------------------------------------------------------------------------
+refine slm_normalize_status_on_update:
+	MC_SLM_STATUS_UPDATE ($EV)
+    {
+		if ($EV.old_status == 'Compliant') then
+		{
+			$EV.old_status_enum = COMPLIANT;
+		}
+		else
+		{
+			if ($EV.old_status == 'At Risk') then
+			{
+				$EV.old_status_enum = AT_RISK;
+			}
+			else
+			{
+				if ($EV.old_status == 'Breached') then
+				{
+					$EV.old_status_enum = BREACHED;
+				}
+				else
+				{
+					$EV.old_status_enum = COMPLIANT;
+				};	
+			};	
+		};	
+		if ($EV.new_status == 'Compliant') then
+		{
+			$EV.new_status_enum = COMPLIANT;
+		}
+		else
+		{
+			if ($EV.new_status == 'At Risk') then
+			{
+				$EV.new_status_enum = AT_RISK;
+			}
+			else
+			{
+				if ($EV.new_status == 'Breached') then
+				{
+					$EV.new_status_enum = BREACHED;
+				}
+				else
+				{
+					$EV.new_status_enum = COMPLIANT;
+				};	
+			};	
+		};	
+    }
+END
+
+#------------------------------------------------------------------------------------
+# Create a new SLA tracking object if this is the first time we're seeing this SLA
+#------------------------------------------------------------------------------------
+new create_new_sla_on_update:
+	MC_SLM_STATUS_UPDATE ($EV)
+	unless
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency 
+		]
+	}
+	triggers
+	{
+		new_data($NEW, MC_SLM_SLA, [name = $EV.name, type = $EV.type, frequency = $EV.frequency]);
+	}
+END
+
+#------------------------------------------------------------------------------------
+# Update the compliance status and component list of an existing SLA tracking object
+#------------------------------------------------------------------------------------
+new update_sla:
+	MC_SLM_STATUS_UPDATE ($EV)
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $SLA.components
+		]
+	}
+	triggers
+	{
+		$SLA.type        = $EV.type;
+		$SLA.status      = $EV.new_status_enum;
+
+		if ($EV.new_status_enum < $EV.old_status_enum AND 
+			$EV.old_status_enum >= $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = COMPLIANT;
+		}
+		else
+		{
+			if ($SLA.status > $COMP.sla_rollup_status) then
+			{
+				$COMP.sla_rollup_status = $SLA.status;
+			};
+		};
+		$EV.status=CLOSED;
+	}
+END
+
+#------------------------------------------------------------------------------------
+# Update each of the component's roleup status on status change, as needed
+#------------------------------------------------------------------------------------
+new rollup_sla_statuses_on_update:
+	MC_SLM_STATUS_UPDATE ($EV) where
+	[
+		$EV.new_status_enum < $EV.old_status_enum
+	]
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $SLA.components AND $COMP.sla_rollup_status == COMPLIANT
+		]
+		MC_SLM_SLA ($OTHER_SLA) where 
+		[
+			$OTHER_SLA.components contains $COMP.mc_udid
+		]
+	}
+	triggers
+	{
+		if ($OTHER_SLA.status > $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = $OTHER_SLA.status;
+		};
+	}
+END
+
+
+#------------------------------------------------------------------------------------
+# Delete the SLA tracking object when the SLA is deleted
+#------------------------------------------------------------------------------------
+new delete_sla:
+	MC_SLM_DELETE_SLA ($EV)
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $SLA.components
+		]
+	}
+	triggers
+	{
+		if (listlen($EV.components) == 0) then
+		{
+			$EV.components = $SLA.components;
+		};
+
+		if ($SLA.status >= $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = NO_SLAS;
+		};
+
+		remove_data($SLA);
+		$EV.status=CLOSED;
+	}
+END
+
+
+#------------------------------------------------------------------------------------
+# Update each of the component's roleup status on SLA deletion, as needed
+#------------------------------------------------------------------------------------
+new rollup_sla_statuses_after_delete:
+	MC_SLM_DELETE_SLA ($EV)
+	using ALL
+	{
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $EV.components AND $COMP.sla_rollup_status == NO_SLAS
+		]
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.components contains $COMP.mc_udid
+		]
+	}
+	triggers
+	{
+		if ($SLA.status > $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = $SLA.status;
+		};
+	}
+END
+
+#------------------------------------------------------------------------------------
+# Delete the SLA tracking object when the related SLA review period is removed
+#------------------------------------------------------------------------------------
+new remove_sla_frequency:
+	MC_SLM_REMOVE_SLA_FREQUENCY ($EV)
+	using ALL
+	{
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.name == $EV.name AND
+			$SLA.frequency == $EV.frequency
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $SLA.components
+		]
+	}
+	triggers
+	{
+		if (listlen($EV.components) == 0) then
+		{
+			$EV.components = $SLA.components;
+		};
+
+		if ($SLA.status >= $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = NO_SLAS;
+		};
+
+		remove_data($SLA);
+		$EV.status=CLOSED;
+	}
+END
+
+
+#------------------------------------------------------------------------------------
+# Update each of the component's roleup status on SLA frequency removal, as needed
+#------------------------------------------------------------------------------------
+new rollup_sla_statuses_after_frequency_removal:
+	MC_SLM_REMOVE_SLA_FREQUENCY ($EV)
+	using ALL
+	{
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			$COMP.mc_udid within $EV.components AND $COMP.sla_rollup_status == NO_SLAS
+		]
+		MC_SLM_SLA ($SLA) where 
+		[
+			$SLA.components contains $COMP.mc_udid
+		]
+	}
+	triggers
+	{
+		if ($SLA.status > $COMP.sla_rollup_status) then
+		{
+			$COMP.sla_rollup_status = $SLA.status;
+		};
+	}
+END
+

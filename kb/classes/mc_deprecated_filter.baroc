@@ -1,0 +1,28 @@
+#
+# File name: mc_deprecated_filter.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------
+#
+# This data class is used to define a regular
+# expression plus other conditions [see parent class]
+# that can be used in the filter phase to filter events.
+#
+# Events matching the regular expression and the other
+# conditions will be dropped [see rules/mc_dfilter.mrl]
+#
+# 1=FILTER_POLICY
+#
+#-----+---------------------+------------------------
+# 1   | reg_exp_str         | regular expression <-> msg slot
+#-----+---------------------+------------------------
+
+MC_DATA_CLASS:
+	FILTER_POLICY ISA DEPRECATED_POLICY DEFINES
+	{
+		class: default = "";
+		reg_exp_str: STRING;
+	};
+END
+

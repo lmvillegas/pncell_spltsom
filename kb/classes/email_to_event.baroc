@@ -1,0 +1,17 @@
+#
+# File name: email_to_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: email to event.baroc
+# Version: 9.6.00
+# Copyright 1998-2015 BMC Software, Inc. All Rights Reserved
+#
+MC_EV_CLASS:EMAIL2EVENT ISA EVENT DEFINES
+{
+	#"Unique ID" (if set)
+	msg_id : STRING, default='0';	
+}; 
+END
+

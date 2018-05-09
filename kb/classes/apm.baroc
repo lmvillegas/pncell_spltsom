@@ -1,0 +1,18 @@
+#
+# File name: apm.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: Events for APM
+#
+#----------------------------------------------------
+
+MC_EV_CLASS:
+   APM_Event ISA EVENT
+   DEFINES
+   {
+        apm_application : STRING;
+		apm_nodeID		: STRING;
+    };
+END

@@ -1,0 +1,26 @@
+#
+# File name: severity_map.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#Severity map class to map integrated applications severities with Cell severities 
+MC_DATA_CLASS : SEVERITY_MAP ISA DATA
+DEFINES
+{
+	origin_class : STRING ;
+	#severity at the event origin 
+	origin_sev : STRING ;
+	mapped_sev : SEVERITY ;
+};
+END
+
+
+MC_DATA_CLASS : DEFAULT_PROVIDERS_SEV ISA DATA
+DEFINES
+{
+	provider_class: STRING;
+	severity: STRING;
+};
+END
+

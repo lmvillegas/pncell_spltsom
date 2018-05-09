@@ -1,0 +1,48 @@
+#
+# File name: eye_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#--------------------------------------------------------------------------
+#
+#    BMC Impact Integration for PATROL 7.1
+#
+#--------------------------------------------------------------------------
+#
+#    This is unpublished proprietary source code of Entuity Ltd.            
+#                                                                        
+#    This source is provided as is with no warranties of any kind including 
+#    the warranties of design, merchantibility and fitness for a particular 
+#    purpose, or arising from a course of dealing, usage or trade practice. 
+#
+#    This source is provided with no support  and without any obligation on 
+#    the part of Entuity Ltd to assist in its use, correction, modification 
+#    or enhancement.                                                        
+#                                                                        
+#    Entuity Ltd. shall have no liability  with respect to the infringement 
+#    of copyrights,trade secrets or any patents by this source. In no event 
+#    will Entuity Ltd. be liable  for  any lost revenue or profits or other 
+#    special, indirect and consequential damages,  even if Entuity Ltd. has 
+#    been advised of the possibility of such damages.                       
+#                                                                        
+#    Entuity Ltd. (c) 2006, 2007, 2008, 2009, 2010
+#                                                                        
+#--------------------------------------------------------------------------
+
+MC_EV_CLASS :
+	EYE_EVENT ISA EVENT
+	DEFINES
+	{
+		mc_object: dup_detect=yes;
+		mc_tool_id: dup_detect=yes;
+		eye_userId:	STRING;
+		eye_impact_descr:	STRING;
+		eye_stormworks_id:	STRING;
+		eye_comp_id:	STRING;
+		eye_event_group:	STRING, dup_detect=yes;
+		eye_event_id:	STRING, dup_detect=yes;
+		eye_view:	STRING;
+		eye_inUtil: STRING;
+		eye_outUtil: STRING;
+	};
+END

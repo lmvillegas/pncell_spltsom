@@ -1,0 +1,171 @@
+#
+# File name: changeManagement.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+################################################################################
+#
+# update the original change event based on the new change event received.
+# Based on the changeId and mc_smc_id, identify the existing change event present 
+# in the CELL kb, and check for changeModifiedDate for verifying the sequence in
+# which the change events have reached BPPM. If the new event received by BPPM is the 
+# latest as compared to the one present in the CELL kb, then update the CELL kb
+# change event with the new event received.
+# Also if the changeStatus received is CLOSED,set the event status to CLOSED.
+#
+################################################################################
+
+
+new update_change_event : CHANGE_EV($CHNG_EV) 
+          updates ALL CHANGE_EV($CHNG_EV_OLD)
+          where [$CHNG_EV_OLD.changeId == $CHNG_EV.changeId AND $CHNG_EV_OLD.mc_smc_id == $CHNG_EV.mc_smc_id ]
+          {
+          	if ($CHNG_EV.changeModifiedDate > $CHNG_EV_OLD.changeModifiedDate)
+          	then
+          	{
+				if ($CHNG_EV_OLD.status != 'CLOSED')
+				then
+				{
+					ntadd($CHNG_EV_OLD, concat(["Change Event updated to ", $CHNG_EV_OLD.changeStatus, " on Date: ", $CHNG_EV_OLD.changeModifiedDate, " , ChangeNotes: ", $CHNG_EV_OLD.changeNotes]));
+					
+					$CHNG_EV_OLD.changeCoordinator = $CHNG_EV.changeCoordinator;
+					$CHNG_EV_OLD.changeCategory = $CHNG_EV.changeCategory; 
+					$CHNG_EV_OLD.changePriority = $CHNG_EV.changePriority;
+					$CHNG_EV_OLD.changeReason = $CHNG_EV.changeReason;
+					$CHNG_EV_OLD.changeStatus = $CHNG_EV.changeStatus;
+					$CHNG_EV_OLD.statusReason = $CHNG_EV.statusReason;
+					$CHNG_EV_OLD.impact = $CHNG_EV.impact;
+					$CHNG_EV_OLD.urgency = $CHNG_EV.urgency;
+					$CHNG_EV_OLD.riskLevel = $CHNG_EV.riskLevel;
+					$CHNG_EV_OLD.scheduledStartDate = $CHNG_EV.scheduledStartDate;
+					$CHNG_EV_OLD.scheduledEndDate = $CHNG_EV.scheduledEndDate;
+					$CHNG_EV_OLD.actualStartDate = $CHNG_EV.actualStartDate;
+					$CHNG_EV_OLD.actualEndDate = $CHNG_EV.actualEndDate;
+					$CHNG_EV_OLD.completedDate = $CHNG_EV.completedDate;
+					$CHNG_EV_OLD.changeModifiedDate = $CHNG_EV.changeModifiedDate;
+					$CHNG_EV_OLD.changeCustomerName = $CHNG_EV.changeCustomerName;
+					$CHNG_EV_OLD.changeCompany = $CHNG_EV.changeCompany;
+					$CHNG_EV_OLD.changeCompanyLocation = $CHNG_EV.changeCompanyLocation;
+					$CHNG_EV_OLD.dataSetId = $CHNG_EV.dataSetId;
+					$CHNG_EV_OLD.ciClass = $CHNG_EV.ciClass;
+					$CHNG_EV_OLD.ciAssociationDate = $CHNG_EV.ciAssociationDate;
+					$CHNG_EV_OLD.ciAssociationType = $CHNG_EV.ciAssociationType;
+					$CHNG_EV_OLD.changeNotes = $CHNG_EV.changeNotes;
+					
+					$CHNG_EV_OLD.itsm_company = $CHNG_EV.itsm_company;
+					$CHNG_EV_OLD.msg = $CHNG_EV.msg;
+					$CHNG_EV_OLD.itsm_location = $CHNG_EV.itsm_location;
+					$CHNG_EV_OLD.changeOwner = $CHNG_EV.changeOwner;
+					$CHNG_EV_OLD.mc_smc_id = $CHNG_EV.mc_smc_id;
+					$CHNG_EV_OLD.mc_smc_alias = $CHNG_EV.mc_smc_alias;
+					$CHNG_EV_OLD.severity = $CHNG_EV.severity;
+					$CHNG_EV_OLD.mc_priority = $CHNG_EV.mc_priority;
+					
+						
+					#On recceipt of the CLOSED changeStatus, need to CLOSE the event.
+					if ($CHNG_EV.changeStatus == 'Closed' OR $CHNG_EV.changeStatus == 'Cancelled' OR $CHNG_EV.changeStatus == 'Abort')
+					then
+					{
+						$CHNG_EV_OLD.status = 'CLOSED';
+					};
+					#increment the repeat count
+					$CHNG_EV_OLD.repeat_count = $CHNG_EV_OLD.repeat_count + 1;
+					drop_new;
+				}
+			}
+			else
+			{
+				#increment the repeat count
+				$CHNG_EV_OLD.repeat_count = $CHNG_EV_OLD.repeat_count + 1;
+				ntadd($CHNG_EV_OLD, concat(["Change Event updated to ", $CHNG_EV_OLD.changeStatus, " on Date: ", $CHNG_EV_OLD.changeModifiedDate, " , ChangeNotes: ", $CHNG_EV_OLD.changeNotes]));
+				drop_new;
+			};
+          }
+
+END
+
+################################################################################
+#
+# Need to check the existence of change event before creating a new task event.
+# As if there is no change event in the CELL kb, the task event should be dropped
+# or else it will not get related to the parent change event.
+#
+################################################################################
+
+new check_related_change_event : TASK_EV($TASK_EV) 
+	  unless
+	  {
+	  	CHANGE_EV($CHNG_EV)
+	  		where [ $TASK_EV.changeId == $CHNG_EV.changeId ]
+	  }
+	  triggers
+	  {
+	  	drop_new;
+	  }
+	
+END
+
+
+################################################################################
+#
+# update the original task event based on the new task event received.
+# Based on the taskId and mc_smc_id, identify the existing task event present 
+# in the CELL kb, and check for taskModifiedDate for verifying the sequence in
+# which the task events have reached BPPM. If the new event received by BPPM is the 
+# latest as compared to the one present in the CELL kb, then update the CELL kb
+# task event with the new event received.
+# Also if the taskStatus received is CLOSED,set the event status to CLOSED.
+#
+################################################################################
+
+new update_task_event : TASK_EV($TASK_EV) 
+	  updates ALL TASK_EV($TASK_EV_OLD)
+	  where [          $TASK_EV_OLD.taskId == $TASK_EV.taskId AND $TASK_EV_OLD.mc_smc_id == $TASK_EV.mc_smc_id AND $TASK_EV_OLD.status != 'CLOSED']
+	  {
+		if ($TASK_EV.taskModifiedDate > $TASK_EV_OLD.taskModifiedDate)
+		then
+		{
+			ntadd($TASK_EV_OLD, concat(["Task Event updated to ", $TASK_EV_OLD.taskStatus, " on Date: ", $TASK_EV_OLD.taskModifiedDate, " , TaskNotes: ", $TASK_EV_OLD.taskNotes]));
+			
+			$TASK_EV_OLD.changeId = $TASK_EV.changeId;
+			$TASK_EV_OLD.taskName = $TASK_EV.taskName;
+			$TASK_EV_OLD.taskNotes = $TASK_EV.taskNotes;
+			$TASK_EV_OLD.taskStatus = $TASK_EV.taskStatus;
+			$TASK_EV_OLD.taskPriority = $TASK_EV.taskPriority;
+			$TASK_EV_OLD.taskId = $TASK_EV.taskId;
+			$TASK_EV_OLD.taskType = $TASK_EV.taskType;
+			$TASK_EV_OLD.taskStatusReason = $TASK_EV.taskStatusReason;
+			$TASK_EV_OLD.taskAssigneeCompany = $TASK_EV.taskAssigneeCompany;
+			$TASK_EV_OLD.taskAssigneeGroup = $TASK_EV.taskAssigneeGroup;
+			$TASK_EV_OLD.taskAssignee = $TASK_EV.taskAssignee;
+			$TASK_EV_OLD.taskActualStartDate = $TASK_EV.taskActualStartDate;
+			$TASK_EV_OLD.taskActualEndDate = $TASK_EV.taskActualEndDate;
+			$TASK_EV_OLD.taskModifiedDate = $TASK_EV.taskModifiedDate;
+			$TASK_EV_OLD.dataSetId = $TASK_EV.dataSetId;
+			$TASK_EV_OLD.ciClass = $TASK_EV.ciClass;
+			$TASK_EV_OLD.ciAssociationDate = $TASK_EV.ciAssociationDate;
+			$TASK_EV_OLD.ciAssociationType = $TASK_EV.ciAssociationType;
+
+
+			$TASK_EV_OLD.msg = $TASK_EV.msg;
+			$TASK_EV_OLD.itsm_company = $TASK_EV.itsm_company;
+			$TASK_EV_OLD.mc_smc_id = $TASK_EV.mc_smc_id;
+			$TASK_EV_OLD.mc_smc_alias = $TASK_EV.mc_smc_alias;
+			$TASK_EV_OLD.mc_priority = $TASK_EV.mc_priority;
+
+					
+			#On recceipt of the CLOSED taskStatus, need to CLOSE the event.
+			if ($TASK_EV.taskStatus == 'Closed')
+			then
+			{
+				$TASK_EV_OLD.status = 'CLOSED';
+			};
+		};
+		#increment the repeat count
+		$TASK_EV_OLD.repeat_count = $TASK_EV_OLD.repeat_count + 1;
+		drop_new;
+	  }
+END
+
+

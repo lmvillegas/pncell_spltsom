@@ -1,0 +1,46 @@
+#
+# File name: repropagate.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#---------------------------------------------------------------------------------
+#
+#  Rule to set the slot mc_event_model_version as repropagate for the event
+#  which are not propagated earlier to the destination specified in the
+#  record REPROPAGATE
+#
+#  This rule will be triggered by event sync up tool to sync the cell and Jserver event
+#-----------------------------------------------------------------------------------
+
+new repropagate_trigger: MC_CELL_CONTROL($C) where [ $C.mc_tool_rule == repropagate ]
+   updates ALL EVENT($E) where [ NOT propagated_to($E,$REPROPAGATE.dest) >= 1 ]
+   {
+      $E.mc_event_model_version = repropagate;
+   }
+   updates ALL MC_CELL_CONTROL($E) where [ NOT propagated_to($E,$REPROPAGATE.dest) >= 1 ]
+   {
+      $E.mc_event_model_version = repropagate;
+   }
+   triggers
+   {
+		$C.status = CLOSED;
+   }
+END
+
+
+#---------------------------------------------------------------------------------
+#
+#  Rule to repropagate the event which are not propagate earlier
+#  means for which mc_event_model_version set to repropagate
+#
+#  This rule will be used by event sync up tool to sync the cell and Jserver event
+#-----------------------------------------------------------------------------------
+
+propagate repropagate: EVENT($E) where [ NOT propagated_to($E,$REPROPAGATE.dest) >= 1 ]
+   to $REPROPAGATE.dest when $E.mc_event_model_version == repropagate
+END
+
+propagate repropagate_internal: MC_CELL_CONTROL($E) where [ NOT propagated_to($E,$REPROPAGATE.dest) >= 1 ]
+   to $REPROPAGATE.dest when $E.mc_event_model_version == repropagate
+END

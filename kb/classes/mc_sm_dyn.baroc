@@ -1,0 +1,117 @@
+#
+# File name: mc_sm_dyn.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#-------------------------------------------------------------------------------
+# data class used by dynamic service impact 
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# Service imapct pattern data 
+#
+# Stores patterns of CIs and impact relationships
+# these patterns contains reference to variables of the form $<name>
+# these variable are instanciated to for CI or impact relationship baroc definition
+#
+# PatternName: id grouping  patterns togeteher
+# Dependencies: the list of variables referenced in the pattern that 
+#               need to be different from the empty string for the pattern to be instanciated
+#-------------------------------------------------------------------------------
+MC_DATA_CLASS:
+    BMC_SI_PATTERN  ISA DATA DEFINES
+    {
+	PatternName:	STRING;
+	Dependencies:   LIST_OF STRING, default=['NoDep'];
+    };
+END
+
+#-------------------------------------------------------------------------------
+# CI pattern data 
+#
+# Stores patterns of CIs
+#
+# BarocPattern: a string containing a CI instance in baroc format
+#               this string may contains variable that will be replace by string values
+#		during instanciation
+#-------------------------------------------------------------------------------
+MC_DATA_CLASS:
+    BMC_SI_CI_PATTERN  ISA  BMC_SI_PATTERN DEFINES
+    {
+	BarocPattern:		STRING;
+    };
+END
+ 
+#-------------------------------------------------------------------------------
+# Impact relationship pattern data 
+#
+# Stores patterns of Impact relation
+#
+# ProviderAlias: alias of the provider
+# ConsumerAlias: alias of the cinsumer
+# SlotPattern: a string containing the "tail" of a BMC_Impact instance in baroc format
+#  	       this "tail" must not contain the class name not the provider_id and consumer_id
+#              and must start with a "END"
+#
+# these 3 slots may contains variable that will be replace by string values during instanciation
+#-------------------------------------------------------------------------------
+MC_DATA_CLASS:
+    BMC_SI_REL_PATTERN  ISA  BMC_SI_PATTERN DEFINES
+    {
+	ProviderAlias:		STRING;
+	ConsumerAlias:		STRING;
+	SlotsPattern:		STRING;
+    };
+END
+
+#-------------------------------------------------------------------------------
+# Service impact pattern policy
+# Use for dynamic service impact creation triggered by new events
+#
+# PatternName: name of the pattern to be instantiated.
+# EventSlots: list of events slots used as input to the match table
+# PatternArgs: list of pattern variable names (starting with $) 
+#              that will be instanciated by the output of the match table
+# trace: if YES an operation in log in the event when the policy is applied.
+#-------------------------------------------------------------------------------
+
+MC_DATA_CLASS:
+    IM_SI_PATTERN_POLICY  ISA IM_POLICY DEFINES
+    {
+	PatternName:	STRING;
+	PatternArgs:	LIST_OF STRING;
+	EventSlots: 	LIST_OF STRING;
+	trace: 		MC_YESNO;
+    };
+END
+
+#-------------------------------------------------------------------------------
+# Service impact pattern descr
+# Use for dynamic service impact creation triggered by the creation of a CI
+#
+# CIClass: indicate the triggering CI class
+# PatternName: name of the pattern to be instantiated.
+# DataSlots: list of CI slots used as input to the match table
+# PatternArgs: list of pattern variable names (starting with $) 
+#              that will be instanciated by the output of the match table
+# trace: if YES an operation in log in the event when the policy is applied.
+#-------------------------------------------------------------------------------
+MC_DATA_CLASS:
+    IM_SI_PATTERN_DESCR  ISA DATA DEFINES
+    {
+	CIClass:	STRING, key=yes;
+	PatternName:	STRING, key=yes;
+	PatternArgs:	LIST_OF STRING;
+	DataSlots: 	LIST_OF STRING;
+    };
+END
+
+#-------------------------------------------------------------------------------
+# Service impact pattern descr
+# Use for dynamic service impact creation
+# the output values of this match table are use to intanciate service impact 
+# pattern variables that are referenced by the service impact pattern data (BMC_SI_PATTERN)
+#-------------------------------------------------------------------------------
+MC_DATA_CLASS: 
+    SI_PATTERN_MATCH_TABLE ISA BEM_MATCH_TABLE;
+END

@@ -1,0 +1,45 @@
+#
+# File name: refine_multiple_server_events.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+#===============================================================================
+# Refine rule for Multiple NGP Server depolyment
+# This rule is configured for detecting events received from other NGP or non-NGP Servers.
+# Based on this rule all the events received from other NGP or non-NGP Servers, will be 
+# treated as an external event in the Master NGP Server.
+# All the slots associated to CI association are initialized to 0 or blank for
+# configuring the event as an external event.
+#-------------------------------------------------------------------------------
+
+# Refine rule to intialize the PPM_EV class slots
+
+refine initialize_ppm_ev:
+	PPM_EV ($EV)
+	{
+		if (listlen($EV.mc_history) != 0) then
+		{
+			$EV.pn_object_id = 0;
+			$EV.pn_object_class_id = 0;
+			$EV.pn_parameter_id = 0;
+			opadd($EV, "Initialized PPM_EV slots specific to CI association", "");
+		};
+	}
+END
+
+# Refine rule to intialize the CORE_EVENT class slots
+
+refine initialize_core_event:
+	EVENT ($EV)
+	{
+		if (listlen($EV.mc_history) != 0) then
+		{
+			$EV.mc_smc_id = "";
+			$EV.mc_smc_type = "";
+			$EV.mc_host_id = 0;
+			opadd($EV, "Initialized CORE_EVENT slots specific to CI association", "");
+		};
+	}
+END

@@ -1,0 +1,49 @@
+#
+# File name: im_blackout_actions.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#
+# actions that can be triggered at the start or end of a blackout period
+#-------------------------------------------------------------------------------
+
+action im_blackout_actions.blackout:
+
+    IM_BLACKOUT_POLICY ($POL)
+    using ALL { IM_BLACKOUT_EVENT_TABLE ($BET) where [$BET.policy_udid == $POL.mc_udid]
+                EVENT ($EV) where  [$EV.mc_ueid == $BET.event_ueid AND $EV.status == OPEN] }
+    {
+       $EV.status = BLACKOUT;
+       opadd($EV, $POL.name, "BLACKED_OUT", "");	
+    }
+
+    IM_CI_BLACKOUT_POLICY ($POL)
+    using ALL { IM_BLACKOUT_EVENT_TABLE ($BET) where [$BET.policy_udid == $POL.mc_udid]
+                EVENT ($EV) where  [$EV.mc_ueid == $BET.event_ueid AND $EV.status == OPEN] }
+    {
+       $EV.status = BLACKOUT;
+       opadd($EV, $POL.name, "BLACKED_OUT", "");	
+    }
+
+END
+
+action im_blackout_actions.reopen: 
+
+    IM_BLACKOUT_POLICY ($POL)
+    using ALL { IM_BLACKOUT_EVENT_TABLE ($BET) where [$BET.policy_udid == $POL.mc_udid]
+                EVENT ($EV) where  [$EV.mc_ueid == $BET.event_ueid AND $EV.status == BLACKOUT] }
+    {
+       $EV.status = OPEN;
+       opadd($EV, $POL.name, "REOPENED", "");	
+    }
+
+    IM_CI_BLACKOUT_POLICY ($POL)
+    using ALL { IM_BLACKOUT_EVENT_TABLE ($BET) where [$BET.policy_udid == $POL.mc_udid]
+                EVENT ($EV) where  [$EV.mc_ueid == $BET.event_ueid AND $EV.status == BLACKOUT] }
+    {
+       $EV.status = OPEN;
+       opadd($EV, $POL.name, "REOPENED", "");	
+    }
+
+END

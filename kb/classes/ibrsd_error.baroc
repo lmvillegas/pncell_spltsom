@@ -1,0 +1,16 @@
+#
+# File name: ibrsd_error.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#  Description	: System definitions extensions
+#  Author		: Anuradha Kumbhar
+#  Created		: 20th July 2006
+#----------------------------------------------------
+
+MC_EV_CLASS : 	IBRSD_ERROR ISA EVENT 	DEFINES  	
+{		
+	severity	: SEVERITY , default=MAJOR;
+	use_case    : STRING;
+	mc_smc_impact				: default=NON_ELECTABLE, parse=no;
+}; END

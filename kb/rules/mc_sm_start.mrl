@@ -1,0 +1,95 @@
+#
+# File name: mc_sm_start.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS RULESET
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE SERVICE MANAGEMENT MODEL
+#----------------------------------------------------
+
+#----------------------------------------------------
+# the follwing index declaration allow optimization for queries
+# with equality or within constraints on the mc_smc_id slot
+# removing this declaration will affect the performances of such queries
+# notably queries issue by console to retreive causal events
+#----------------------------------------------------
+
+index mc_smc_id_index: CORE_EVENT hashed [mc_smc_id] END
+
+
+#----------------------------------------------------
+# AUTOCLOSE
+# Operation to be perform when the cell starts with -id
+#----------------------------------------------------
+
+#----------------------------------------------------
+# ATTACH 1 of 3
+# Operation to be perform when the cell starts with -id
+#----------------------------------------------------
+
+new reattach_events:
+	MC_CELL_START ($START) where
+	[
+		$START.init_events == 0 AND
+		$START.init_data == 1
+	]
+	using ALL
+	{
+		EVENT ($RAW_EVENT) where 
+		[
+			$RAW_EVENT.status outside [CLOSED,BLACKOUT] AND
+			$RAW_EVENT.mc_smc_id != "" AND
+			$RAW_EVENT.mc_smc_impact outside [NOT_ELECTED,NON_ELECTABLE] 
+		]
+		MC_SM_COMPONENT ($COMP) where
+		[
+			$COMP.mc_udid == $RAW_EVENT.mc_smc_id
+		]
+	}
+	triggers
+	{
+		smc_attach($RAW_EVENT, $COMP);	
+	}
+END
+
+new detach_deleted_events:
+	MC_CELL_START ($START) where
+	[
+		$START.init_events == 1 AND
+		$START.init_data == 0
+	]
+	triggers
+	{
+		smc_detach_deleted_events;	
+	}
+END
+
+
+#----------------------------------------------------
+# Last step for upgrading a db:
+# (after a pinit -a) 
+# re-attach open events to CIs
+#----------------------------------------------------
+new sim_reattach_events:
+    MC_CELL_CONTROL ($EV) where [$EV.mc_tool_rule ==  sim_reattach_events]
+	using ALL
+	{
+		EVENT ($RAW_EVENT) where 
+		[
+			$RAW_EVENT.status == OPEN AND
+			$RAW_EVENT.mc_smc_id != "" AND
+			$RAW_EVENT.mc_smc_impact  outside [NOT_ELECTED,NON_ELECTABLE] 
+		]
+		MC_SM_COMPONENT ($COMP) where
+		[
+			$COMP.mc_udid == $RAW_EVENT.mc_smc_id
+		]
+	}
+	triggers
+	{
+		smc_attach($RAW_EVENT, $COMP);	
+	}
+END

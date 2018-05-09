@@ -1,0 +1,26 @@
+#
+# File name: mcxpcoll.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+################################################################################
+# BMC Impact Integration for PATROL                                            #
+# PATROL Collectors                                                            #
+#                                                                              #
+# Date     : January 29th, 2003                                                #
+# Revision : October 14th, 2003                                                #
+#                                                                              #
+################################################################################
+
+################################################################################
+#
+# Generic/Dynamic collectors (put them at the *end* of file)
+#
+################################################################################
+
+collector 'By Location'.*.*.*.*.*:
+PATROL_EV where [p_application: not_equals '']
+create $THIS.p_application
+END
+
+################################################################################

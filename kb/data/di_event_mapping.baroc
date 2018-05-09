@@ -1,0 +1,138 @@
+#
+# File name: di_event_mapping.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+#
+# Data instances provided in the default KB
+
+#====================================================
+# MAPPING TABLES`
+#====================================================
+
+ 
+#----------------------------------------------------
+# Mapping to computer system
+# with alias of the form BMC_ComputerSystem:<hostname>:<domainame>
+#----------------------------------------------------
+BMC_SIM_MATCH_TABLE;
+                tag = "alias";
+                name = "Default Computer System Mapping for Event";
+                input_match=['<EVENT>','*','*<.>*','*','*','*','*']; 
+                ref_instances_classes=[EVENT];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[strreplace($1.mc_host,"." ,":",1)])'];
+END
+
+BMC_SIM_MATCH_TABLE;
+                tag = "alias";
+                name = "Default Computer System Mapping for Patrol Event";
+                input_match=['<PATROL_EV>','*','*','*','*','*','*']; 
+                ref_instances_classes=[PATROL_EV];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$1.mc_host])'];
+END
+
+BMC_SIM_MATCH_TABLE;
+                tag = "alias";
+                name = "Default Computer System Mapping for Alarm";
+                input_match=['<ALARM>','*','*<.>*','*','*','*','*']; 
+                ref_instances_classes=[ALARM];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[strreplace($1.mc_host,"." ,":",1)])'];
+END
+
+BMC_SIM_MATCH_TABLE;
+                tag = "alias";
+                name = "Default Computer System Mapping for Abnormality";
+                input_match=['<ABNORMALITY>','*','*<.>*','*','*','*','*']; 
+                ref_instances_classes=[ABNORMALITY];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[strreplace($1.mc_host,"." ,":",1)])'];
+END
+
+#----------------------------------------------------
+# Mapping to computer system
+# with alias of the form BMC_ComputerSystem:<ip address>
+#----------------------------------------------------
+BMC_SIM_MATCH_TABLE;
+                 ReadSecurity=[];
+                WriteSecurity=[];
+                name='EVENT_DEVICE_ASSOCIATION(Based on HostAddress)';
+                tag='alias';
+                input_match=['<EVENT>','*','*','*<.>*','*','*','*'];
+                ref_instances_classes=['EVENT'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$1.mc_host_address])'];
+END
+
+#----------------------------------------------------
+# Mapping to computer system
+# with alias of the form BMC_ComputerSystem:<hostname>
+#----------------------------------------------------
+BMC_SIM_MATCH_TABLE;
+                ReadSecurity = [];
+                WriteSecurity = [];
+                name='EVENT_DEVICE_ASSOCIATION(Based on host)';
+                tag='alias';
+                input_match=['<EVENT>','*','*','*','*','*','*'];
+                ref_instances_classes=['EVENT'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$V3])'];
+ 
+END
+ 
+BMC_SIM_MATCH_TABLE;
+                ReadSecurity = [];
+                WriteSecurity = [];
+                name='ALARM_DEVICE_ASSOCIATION(Based on host)';
+                tag='alias';
+                input_match=['<ALARM>','*','*','*','*','*','*'];
+                ref_instances_classes=['ALARM'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$V3])'];
+ 
+END
+
+BMC_SIM_MATCH_TABLE;
+                ReadSecurity = [];
+                WriteSecurity = [];
+                name='ABNORMALITY_DEVICE_ASSOCIATION(Based on host)';
+                tag='alias';
+                input_match=['<ABNORMALITY>','*','*','*','*','*','*'];
+                ref_instances_classes=['ABNORMALITY'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$V3])'];
+ 
+END
+
+#----------------------------------------------------
+# Mapping to computer system
+# with alias of the form BMC_ComputerSystem:<webURL>
+#----------------------------------------------------
+BMC_SIM_MATCH_TABLE;
+                ReadSecurity = [];
+                WriteSecurity = [];
+                name='EVENT_DEVICE_ASSOCIATION(Based on webURL)';
+                tag='alias';
+                input_match=['<EVENT>','*','<www.>*','*','*','*','*'];
+                ref_instances_classes=['EVENT'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$V3])'];
+ 
+END
+ 
+BMC_SIM_MATCH_TABLE;
+                ReadSecurity = [];
+                WriteSecurity = [];
+                name='ALARM_DEVICE_ASSOCIATION(Based on webURL)';
+                tag='alias';
+                input_match=['<ALARM>','*','<www.>*','*','*','*','*'];
+                ref_instances_classes=['ALARM'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$V3])'];
+ 
+END
+
+BMC_SIM_MATCH_TABLE;
+                ReadSecurity = [];
+                WriteSecurity = [];
+                name='ABNORMALITY_DEVICE_ASSOCIATION(Based on webURL)';
+                tag='alias';
+                input_match=['<ABNORMALITY>','*','<www.>*','*','*','*','*'];
+                ref_instances_classes=['ABNORMALITY'];
+                output_expressions=['sprintf("BMC_ComputerSystem:%s",[$V3])'];
+ 
+END

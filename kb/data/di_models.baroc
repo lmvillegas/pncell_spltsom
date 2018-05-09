@@ -1,0 +1,437 @@
+#
+# File name: di_models.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# Data instances provided in the default KB
+# These models can be modified or complemented with others
+#
+
+#====================================================
+# COMPONENENT STATUS VS EVENT SEVERITY
+#====================================================
+# It is recommended for consistency to align the
+# color of each severity to the color of the status
+# the severity is mapped to.
+# For example, the color for CRITICAL should be Red
+# as it is mapped to UNAVAILABLE (Red).
+#
+#	1=BMC_SEVERITY_TO_STATUS
+#	2=BMC_STATUS_TO_SEVERITY
+#
+#----------------------------------------------------
+BMC_SEVERITY_TO_STATUS; severity=UNKNOWN;	status=UNKNOWN;		END
+BMC_SEVERITY_TO_STATUS; severity=OK; 		status=OK;		END
+BMC_SEVERITY_TO_STATUS; severity=INFO; 		status=INFO;		END
+BMC_SEVERITY_TO_STATUS; severity=WARNING;	status=WARNING;		END
+BMC_SEVERITY_TO_STATUS; severity=MINOR;		status=MINOR;		END
+BMC_SEVERITY_TO_STATUS; severity=MAJOR;		status=IMPACTED;	END
+BMC_SEVERITY_TO_STATUS; severity=CRITICAL;	status=UNAVAILABLE;	END
+
+BMC_STATUS_TO_SEVERITY; status=UNKNOWN;		severity=UNKNOWN;	END
+BMC_STATUS_TO_SEVERITY; status=OK;		severity=OK;		END
+BMC_STATUS_TO_SEVERITY; status=INFO;		severity=INFO; 		END
+BMC_STATUS_TO_SEVERITY; status=BLACKOUT;	severity=INFO;		END
+BMC_STATUS_TO_SEVERITY; status=WARNING;		severity=WARNING;	END
+BMC_STATUS_TO_SEVERITY; status=MINOR;	severity=MINOR;		END
+BMC_STATUS_TO_SEVERITY; status=IMPACTED;	severity=MAJOR;		END
+BMC_STATUS_TO_SEVERITY; status=UNAVAILABLE;	severity=CRITICAL;	END
+
+#====================================================
+# STATUS COMPUTATION MODELS
+#====================================================
+#
+#	1=STANDARD
+#	2=CLUSTER
+#       3=WEIGHTED_CLUSTER
+#       4=SELF_PREFERRED
+#
+#----------------------------------------------------
+
+BMC_STATUS_COMPUTATION;
+	model_name=STANDARD;
+	no_alert_status=OK;
+END
+
+BMC_STATUS_COMPUTATION;
+	model_name=STANDARD_UNKNOWN;
+	no_alert_status=UNKNOWN;
+END
+
+BMC_STATUS_COMPUTATION;
+	model_name=CLUSTER;
+	impact_function=QUORUM;
+	quorum=51;
+	no_alert_status=OK;
+END
+
+BMC_STATUS_COMPUTATION;
+ model_name=WEIGHTED_CLUSTER;
+ impact_function=WEIGHTED;
+ no_alert_status=OK;
+END
+
+BMC_STATUS_COMPUTATION;
+ model_name=SELF_PREFERRED;
+ consolidate_function=SELF_PREFERRED;
+ no_alert_status=OK;
+END
+
+#====================================================
+# STATUS PROPAGATION MODELS
+#====================================================
+#
+#	1=INCREASING
+#	2=DIRECT
+#	3=DECREASING
+#	4=BLOCKING
+#
+
+#----------------------------------------------------
+# Propagation Model: INCREASING
+#----------------------------------------------------
+# This model may be used with relationships
+# of type IMPACT_RELATIONSHIP
+#----------------------------------------------------
+
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=BLACKOUT; propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=UNKNOWN;     propagated_status=UNKNOWN;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=OK;   propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=INFO;   propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=WARNING;     propagated_status=MINOR;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=MINOR;     propagated_status=IMPACTED;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=IMPACTED;    propagated_status=UNAVAILABLE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=ACTIVE; provider_status=UNAVAILABLE; propagated_status=UNAVAILABLE;
+END
+
+#------------------------------
+
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=OK;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=INFO;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=WARNING;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=MINOR; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=IMPACTED;    propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=INCREASING;
+relationship_state=INACTIVE; provider_status=UNAVAILABLE; propagated_status=NONE;
+END
+
+#----------------------------------------------------
+
+BMC_STATUS_PROPAGATION;
+	name=INCREASING;
+	provider_type=BMC_BaseElement;
+	consumer_type=BMC_BaseElement;
+	description='INCREASING relationship (Increasing impact)';
+END
+
+
+#----------------------------------------------------
+# Propagation Model: DIRECT
+#----------------------------------------------------
+# This model is the default model for all the
+# relationships of type IMPACT_RELATIONSHIP
+#----------------------------------------------------
+
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=BLACKOUT; propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=UNKNOWN;     propagated_status=UNKNOWN;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=OK;   propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=INFO;   propagated_status=INFO;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=WARNING;     propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=MINOR; propagated_status=MINOR;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=IMPACTED;    propagated_status=IMPACTED;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=ACTIVE; provider_status=UNAVAILABLE; propagated_status=UNAVAILABLE;
+END
+
+#------------------------------
+
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=OK;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=INFO;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=WARNING;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=MINOR; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=IMPACTED;    propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DIRECT;
+relationship_state=INACTIVE; provider_status=UNAVAILABLE; propagated_status=NONE;
+END
+# BMC_PROPAGATION_MAP; name=DIRECT;
+# relationship_state=INACTIVE; provider_status=SLA_BROKEN;  propagated_status=NONE;
+# END
+
+#----------------------------------------------------
+
+BMC_STATUS_PROPAGATION;
+	name=DIRECT;
+	provider_type=BMC_BaseElement;
+	consumer_type=BMC_BaseElement;
+	description='DIRECT relationship (linear impact)';
+END
+
+
+#----------------------------------------------------
+# Propagation Model: DECREASING
+#----------------------------------------------------
+# This model may be used with relationships
+# of type IMPACT_RELATIONSHIP
+#----------------------------------------------------
+
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=BLACKOUT; propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=UNKNOWN;     propagated_status=UNKNOWN;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=OK;   propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=INFO;   propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=WARNING;     propagated_status=INFO;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=MINOR; propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=IMPACTED;    propagated_status=MINOR;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=ACTIVE; provider_status=UNAVAILABLE; propagated_status=IMPACTED;
+END
+
+#------------------------------
+
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=OK;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=INFO;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=WARNING;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=MINOR; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=IMPACTED;    propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=DECREASING;
+relationship_state=INACTIVE; provider_status=UNAVAILABLE; propagated_status=NONE;
+END
+
+#----------------------------------------------------
+
+BMC_STATUS_PROPAGATION;
+	name=DECREASING;
+	provider_type=BMC_BaseElement;
+	consumer_type=BMC_BaseElement;
+	description='DECREASING relationship (Reducing impact)';
+END
+
+
+#----------------------------------------------------
+# Propagation Model: JUST_WARNING
+#----------------------------------------------------
+# This model may be used with relationships
+# of type IMPACT_RELATIONSHIP
+#----------------------------------------------------
+
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=OK;   propagated_status=OK;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=INFO;   propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=WARNING;     propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=MINOR; propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=IMPACTED;    propagated_status=WARNING;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=ACTIVE; provider_status=UNAVAILABLE; propagated_status=WARNING;
+END
+
+#------------------------------
+
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=OK;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=INFO;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=WARNING;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=MINOR; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=IMPACTED;    propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_WARNING;
+relationship_state=INACTIVE; provider_status=UNAVAILABLE; propagated_status=NONE;
+END
+
+#----------------------------------------------------
+
+BMC_STATUS_PROPAGATION;
+	name=JUST_WARNING;
+	provider_type=BMC_BaseElement;
+	consumer_type=BMC_BaseElement;
+	description='JUST_WARNING relationship (at most a WARNING is propagated for status greater than OK)';
+END
+
+#----------------------------------------------------
+# Propagation Model: JUST_INFO
+#----------------------------------------------------
+# This model may be used with relationships
+# of type IMPACT_RELATIONSHIP
+#----------------------------------------------------
+
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=OK;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=INFO;   propagated_status=INFO;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=WARNING;     propagated_status=INFO;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=MINOR; propagated_status=INFO;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=IMPACTED;    propagated_status=INFO;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=ACTIVE; provider_status=UNAVAILABLE; propagated_status=INFO;
+END
+
+#------------------------------
+
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=BLACKOUT; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=UNKNOWN;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=OK;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=INFO;   propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=WARNING;     propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=MINOR; propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=IMPACTED;    propagated_status=NONE;
+END
+BMC_PROPAGATION_MAP; name=JUST_INFO;
+relationship_state=INACTIVE; provider_status=UNAVAILABLE; propagated_status=NONE;
+END
+
+#----------------------------------------------------
+
+BMC_STATUS_PROPAGATION;
+	name=JUST_INFO;
+	provider_type=BMC_BaseElement;
+	consumer_type=BMC_BaseElement;
+	description='JUST_INFO relationship (only INFO status is propagated for status greater or equals to INFO otherwise NONE is propagated';
+END

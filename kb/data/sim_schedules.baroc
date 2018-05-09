@@ -1,0 +1,19 @@
+#
+# File name: sim_schedules.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# Data instances provided in the default KB
+#
+
+#====================================================
+# BMC_SERVICE_SCHEDULE_CONFIG
+#====================================================
+
+BMC_SERVICE_SCHEDULE_CONFIG;
+	mc_udid=SERVICE_SCHEDULE_CONFIG;
+	PriorityFormula=WEIGHTED;
+END

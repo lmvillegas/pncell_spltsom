@@ -1,0 +1,26 @@
+#
+# File name: outage_policy_record.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+ENUMERATION OUTAGE_POLICY_TYPE
+	10   NONE
+    20   DEFAULT
+    30   CUSTOM
+END
+
+RECORD OUTAGE_CONFIG
+	DEFINES 
+	{
+        active_policy : OUTAGE_POLICY_TYPE, default = NONE;
+		outage_update : INTEGER, default = 0;
+    }
+END
+
+RECORD OUTAGE_DEFAULT_POLICY
+	DEFINES 
+	{
+		policy_name : STRING, default = 'Default_Outage_Policy';
+	}
+END

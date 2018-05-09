@@ -1,0 +1,32 @@
+#
+# File name: ppm_mfd_ev.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ppm_mfd_ev.baroc
+# Version: 9.6.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------------
+#  Baroc definition for MFD events.
+#  NandaKumar Chava
+#  26th Oct 2014	
+#----------------------------------------------------------
+#
+# #
+#
+
+
+# Event class for MFD Events
+MC_EV_CLASS: 
+	PPM_MFD_EV ISA PPM_EV DEFINES
+	{
+		pn_object_id : INTEGER, default = 100	;	
+     		pn_object_class_id : INTEGER, default = 50001;
+     		pn_mfd_type: STRING, default = "Normal";
+     		pn_mfd_timestamp: INTEGER, default = 0	;
+	};
+END
+

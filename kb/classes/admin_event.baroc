@@ -1,0 +1,213 @@
+#
+# File name: admin_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------------
+#
+#  Used for Central Administration 
+
+
+
+#---------------------------------------------------------------------
+#  Base class for admin events
+#---------------------------------------------------------------------
+
+
+
+# The base class for all admin events
+MC_EV_CLASS: 
+	ADMIN_EVENT ISA EVENT DEFINES
+			{
+			mc_event_model_version		:	STRING, default = "1.0.0"; # Will be defined in CORE_EVENT
+			tool_host					:	STRING;	
+			severity					:	default = OK;
+#			mc_event_category			:	default = 'CONFIGURATION_MANAGEMENT';
+			};
+END
+
+
+
+
+#---------------------------------------------------------------------
+#  Configuration Events
+#---------------------------------------------------------------------
+
+
+
+
+
+# Event class for sending Configuration info for 
+#
+# Other slots needed
+# mc_host   tool_host
+# mc_object  mc_tool
+# mc_object_class  mc_tool_class
+#
+MC_EV_CLASS:
+        ADMIN_CONFIG_INFO ISA ADMIN_EVENT DEFINES
+        	{
+			port 		 				:	INTEGER, default = 0;
+			version 		 			:	STRING;
+			build_number				:	INTEGER;
+			build_date					:	STRING;
+			home_dir 			 		:	STRING;
+			bin_dir						:	STRING;
+			kb_dir						:	STRING;
+			conf_files 					:	LIST_OF STRING;
+			dir_file 			 		:	STRING;
+			trace_conf_file 			:	STRING;
+			trace_files 				:	LIST_OF STRING;
+			filter_files 				:	LIST_OF STRING;
+			selector_files 				:	LIST_OF STRING;
+			map_files 					:	LIST_OF STRING;
+			extra_support_files			: 	LIST_OF	STRING;
+			os_class					:	ADMIN_OS_CLASS;
+			os_version					:	STRING;
+			product_type  	 			:	STRING;
+			aliases						:	LIST_OF STRING;
+			mc_smc_impact				:	default=0;
+			environment					:	STRING, default = 'PRODUCTION';
+			target						:	STRING;
+			skip						:	MC_YESNO, default = 'NO';
+			role						:	ADMIN_ROLES, default = STANDALONE;
+			server_1_host				:	STRING;
+			server_1_port				:	INTEGER, default = 0;
+			server_2_host				:	STRING;
+			server_2_port				:	INTEGER, default = 0;
+			kb_type						: 	ADMIN_CELL_TYPE, default = NOT_APPLICABLE;
+			service_name				:	STRING;
+        	};  
+END
+
+
+
+
+
+
+# Un-register an object
+#
+# Other slots needed
+# mc_host
+# mc_object  mc_tool
+# mc_object_class  mc_tool_class
+#
+MC_EV_CLASS:
+        ADMIN_UNREGISTER ISA ADMIN_EVENT DEFINES
+	        {
+	        component_id				:	STRING;
+	        unregister_type				:	ADMIN_UNREGISTER_TYPES, default = TEMP;
+	        };
+END
+
+
+# Un-register a product
+#
+# Other slots needed
+# mc_host
+# mc_object_class
+#
+MC_EV_CLASS:
+        ADMIN_UNREGISTER_PRODUCT ISA ADMIN_EVENT;
+END
+
+
+
+# Event to clear a block of creation
+#
+# Other slots needed
+# mc_host
+# mc_object  mc_tool
+# mc_object_class  mc_tool_class
+#
+MC_EV_CLASS:
+        ADMIN_CLEAR_BLOCK ISA ADMIN_EVENT DEFINES
+	        {
+	        component_id				:	STRING;
+	        };
+END
+
+
+
+
+# Event inidcating the run state of a cell has changed
+MC_EV_CLASS:
+	ADMIN_ACTIVITY_STATE ISA ADMIN_EVENT DEFINES
+        	{
+			run_state				:	ADMIN_RUN_STATES, default = STATE_UNKNOWN;
+     		severity				:	default = OK;
+     		mc_smc_id				:	dup_detect=yes;
+     		raw_state				:	STRING,  dup_detect=yes;
+     		role					:	ADMIN_ROLES;
+     		cmd						:	STRING;
+     		};
+END
+
+
+MC_EV_CLASS:
+	ADMIN_SECONDARY_INFO ISA ADMIN_EVENT DEFINES
+			{
+			CellName				:	STRING;
+			DuplicateMode			:	STRING;
+			HomeDir					:	STRING;
+			LogDir					:	STRING;
+			TmpDir					:	STRING;
+			KBDir					:	STRING;
+			ConfigFile				:	STRING;
+			TraceConfigFile			:	STRING;
+			TraceDefaultFile		:	STRING;
+			ServerDirectoryFile		:	STRING;
+			PropagateConfigFile		:	STRING;
+			ModifyConfigFile		:	STRING;
+			cmd						:	STRING;
+			platform				:	STRING;
+			};				
+END
+
+
+
+
+#------------------------------------------------------------------------------
+#		Interfaces
+#------------------------------------------------------------------------------
+
+
+MC_INTERFACE: ADMIN_ACTIVITY_INTERFACE
+	DEFINES {
+		component_id			: STRING;
+		result					: STRING;
+		};
+END
+
+
+#------------------------------------------------------------------------------
+#		Data definitions
+#------------------------------------------------------------------------------
+
+
+MC_DATA_CLASS : ADMIN_DATA ISA DATA;
+END
+
+
+MC_DATA_CLASS : ADMIN_PLATFORM_LOOKUP  ISA ADMIN_DATA
+	DEFINES	{
+		platform							:	STRING,key=yes;
+		os_class							:	ADMIN_OS_CLASS;
+		};
+END
+
+
+
+
+
+
+
+
+
+
+
+
+            
+            
+  

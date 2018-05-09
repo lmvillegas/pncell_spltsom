@@ -1,0 +1,22 @@
+#
+# File name: ibrsd_bem_error_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+collector 'Incident Errors' :
+{
+        r['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Operator Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        w['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Operator Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        x['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Operator Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+}
+END
+
+
+collector 'Incident Errors'.'Event Incident Errors':
+IBRSD_ERROR 
+where [$THIS.use_case == 'BEM']
+END	
+

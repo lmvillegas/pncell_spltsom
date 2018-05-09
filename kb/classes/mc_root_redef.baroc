@@ -1,0 +1,37 @@
+#
+# File name: mc_root_redef.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#  Description:	System definitions extensions
+#
+#---------------------------------------------------------------------
+
+#----------------------------------------------------
+# Extension of system defined EVENT class with optional slots
+# Provided for backward compatibility
+#----------------------------------------------------
+
+MC_EV_CLASS : 
+   EVENT
+   DEFINES {
+      source : STRING;
+      sub_source : STRING;
+      hostname : STRING;
+      origin : STRING;
+      sub_origin : STRING;
+      server_handle : INTEGER, parse = no;
+      acl : LIST_OF STRING, default = [admin], parse = no;
+      credibility : INTEGER, default = 1, parse = no;
+      msg_catalog : STRING;
+      msg_index : INTEGER;
+      num_actions : INTEGER, parse = no;
+      site: STRING;
+      mc_it_mgmt_process : STRING;
+   };
+END
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

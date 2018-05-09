@@ -1,0 +1,76 @@
+#
+# File name: admin_enums.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------------
+#
+#  Used for Central Administration 
+
+
+
+
+#---------------------------------------------------------------------
+#  Configuration Events
+#---------------------------------------------------------------------
+
+# Enumeration for the OS types
+ENUMERATION ADMIN_OS_CLASS
+   0	UNKNOWN	
+   10   WINDOWS
+   20   SOLARIS
+   30	AIX
+   40	LINUX
+   50	HPUX
+   60 'z/OS'
+END
+
+
+
+
+#---------------------------------------------------------------------
+#   Enumeration for the type of unregister
+#---------------------------------------------------------------------
+ENUMERATION ADMIN_UNREGISTER_TYPES
+   10   TEMP
+   20   PERMANENTLY
+END
+
+#---------------------------------------------------------------------
+#   Enumeration for the roles
+#---------------------------------------------------------------------
+ENUMERATION ADMIN_ROLES
+   10   NONE
+   20   STANDALONE
+   30	PRIMARY
+   40	FAILOVER
+END
+
+
+#---------------------------------------------------------------------
+#   Enumeration for the cell types
+#---------------------------------------------------------------------
+ENUMERATION ADMIN_CELL_TYPE
+   10   NOT_APPLICABLE
+   20   EVENT_MANAGEMENT
+   30	SERVICE_IMPACT_MANGAEMENT
+   40	IMPACT_ADMIN_CELL
+   50	BMC_INTEGRATION_CELL
+END
+
+
+
+#----------------------------------------------------
+# Enumeration for run state
+#----------------------------------------------------
+
+ENUMERATION ADMIN_RUN_STATES
+		0  STATE_UNKNOWN
+		10 STATE_STARTED
+		20 STATE_STOPPED
+		30 STATE_STANDBY
+		40 STATE_PAUSED
+		50 STATE_UNAVAILABLE 
+		60 STATE_ACTIVE
+END

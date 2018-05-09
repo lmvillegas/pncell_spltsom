@@ -1,0 +1,48 @@
+#
+# File name: mc_deprecated_notification.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+new notify_using_dynamic_policy:
+	EVENT($EV) where 
+	[
+		$EM_KB_OPTIONS.dnotification_enabled == YES AND
+		$EV.status == OPEN
+	]
+	using
+	{
+    	DEPRECATED_NOTIFICATION_POLICY ($POL) where
+    	[
+			$POL.address_list != [] AND
+			$EV.CLASS subclass_of $POL.class AND
+			($POL.low_severity <= $EV.severity AND $EV.severity <= $POL.high_severity) AND
+			($POL.location_list == [] OR $EV.mc_location within $POL.location_list) AND
+			( $POL.schedule_name == "" OR
+			 (($POL.sched_invert == NO  AND $POL.schedule_name within $MC_DEPRECATED_SCHEDULES.active_schedule_list) OR
+			  ($POL.sched_invert == YES AND $POL.schedule_name within $MC_DEPRECATED_SCHEDULES.inactive_schedule_list)
+			 )
+			)
+    	]
+	}
+triggers
+	{
+		listwalk($POL.address_list, $ADDR);
+		$USER_DATA = strtolist($ADDR, ":");
+		if (listlen($USER_DATA) == 2)
+		then
+		{
+			$NTFY_MODE = listgetelt($USER_DATA, 1);
+			$USER_ADDR = listgetelt($USER_DATA, 2);
+			
+			if ($NTFY_MODE == "EMAIL")
+			then { execute($EV, mc_sendmail, [$USER_ADDR], YES); }
+			else
+			{
+				if ($NTFY_MODE == "PAGER")
+				then { execute($EV, mc_pager, [$USER_ADDR], YES); };
+			};
+		};
+	}
+END

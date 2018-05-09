@@ -1,0 +1,52 @@
+#
+# File name: art_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#-------------------------------------------------------------------------------------
+# BIM Essential - integration of TM ART Central incidents to BMC Impact Manager events
+#
+#      Class definitions - TXM_EVENT, ART_EVENT, and ART_NORMALIZED_EVENT
+#
+#-------------------------------------------------------------------------------------
+#
+#
+
+MC_EV_CLASS : 
+   TXM_EVENT ISA EVENT
+   DEFINES {
+   };
+END
+
+
+MC_EV_CLASS : 
+   ART_EVENT ISA TXM_EVENT
+   DEFINES {
+	  Type : INTEGER;
+	  Project : STRING;
+	  Severity : STRING;
+	  Rulename : STRING;
+	  Expression : STRING;
+	  Rise_Time : STRING;
+	  Rise_Time_Long : INTEGER;
+	  Fall_Time : STRING;
+	  Fall_Time_Long : INTEGER;
+	  Duration : STRING;
+	  Report_Link : STRING;
+      XML_Header_Node : LIST_OF STRING;
+      XML_Leaf_Nodes : LIST_OF STRING;
+      XML_File_Contents : STRING;
+      Formatted_File_Contents : STRING;
+   };
+END
+
+
+MC_EV_CLASS : 
+   ART_NORMALIZED_EVENT ISA TXM_EVENT
+   DEFINES {
+      XML_Header_Node : LIST_OF STRING;
+      XML_Leaf_Nodes : LIST_OF STRING;
+      XML_File_Contents : STRING;
+      Formatted_File_Contents : STRING;
+   };
+END

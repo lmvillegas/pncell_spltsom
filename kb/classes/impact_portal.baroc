@@ -1,0 +1,43 @@
+#
+# File name: impact_portal.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: Events for error report from BMC Impact Portal
+#
+#----------------------------------------------------
+
+# ---- This is the super class for all mccs events ----
+MC_EV_CLASS :
+   BIP_EVENT ISA EVENT
+   DEFINES {
+      mc_tool_class: default = "BMC Impact Portal";
+      mc_incident_time: INTEGER, representation = date;
+      mc_arrival_time: INTEGER, representation = date;
+   };
+END
+
+# -- event for BIP start information --
+MC_EV_CLASS :
+   BIP_START ISA BIP_EVENT
+   DEFINES {
+      mc_object_class: default = "BMC Impact Portal";
+      mc_event_category: default = OPERATIONS_MANAGEMENT;
+      severity : default = OK;
+   };
+END
+
+# -- event for BIP stop information --
+MC_EV_CLASS :
+   BIP_STOP ISA BIP_EVENT
+   DEFINES {
+      mc_object_class: default = "BMC Impact Portal";
+      mc_event_category: default = OPERATIONS_MANAGEMENT;
+      severity : default = CRITICAL;
+   };
+END
+
+#
+# End-of-file
+#

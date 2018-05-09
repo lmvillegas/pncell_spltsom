@@ -1,0 +1,85 @@
+#
+# File name: ibrsd_event_association.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#******************************************************************************************************************************
+# BMC Impact Integration for ARS
+# Date     		: April 10 , 2006
+# Description	: Event association rule for EVENT_INCIDENT_INFO and CI_INCIDENT_INFO
+#				  It will create Related events of type "biiars_event_association"
+# Author		: SMS Pune Integration Connect Team
+# Revision		: 
+#				  
+#******************************************************************************************************************************
+
+# Relate EVENT_INCIDENT_INFO with the event,having mc_ueid stored in the mc_relation_source of EVENT_INCIDENT_INFO 
+# on new/update of EVENT_INCIDENT_INFO
+execute event_incident_info_relate : EVENT_INCIDENT_INFO($E) where [ $E.status != CLOSED ]
+	when $E.event_mc_ueid
+	{
+		relate($E);
+		add_to_list($E.event_mc_ueid , $E.event_ids );
+	}
+END`
+
+execute update_event_for_incident_id : EVENT_INCIDENT_INFO($E)
+	using ALL 
+	{ 
+		EVENT ($EV) where [listmember($E.event_ids,$EV.mc_ueid) ]
+	}
+	when $E.incident_status
+	{
+		#set the incident_id of the orignial event to the incident_id
+		if ($EV.itsm_incident_id == "") then
+        {
+			$EV.itsm_incident_id = $E.incident_id ;	
+		};
+		$EV.itsm_incident_status = $E.incident_status;
+	}
+END
+
+#UnRelate EVENT_INCIDENT_INFO from the event,having mc_ueid stored in the mc_relation_source of EVENT_INCIDENT_INFO
+execute event_incident_info_unrelate : EVENT_INCIDENT_INFO($E)
+	when $E.status == CLOSED 
+	{ 
+		unrelate($E);
+		rem_from_list($E.event_mc_ueid , $E.event_ids );
+	}
+END
+
+# Relate CI_INCIDENT_INFO with the event,having mc_ueid stored in the mc_relation_source of CI_INCIDENT_INFO 
+# on new/update of CI_INCIDENT_INFO
+execute ci_incident_info_add_to_eventids : CI_INCIDENT_INFO($E) where [ $E.status != CLOSED ]
+	when $E.event_mc_ueid
+	{
+		relate($E);
+		add_to_list($E.event_mc_ueid , $E.event_ids );
+	}
+END`
+
+execute update_event_for_incident_id_on_ci : CI_INCIDENT_INFO($E) 
+	using ALL 
+	{ 
+		EVENT ($EV) where [ listmember($E.event_ids,$EV.mc_ueid) ]
+	}
+	when $E.incident_status
+	{
+		#set the incident_id of the orignial event to the incident_id
+		if ($EV.itsm_incident_id == "") then
+        {
+			$EV.itsm_incident_id = $E.incident_id ;
+		};
+		$EV.itsm_incident_status = $E.incident_status;	
+	}
+END
+
+#UnRelate CI_INCIDENT_INFO from the event,having mc_ueid stored in the mc_relation_source of CI_INCIDENT_INFO
+execute ci_incident_info_rem_from_eventids : CI_INCIDENT_INFO($E)
+	when $E.status == CLOSED 
+	{
+		unrelate($E); 
+		rem_from_list($E.event_mc_ueid , $E.event_ids );
+	}
+END

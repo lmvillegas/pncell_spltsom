@@ -1,0 +1,66 @@
+#
+# File name: sce_compatibility.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+new state_change_compatibility :
+
+	SIM_COMPONENT_CHANGE ($SCC)
+	
+	using {
+		BMC_BaseElement ($COMP) where [ $COMP.mc_udid equals $SCC.component_udid ]
+	
+	}
+	
+	triggers 
+		{
+		drop_new ;
+		generate_event(SMC_STATE_CHANGE, 
+				[ mc_incident_time = $SCC.occurrence_time,
+				  smc_status = $SCC.component_status,
+				  mc_smc_type = $COMP.CLASS,
+				  mc_smc_id = $COMP.mc_udid,
+				  severity = $SCC.severity,
+				  mc_parameter_value = $COMP.Name ]
+				  ) ;
+		}
+END
+
+new close_old_state_change :
+
+	SMC_STATE_CHANGE ($SSC)
+
+	updates duplicate ($OLD) where [ $OLD.status not_equals 'CLOSED' ]
+		{
+		if ( $OLD.smc_status equals $SSC.smc_status )
+		then
+			{
+			drop_new ;
+			}
+		else {
+			$OLD.status = 'CLOSED' ;
+			$SSC.smc_previous_status = $OLD.smc_status ;
+			}
+		}
+END
+
+
+new state_change_close_at_delete :
+
+	SIM_COMPONENT_DELETE ($SCD)
+
+	updates SMC_STATE_CHANGE ($OLD) 
+			where [ $OLD.mc_smc_id equals $SCD.component_udid
+				  AND
+				  $OLD.status not_equals 'CLOSED'
+				]
+		{
+		$OLD.status = 'CLOSED' ;
+		}
+
+	triggers
+		{
+		drop_new ;
+		}
+END

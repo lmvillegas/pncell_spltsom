@@ -1,0 +1,12 @@
+#
+# File name: ibrsd_retry_info_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+MC_EV_CLASS : 	IBRSD_RETRY_EVENT ISA EVENT 	DEFINES  	
+{		
+	severity	: SEVERITY , default=WARNING;
+	origID_ForRetry	:	STRING;	
+	mc_smc_impact				: default=NON_ELECTABLE, parse=no;
+}; END

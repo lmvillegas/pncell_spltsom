@@ -1,0 +1,71 @@
+#
+# File name: ppm_sm_collector.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ppm_sm_collector.mrl
+# Version: 9.5.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+
+
+collector 'Truesight Infrastructure Health':
+{
+        r['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        w['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        x['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+}
+END
+
+collector 'Truesight Infrastructure Health'.'By Status':
+PPM_SM_EV
+END
+
+collector 'Truesight Infrastructure Health'.'By Status'.Open:
+PPM_SM_EV
+where [
+	$THIS.status == OPEN AND
+	( $THIS.mc_object_class == PROACTIVENET_COMPONENT OR $THIS.mc_object_class == TRUESIGHT_IM_INST )
+]
+
+END
+
+collector 'Truesight Infrastructure Health'.'By Status'.Acknowledged:
+PPM_SM_EV
+where [
+	$THIS.status == ACK AND
+	$THIS.mc_object_class == PROACTIVENET_COMPONENT
+]
+
+END
+
+collector 'Truesight Infrastructure Health'.'By Status'.Assigned:
+PPM_SM_EV
+where [
+	$THIS.status == ASSIGNED AND
+	$THIS.mc_object_class == PROACTIVENET_COMPONENT
+]
+
+END
+
+
+collector 'Truesight Infrastructure Health'.'By Status'.Closed:
+PPM_SM_EV
+where [
+	$THIS.status == CLOSED AND
+	( $THIS.mc_object_class == PROACTIVENET_COMPONENT OR $THIS.mc_object_class == TRUESIGHT_IM_INST )
+]
+
+END
+
+collector 'Truesight Infrastructure Health'.'By Status'.Blackout:
+PPM_SM_EV
+where [
+	$THIS.status == BLACKOUT AND
+	$THIS.mc_object_class == PROACTIVENET_COMPONENT
+]
+END 

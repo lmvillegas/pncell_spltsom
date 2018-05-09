@@ -1,0 +1,12 @@
+#
+# File name: sdig_poller_timestamp.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+MC_DATA_CLASS: 
+	SDIG_POLLER_TIMESTAMP ISA DATA  DEFINES
+	{
+		uniqueName: STRING, key=yes;
+		timestamp: INTEGER, representation=date;
+	};
+END

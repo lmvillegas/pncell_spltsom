@@ -1,0 +1,266 @@
+#
+# File name: mc_root_internal.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#  COPY OF INTERNAL DEFINITIONS - DO NOT LOAD!
+#---------------------------------------------------------------------
+#
+# Module :	Impact Manager - Cell specific BAROC elements
+# Description:	System definitions part 1 - core definitions
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+
+ENUMERATION STATUS
+    0   OPEN
+   10   ACK
+   20   ASSIGNED
+   30   CLOSED
+   40   BLACKOUT
+END
+
+ENUMERATION SEVERITY
+   10   UNKNOWN
+   20   OK
+   30   INFO
+   40   WARNING
+   50   MINOR
+   60   MAJOR
+   70   CRITICAL
+END
+
+ENUMERATION MC_PRIORITY
+   10   PRIORITY_5
+   20   PRIORITY_4
+   30   PRIORITY_3
+   40   PRIORITY_2
+   50   PRIORITY_1
+END
+
+ENUMERATION MC_EVENT_CATEGORY
+    0   ''
+  100   SLA_MANAGEMENT
+  110   CAPACITY_MANAGEMENT
+  120   SERVICE_CONTINUITY_MANAGEMENT
+  130   AVAILABILITY_MANAGEMENT
+  140   INCIDENT_MANAGEMENT
+  150   CONFIGURATION_MANAGEMENT
+  160   RELEASE_MANAGEMENT
+  170   PROBLEM_MANAGEMENT
+  180   CHANGE_MANAGEMENT
+  190   OPERATIONS_MANAGEMENT
+  200   SECURITY_MANAGEMENT
+  210   FINANCIAL_MANAGEMENT
+  220   SERVICE_DESK_MANAGEMENT
+END
+
+ENUMERATION MC_EVENT_SUBCATEGORY
+   10	OTHER
+   20	APPLICATION
+   30	DATABASE
+   40	NETWORK
+   50	SYSTEM
+   60	USER_TRANSACTIONS
+END
+
+ENUMERATION MC_YESNO
+    0	NO
+    1	YES
+END
+
+ENUMERATION MC_SMC_IMPACT
+    0	NOT_ELECTED
+    1	ELECTED
+    2	NON_ELECTABLE
+    3	ATTACHED
+    4	IMPACTING
+END
+
+#---------------------------------------------------------------------
+#  Root classes
+#---------------------------------------------------------------------
+
+ROOT : MC_EV_CLASS; END
+
+ROOT : MC_DATA_CLASS; END
+
+ROOT : MC_PUBLISH_DATA_CLASS ISA MC_DATA_CLASS; END
+
+ROOT : MC_INTERFACE; END
+
+ROOT : TEC_CLASS ISA MC_EV_CLASS; END
+
+#---------------------------------------------------------------------
+#  Core classes
+#---------------------------------------------------------------------
+
+MC_EV_CLASS : 
+   CORE_EVENT
+   DEFINES {
+      event_handle : INTEGER, parse = no, read_only = yes;
+      mc_ueid : STRING, read_only = yes;
+      mc_client_address : STRING, parse = no;
+      adapter_host : STRING;
+      mc_location : STRING;
+      mc_service : STRING;
+      mc_host_class : STRING;
+      mc_host : STRING;
+      mc_host_address : STRING;
+      mc_host_id : INTEGER, hidden = yes;
+      mc_account : STRING;
+      mc_object_class : STRING;
+      mc_object : STRING;
+      mc_object_uri : STRING;
+      mc_object_owner : STRING;
+      mc_tool_class : STRING;
+      mc_tool : STRING;
+      mc_tool_id : STRING;
+      mc_tool_rule : STRING;
+      mc_tool_key : STRING;
+      mc_tool_sev : STRING;
+      mc_tool_address : STRING;
+      mc_tool_uri : STRING;
+      mc_tool_time : INTEGER, representation = date;
+      mc_tool_suggestion : STRING;
+      mc_origin_class : STRING;
+      mc_origin : STRING;
+      mc_origin_key : STRING;
+      mc_origin_sev : STRING;
+      mc_parameter : STRING;
+      mc_parameter_value : STRING;
+      mc_parameter_unit : STRING;
+      mc_parameter_threshold : STRING;
+      mc_event_category : MC_EVENT_CATEGORY;
+      mc_event_subcategory : MC_EVENT_SUBCATEGORY, default=OTHER;
+      mc_event_model_version : STRING, default = '1.1.00';
+      mc_incident_time : INTEGER, representation = date;
+      mc_incident_report_time : INTEGER, representation = date;
+      mc_arrival_time : INTEGER, representation = date;
+      mc_local_reception_time : INTEGER, representation = date;
+      date_reception : INTEGER, representation = date;
+      date : STRING, hidden=yes;
+      status : STATUS, default = OPEN;
+      severity : SEVERITY, default = WARNING;
+      mc_original_severity : SEVERITY, parse = no;
+      mc_priority : MC_PRIORITY, default = PRIORITY_5;
+      mc_original_priority : MC_PRIORITY, parse = no;
+      mc_owner : STRING;
+      mc_long_msg : STRING;
+      msg : STRING;
+      duration : INTEGER, parse = no;
+      mc_timeout : INTEGER;
+      repeat_count : INTEGER;
+      mc_action_count : INTEGER;
+      administrator : STRING;
+      mc_acl : LIST_OF STRING, parse = no;
+      mc_date_modification : INTEGER, representation = date;
+      mc_notes : LIST_OF STRING, hidden = yes;
+      mc_operations : LIST_OF STRING, hidden = yes;
+      mc_notification_history : LIST_OF STRING, hidden = yes;
+      mc_bad_slot_names : LIST_OF STRING;
+      mc_bad_slot_values : LIST_OF STRING;
+      mc_history : LIST_OF STRING, hidden = yes;
+      mc_modhist : LIST_OF STRING, hidden = yes;
+      mc_propagations : LIST_OF STRING, parse = no;
+      mc_collectors : LIST_OF STRING, parse = no, hidden = yes;
+      mc_abstraction : LIST_OF INTEGER, parse = no, hidden = yes;
+      mc_abstracted : LIST_OF INTEGER, parse = no, hidden = yes;
+      mc_associations : LIST_OF STRING, parse = no, hidden = yes;
+      mc_relationships : STRING, parse=no, read_only=yes, default = '0/0';
+      mc_cause : INTEGER, parse = no, hidden = yes;
+      mc_effects : LIST_OF INTEGER, parse = no, hidden = yes;
+      mc_event_relations : LIST_OF STRING, parse = no, hidden = yes;
+      mc_relation_source : STRING;
+      mc_smc_id : STRING;
+      mc_smc_alias : STRING;
+      mc_smc_impact : MC_SMC_IMPACT, default=NOT_ELECTED;
+      mc_smc_type : STRING;
+      mc_smc_priority : REAL, parse=no, read_only=yes;
+      mc_smc_causes : LIST_OF STRING, parse = no, hidden=yes;
+      mc_smc_effects : LIST_OF STRING, parse = no, hidden=yes;
+      itsm_category : STRING;
+      itsm_type : STRING;
+      itsm_item : STRING;
+      itsm_product_name : STRING;
+      itsm_model_version : STRING;
+      itsm_manufacturer : STRING;
+      itsm_operational_category1 : STRING;
+      itsm_operational_category2 : STRING;
+      itsm_operational_category3 : STRING;
+      itsm_company : STRING;
+      itsm_location : STRING;
+      itsm_incident_id : STRING;
+      itsm_incident_status : STRING;
+      pn_detail_diag : INTEGER, hidden = yes;
+      pn_detail_diag_count : INTEGER, hidden = yes;
+      pn_device_name : STRING;
+      mc_using_organization :   STRING;
+      mc_using_organization_id : STRING;      
+   };
+END
+
+MC_EV_CLASS : 
+   EVENT ISA CORE_EVENT ;
+END
+
+MC_DATA_CLASS : 
+   CORE_DATA
+   DEFINES {
+      data_handle : INTEGER, parse = no, read_only = yes;
+      mc_udid : STRING, read_only = yes;
+      mc_creation_time : INTEGER, parse = no, read_only = yes, representation = date;
+      mc_modification_time : INTEGER, parse = no, read_only = yes, representation = date;
+      mc_modification_request_time : INTEGER, parse = no, read_only = yes, representation = date;
+      mc_modification_requestor : STRING, parse = no, read_only = yes;
+      mc_bad_slot_names : LIST_OF STRING;
+      mc_bad_slot_values : LIST_OF STRING;
+      publish_env_id : STRING, parse = no, read_only = yes;
+      mc_associations : LIST_OF STRING, parse = no, read_only=yes, hidden = yes;
+   };	
+END
+
+MC_DATA_CLASS : 
+   DATA ISA CORE_DATA ;
+END
+
+MC_DATA_CLASS : 
+   POLICY_DATA ISA CORE_DATA ;
+END
+
+MC_DATA_CLASS : 
+   SELECTOR ISA POLICY_DATA
+   DEFINES {
+      based_on : STRING, representation = class;
+      name : STRING, key = yes, read_only = yes;
+      description : STRING;
+      ecfs : LIST_OF ECF;
+      ecfs_descr : LIST_OF STRING;
+   };	
+END
+
+MC_DATA_CLASS : 
+   POLICY ISA POLICY_DATA
+   DEFINES {
+      name : STRING, key = yes, read_only = yes;
+      description : STRING;
+      enabled : INTEGER, default = 1;
+   };
+END
+
+MC_DATA_CLASS : 
+   POLICY_CONTROL ISA POLICY_DATA
+   DEFINES {
+      type : STRING, key = yes, read_only = yes;
+      order : INTEGER, default = 0, read_only = yes;
+      editor : STRING, read_only = yes;
+   };
+END
+
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

@@ -1,0 +1,47 @@
+#
+# File name: apm_incident_ev.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------
+# Description: Incident Events for APM Applications
+#				These events will get created once the Application context changes.
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+
+ENUMERATION APM_APP_SEVERITY
+   10   UNKNOWN
+   20   OK
+   30   INFO
+   40   WARNING
+   50   MINOR
+   60   MAJOR
+   70   CRITICAL
+END
+
+ENUMERATION APM_APP_IMPORTANCE
+   10	LOW
+   20	MEDIUM
+   30	HIGH
+END
+
+ENUMERATION APM_APP_TYPE
+   10	MANUAL
+   20	AUTOMATIC
+END
+
+MC_EV_CLASS:
+   APM_INCIDENT_EV ISA APM_Event
+   DEFINES
+   {
+		app_ID	:	INTEGER, dup_detect=yes, read_only = yes;
+        app_severity : APM_APP_SEVERITY;
+		app_importance	: APM_APP_IMPORTANCE;
+		app_description : STRING, read_only = yes;
+		app_type : APM_APP_TYPE, read_only = yes;
+		app_tenant_id : STRING, read_only = yes;
+    };
+END

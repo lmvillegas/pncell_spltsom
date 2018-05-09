@@ -1,0 +1,10 @@
+#
+# File name: di_default_smc_propagation_policy.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+MC_SMC_PROPAGATION_POLICY;
+	policy_name = "Default SMC_STATE_CHANGE event propagation policy";
+END

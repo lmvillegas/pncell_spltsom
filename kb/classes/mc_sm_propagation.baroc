@@ -1,0 +1,28 @@
+#
+# File name: mc_sm_propagation.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------------
+# Description : This file defines a data class used for propagating 
+#               SMC_STATE_CHANGE events to Integration Gateway.
+#---------------------------------------------------------------------------
+#
+# 1=MC_SMC_PROPAGATION_POLICY
+#
+#---------------------------------------------------------------------------
+# dest_cells:           List of cells the event must be propagated to.
+# smc_class_names:      List of names of Service Management Components whose
+#                       SMC_STATE_CHANGE events will be propagated.
+#                       SMC_STATE_CHANGE events for subcomponents of the 
+#                       listed components will also be propagated.
+#----------------------------------------------------------------------------
+
+MC_DATA_CLASS:
+    MC_SMC_PROPAGATION_POLICY ISA POLICY DEFINES
+    {
+        dest_cells:      LIST_OF STRING, default = ['jServer'];
+        smc_class_names: LIST_OF STRING, default = 
+                             ['LOGICAL_COMPONENT', 'SERVICE_LEVEL_AGREEMENT'];
+    };
+END

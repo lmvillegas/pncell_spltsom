@@ -1,0 +1,19 @@
+#
+# File name: ibrsd_error_association.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#******************************************************************************************************************************
+# BMC Impact Integration for ARS
+# Date     		: April 10 , 2006
+# Description	: Event association for EVENT_INCIDENT_INFO . 
+#				  It will create Related events of type "biiars_event_association"
+# Author		: SMS Pune Integration Connect Team
+# Revision		: 
+#				  
+#******************************************************************************************************************************
+
+MC_EVENT_RELATION;
+class=IBRSD_ERROR;
+type=ibrsd_error_association;
+END

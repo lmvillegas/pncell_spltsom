@@ -1,0 +1,64 @@
+#
+# File name: di_acl_default.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: di_acl_default.baroc
+# Data instances provided in the default KB
+# These ACLs can be modified or complemented with others
+
+#----------------------------------------------------
+# This ACL is for "Data" node in Administration -> DDE Tab
+#----------------------------------------------------
+
+MC_ACL;
+	name='DATA';
+	read_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	write_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	execute_list	= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+END
+
+#----------------------------------------------------
+#  This ACL is for "Service Model Data" node in Administration -> DDE Tab
+#----------------------------------------------------
+
+MC_ACL;
+	name='MC_SM_DATA';
+	read_list 	= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	write_list 	= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	execute_list = ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+END
+
+#----------------------------------------------------
+#  This ACL is for All Selectors with SELECTOR Class in Administration -> Event Management Policies Tab
+#----------------------------------------------------
+
+MC_ACL;
+	name='SELECTOR';
+	read_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	write_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	execute_list	= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+END
+
+#----------------------------------------------------
+#  This ACL is for All Policies with IM_POLICY Base Class in Administration -> Event Management Policies Tab
+#----------------------------------------------------
+
+MC_ACL;
+	name='IM_POLICY';
+	read_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	write_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	execute_list	= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+END
+
+#----------------------------------------------------
+# This ACL is for All selectors with EVENT Base Class in Administration -> Event Management Policies Tab
+#----------------------------------------------------
+
+MC_ACL;
+	name='EVENT';
+	read_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	write_list 		= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+	execute_list	= ['BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','Service Administrators'];
+END

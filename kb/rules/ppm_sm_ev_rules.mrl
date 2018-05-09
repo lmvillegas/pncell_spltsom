@@ -1,0 +1,350 @@
+#
+# File name: ppm_sm_ev_rules.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+########################################
+#
+# Rule for Self Monitoring events.
+# Rule for reconciling multiple events raised with different status. \
+#
+######################################## 
+
+###########################################################################################################################
+#  The followig two rules delay CRITICAL state of PATROL Agent Disconnect events from Agent Controller.
+#  Default delay is 5 minutes (300 seconds)
+###########################################################################################################################
+
+new set_timer_pa_disc_to_crit : PPM_SM_EV($EV)
+	where [ $EV.status != CLOSED AND 
+			$EV.mc_origin_class equals PROACTIVENET_SLFMON_COMPONENT AND
+			$EV.severity equals OK AND
+			$EV.mc_object has_prefix 'PA:' 
+			 ]
+	triggers
+		{
+			set_timer($EV, 0, PATROL_SM_TO_CRITICAL);
+		}
+END
+
+timer inc_pa_disc_to_crit : PPM_SM_EV($EV)
+	where [ $EV.status != CLOSED AND
+			$EV.mc_origin_class equals PROACTIVENET_SLFMON_COMPONENT AND
+			$EV.severity equals OK AND
+			$EV.mc_object has_prefix 'PA:' 
+			 ]
+	timer_info: == PATROL_SM_TO_CRITICAL
+		{
+			$EV.severity = CRITICAL;
+			$EV.mc_priority = PRIORITY_1;
+		}
+END
+
+###########################################################################################################################
+#
+# The following rule auto closes Impact Event cell database daily and weekly backup events where the severity is INFO
+#
+###########################################################################################################################
+
+new CloseIMDBbackupInfo : PPM_SM_EV($EV)
+	where [ $EV.mc_tool_class == PROACTIVENET_TASK_MONITORING AND $EV.mc_object contains "IMDBbackup" AND $EV.status == OPEN AND $EV.severity == INFO ]
+	triggers
+	{
+		$EV.status = CLOSED;
+	}
+END
+
+###########################################################################################################################
+#
+# The following rule auto closes Sybase database daily/incremental and weekly/full backup events where the severity is INFO
+#
+###########################################################################################################################
+
+new CloseSybaseDBbackupInfo : PPM_SM_EV($EV)
+	where [ ($EV.mc_object contains "DBArchive" OR $EV.mc_object contains "Pn_DailyJob_EveryDayAt") AND $EV.mc_tool_class == PROACTIVENET_TASK_MONITORING AND $EV.status == OPEN AND $EV.severity == INFO ]
+	triggers
+	{
+		$EV.status = CLOSED;
+	}
+END
+
+	
+new BPPM_Health_Update_to_Close : 
+   # This is an selection criteria for new event. You need to check how we are matching the new and old event. I have added the below criteria on the basis of the class you have provided. 
+   # Change this according to your requirement
+    PPM_SM_EV ($NEW) 
+        where [ $NEW.status != CLOSED AND 
+    	       $NEW.mc_object_class == 'PROACTIVENET_COMPONENT' AND 
+    	       $NEW.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND 
+			   $NEW.mc_tool_class != 'PROACTIVENET_TASK_MONITORING'	AND
+    	       $NEW.severity == INFO 
+    	       ]
+       updates PPM_SM_EV ($OLD)
+       # This is an selection criteria for existing event. Change it for your exact requirement
+        where [ $OLD.status != CLOSED AND
+	        $OLD.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND
+	        $OLD.mc_object_class == 'PROACTIVENET_COMPONENT' AND            
+	        $OLD.mc_object == $NEW.mc_object AND
+	        $OLD.mc_host == $NEW.mc_host
+	   ]
+	{
+		# below statement will close the existing event, If want to do anything else then can add the code here
+		#$OLD.status = $NEW.status;
+		$OLD.status = CLOSED;
+		$NEW.status = CLOSED;
+		#drop_new;
+	}
+END
+
+#*********************************************************************************************************************
+new ScheduleTaskMonitoring : 
+	PPM_SM_EV ($NEW) where [
+      $NEW.status == OPEN AND 
+      $NEW.mc_object_class == 'PROACTIVENET_COMPONENT' AND 
+      $NEW.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND 
+	  $NEW.mc_tool_class == 'PROACTIVENET_TASK_MONITORING'
+   ]
+   updates PPM_SM_EV ($OLD) where [
+		$OLD.status != CLOSED AND
+		$OLD.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND
+		$OLD.mc_object_class == 'PROACTIVENET_COMPONENT' AND
+		$OLD.mc_tool_class == 'PROACTIVENET_TASK_MONITORING'	AND
+		$OLD.mc_object == $NEW.mc_object AND
+		$OLD.mc_host == $NEW.mc_host
+	]
+	{
+		if (($NEW.severity == 'INFO' AND $OLD.severity == 'INFO') OR ($NEW.severity == 'CRITICAL' AND $OLD.severity == 'CRITICAL')) then
+		{
+			$OLD.repeat_count=$OLD.repeat_count + 1;
+
+			if ( $OLD.repeat_count == 60 ) then
+			{	
+				$OLD.status=CLOSED;
+			}
+			else
+			{
+				drop_new;
+			};
+		}
+		else
+		{
+			if(($NEW.severity == 'INFO' AND $OLD.severity == 'CRITICAL') OR ($NEW.severity == 'CRITICAL' AND $OLD.severity == 'INFO')) then
+			{
+				$OLD.status=CLOSED;
+			}
+		}
+	}
+END
+#*********************************************************************************************************************
+   
+new BPPM_Health_Update_to_Close2 : 
+   PPM_SM_EV ($NEW) where [
+      $NEW.status == OPEN AND 
+      $NEW.mc_object_class == 'PROACTIVENET_COMPONENT' AND 
+      $NEW.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND 
+	  $NEW.mc_tool_class != 'PROACTIVENET_TASK_MONITORING'	AND
+      $NEW.severity > INFO
+   ]
+   updates PPM_SM_EV ($OLD) where [
+      $OLD.status != CLOSED AND
+      $OLD.severity == 'INFO' AND 
+      $OLD.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND
+      $OLD.mc_object_class == 'PROACTIVENET_COMPONENT' AND            
+      $OLD.mc_object == $NEW.mc_object AND
+      $OLD.mc_host == $NEW.mc_host
+   ]
+{
+   $OLD.status = CLOSED;
+}
+END
+
+new BPPM_Health_Drop_Duplicate_Critical: 
+   # This is an selection criteria for new event. You need to check how we are matching the new and old event. I have added the below criteria on the basis of the class you have provided. 
+   # Change this according to your requirement
+    PPM_SM_EV ($NEW) 
+        where [ $NEW.status != BLACKOUT AND 
+    	       $NEW.mc_object_class == 'PROACTIVENET_COMPONENT' AND 
+    	       $NEW.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND 
+			   $NEW.mc_tool_class != 'PROACTIVENET_TASK_MONITORING'	AND
+    	       $NEW.severity == 'CRITICAL' 
+    	       ]
+       updates PPM_SM_EV ($OLD)
+       # This is an selection criteria for existing event. Change it for your exact requirement
+        where [ $OLD.status != BLACKOUT AND 
+        	$OLD.status != CLOSED AND 
+        	$OLD.severity == 'CRITICAL' AND 
+	        $OLD.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND
+	        $OLD.mc_object_class == 'PROACTIVENET_COMPONENT' AND            
+	        $OLD.mc_object == $NEW.mc_object AND
+	        $OLD.mc_host == $NEW.mc_host
+	   ]
+	{
+		drop_new; 
+	}
+
+END
+
+
+new BPPM_Health_Drop_Duplicate_Info: 
+   # This is an selection criteria for new event.
+    PPM_SM_EV ($NEW) 
+        where [
+               $NEW.status == OPEN AND 
+    	       $NEW.mc_object_class == 'PROACTIVENET_COMPONENT' AND 
+    	       $NEW.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND 
+			   $NEW.mc_tool_class != 'PROACTIVENET_TASK_MONITORING' AND
+    	       $NEW.severity == 'INFO' 
+    	       ]
+      triggers
+	{
+		$NEW.status = CLOSED;
+	}
+
+END
+
+new RepeatTicks: 
+PPM_SM_EV($NEW)
+        where [	
+        	$NEW.status == OPEN AND 
+        	$NEW.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND
+			$NEW.mc_object_class == 'PROACTIVENET_COMPONENT'	AND
+			$NEW.mc_tool_class != 'PROACTIVENET_TASK_MONITORING'
+	]	
+	updates PPM_SM_EV($OLD) 
+	where [
+		$OLD.status == OPEN AND 
+		$OLD.mc_origin_class == 'PROACTIVENET_SLFMON_COMPONENT' AND
+		$OLD.mc_object_class == 'PROACTIVENET_COMPONENT' AND            
+		$OLD.mc_object == $NEW.mc_object AND
+	        $OLD.mc_host == $NEW.mc_host AND
+			$OLD.mc_origin == $NEW.mc_origin
+	]
+	{
+	
+		$OLD.repeat_count=$OLD.repeat_count + 1;
+
+		if ( $OLD.repeat_count < 60 ) then
+		{
+			drop_new;
+			
+		}
+		else 
+		{
+			if ( $OLD.repeat_count == 60 ) then
+			{	
+				$OLD.status=CLOSED;
+				$OLD.repeat_count = 0;		
+			}
+		}
+		
+	}
+	
+ END
+
+new TS_Health_Regulation_Close_Same_New: 
+   # This is an selection criteria for new event.
+    PPM_SM_EV ($NEW) 
+        where [
+               $NEW.status == OPEN AND 
+    	       $NEW.mc_object_class == 'TRUESIGHT_IM_INST' AND 
+    	       $NEW.mc_origin_class == 'TRUESIGHT_IM' 
+    	     ]
+    	 updates PPM_SM_EV($OLD)
+    	 where [
+    	       $NEW.mc_object_class == $OLD.mc_object_class AND 
+    	       $NEW.mc_origin_class == $OLD.mc_origin_class AND      
+    	       $NEW.mc_parameter_threshold == $OLD.mc_parameter_threshold AND
+    	       $NEW.severity == $OLD.severity AND
+    	       $NEW.status == $OLD.status AND
+    	       $NEW.mc_object == $OLD.mc_object     
+    	       ]
+    	  {		
+		$OLD.repeat_count=$OLD.repeat_count + 1;
+		#$OLD.status = CLOSED;
+		drop_new;
+	  }
+END
+
+new TS_Health_Regulation_Close_All_Open:
+PPM_SM_EV ($NEW) 
+        where [
+               $NEW.status == OPEN AND 
+    	       $NEW.mc_object_class == 'TRUESIGHT_IM_INST' AND 
+    	       $NEW.mc_origin_class == 'TRUESIGHT_IM'
+    	     ]
+    	 updates ALL PPM_SM_EV($OLD)
+    	 where [
+    	       $NEW.mc_object_class == $OLD.mc_object_class AND 
+    	       $NEW.mc_origin_class == $OLD.mc_origin_class AND      
+    	       $NEW.mc_parameter_threshold == $OLD.mc_parameter_threshold AND
+    	       $NEW.mc_origin == $OLD.mc_origin AND
+    	       $NEW.status == $OLD.status AND
+    	       $NEW.severity == INFO  AND $OLD.severity != INFO      
+    	       ]
+    	  {
+					
+		$OLD.status = CLOSED;		
+	  }
+
+END
+
+new TS_Health_Regulation_Close_Info_On_breach:
+PPM_SM_EV ($NEW) 
+        where [
+               $NEW.status == OPEN AND 
+    	       $NEW.mc_object_class == 'TRUESIGHT_IM_INST' AND 
+    	       $NEW.mc_origin_class == 'TRUESIGHT_IM'
+    	     ]
+    	 updates PPM_SM_EV($OLD)
+    	 where [
+    	       $NEW.mc_object_class == $OLD.mc_object_class AND 
+    	       $NEW.mc_origin_class == $OLD.mc_origin_class AND      
+    	       $NEW.mc_parameter_threshold == $OLD.mc_parameter_threshold AND
+    	       $NEW.mc_origin == $OLD.mc_origin AND
+    	       $NEW.status == $OLD.status AND
+    	       $NEW.severity != INFO AND $OLD.severity == INFO      
+    	       ]
+    	  {
+					
+		$OLD.status = CLOSED;		
+	  }
+
+END
+
+new TSIM_HA_SelfMonPrimary:
+PPM_SM_EV ($NEW) 
+        where [
+               $NEW.status == OPEN AND 
+    	       $NEW.mc_object_class == 'TRUESIGHT_IM_INST_PRIMARY' AND 
+    	       $NEW.mc_origin_class == 'TRUESIGHT_IM'
+    	     ]
+    	 updates PPM_SM_EV($OLD)
+    	 where [
+    	       $NEW.mc_object_class == $OLD.mc_object_class AND 
+    	       $NEW.mc_origin_class == $OLD.mc_origin_class       
+    	       ]
+    	  {
+					
+		$OLD.status = CLOSED;
+	  }
+
+END
+
+new TSIM_HA_SelfMonSecondary:
+PPM_SM_EV ($NEW) 
+        where [
+               $NEW.status == OPEN AND 
+    	       $NEW.mc_object_class == 'TRUESIGHT_IM_INST_SECONDARY' AND 
+    	       $NEW.mc_origin_class == 'TRUESIGHT_IM'
+    	     ]
+    	 updates PPM_SM_EV($OLD)
+    	 where [
+    	       $NEW.mc_object_class == $OLD.mc_object_class AND 
+    	       $NEW.mc_origin_class == $OLD.mc_origin_class       
+    	       ]
+    	  {
+					
+		$OLD.status = CLOSED;
+	  }
+
+END

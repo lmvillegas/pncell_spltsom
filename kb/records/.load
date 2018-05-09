@@ -1,0 +1,11 @@
+#
+# File name: .load
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+em_rec_options
+admin_rec_options
+repropagate
+sim_rec_options
+ibrsd_record
+outage_policy_record

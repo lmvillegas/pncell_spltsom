@@ -1,0 +1,19 @@
+#
+# File name: mc_startup.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+# EXECUTE EXTERNAL SCRIPT AT CELL STARTUP IF OPTION SET
+#----------------------------------------------------
+
+refine exec_script_at_cell_startup:
+	MC_CELL_START ($START) where
+	[
+		$EM_KB_OPTIONS.startup_script_enabled == YES
+	]
+	{
+		execute($START, "startup_script", [], 'yes');
+	}
+END

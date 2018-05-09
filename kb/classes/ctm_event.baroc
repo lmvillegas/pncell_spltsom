@@ -1,0 +1,44 @@
+#
+# File name: ctm_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ctm_event.baroc
+# Version: 9.6.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#--------------------------------------------------------
+# Integration for ITSM
+#
+# Description : This file defines an event class used for control M Event
+#--------------------------------------------------------
+
+MC_EV_CLASS:
+    CTM_EVENT ISA EVENT
+    DEFINES
+    {
+        order_id			: STRING;
+	group				: STRING;	
+	order_table			: STRING;
+	rerun_counter			: STRING;
+	next_time			: INTEGER, representation = date;
+	job_status			: STRING;
+	alarmStatus			: STRING;
+	application_type		: STRING;
+	mc_owner			: STRING;
+	mc_object			: STRING;
+        mc_incident_time		: INTEGER, representation = date;
+	mc_object_class			: STRING;
+	itsm_operational_category1	: STRING;
+	itsm_operational_category2	: STRING;
+	itsm_operational_category3	: STRING;
+	severity			: SEVERITY , default=WARNING;
+	mc_ueid				: STRING;
+	mc_long_msg			: STRING;
+	msg				: STRING;
+	Mc_notes			: STRING;
+
+
+    };
+END

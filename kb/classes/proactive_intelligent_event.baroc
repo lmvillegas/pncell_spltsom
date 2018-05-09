@@ -1,0 +1,14 @@
+#
+# File name: proactive_intelligent_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+MC_EV_CLASS:PROACTIVE_INTELLIGENT_EVENT ISA EVENT DEFINES
+{
+            pn_event_score: REAL, default=0.0;
+            pn_event_has_diagnostics: STRING;
+            pn_alarm_url: STRING;
+            pn_event_ack_status: STRING;
+            pn_event_ack_message: STRING;
+}; END
+

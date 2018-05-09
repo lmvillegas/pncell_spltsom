@@ -1,0 +1,91 @@
+#
+# File name: patrol_portal.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# ------------------------------------------------------------------------------
+#
+# PORTAL BLACKOUT event closes matching open PORTAL PARAMETER STATE CHANGE event
+# 
+# ------------------------------------------------------------------------------
+#
+new close_portal_state_change_due_to_blackout: PORTAL_PARAMETER_STATE_CHANGE_BLACKOUT ($BO_EV)
+	updates PORTAL_PARAMETER_STATE_CHANGE ($CLOSE_EV) where
+	[
+		$CLOSE_EV.status != CLOSED
+		AND $CLOSE_EV.CLASS within [PORTAL_PARAMETER_STATE_CHANGE, PORTAL_PARAMETER_STATE_CHANGE_OFFLINE]
+		AND $CLOSE_EV.mc_host_class == $BO_EV.mc_host_class
+		AND $CLOSE_EV.mc_host == $BO_EV.mc_host
+		AND $CLOSE_EV.mc_object_class == $BO_EV.mc_object_class
+		AND $CLOSE_EV.mc_object == $BO_EV.mc_object
+		AND $CLOSE_EV.mc_parameter == $BO_EV.mc_parameter
+		AND $CLOSE_EV.mc_tool_class == $BO_EV.mc_tool_class
+		AND $CLOSE_EV.mc_tool == $BO_EV.mc_tool
+	]
+	{
+		$CLOSE_EV.status = CLOSED;
+		$STR = concat( ['CLOSURE_REASON: ', $BO_EV.msg] );
+		opadd($CLOSE_EV, 'EVENT_CLOSED', $STR);
+#		ntadd($CLOSE_EV, $STR);
+#		drop_new;
+    }
+END
+
+# ------------------------------------------------------------------------------
+#
+# PORTAL OFFLINE event closes matching open PORTAL PARAMETER STATE CHANGE event
+#
+# ------------------------------------------------------------------------------
+# 
+new close_portal_state_change_due_to_offline: PORTAL_PARAMETER_STATE_CHANGE_OFFLINE ($OL_EV)
+	updates PORTAL_PARAMETER_STATE_CHANGE ($CLOSE_EV) where
+	[
+		$CLOSE_EV.status != CLOSED
+		AND $CLOSE_EV.CLASS within [PORTAL_PARAMETER_STATE_CHANGE, PORTAL_PARAMETER_STATE_CHANGE_BLACKOUT]
+		AND $CLOSE_EV.mc_host_class == $OL_EV.mc_host_class
+		AND $CLOSE_EV.mc_host == $OL_EV.mc_host
+		AND $CLOSE_EV.mc_object_class == $OL_EV.mc_object_class
+		AND $CLOSE_EV.mc_object == $OL_EV.mc_object
+		AND $CLOSE_EV.mc_parameter == $OL_EV.mc_parameter
+		AND $CLOSE_EV.mc_tool_class == $OL_EV.mc_tool_class
+		AND $CLOSE_EV.mc_tool == $OL_EV.mc_tool
+	]
+	{
+		$CLOSE_EV.status = CLOSED;
+		$STR = concat( ['CLOSURE_REASON: ', $OL_EV.msg] );
+		opadd($CLOSE_EV, 'EVENT_CLOSED', $STR);
+#		ntadd($CLOSE_EV, $STR);
+#		drop_new;
+    }
+END
+
+# ------------------------------------------------------------------------------------------
+#
+# PORTAL PARAMETER STATE CHANGE event closes matching open PORTAL OFFLINE or BLACKOUT event
+#
+# ------------------------------------------------------------------------------------------
+#
+new close_portal_state_change_offline_or_blackout_due_to_new_state_change: PORTAL_PARAMETER_STATE_CHANGE ($EV)
+where
+	[	$EV.CLASS == PORTAL_PARAMETER_STATE_CHANGE ]
+	updates PATROL_PORTAL_EVENT ($CLOSE_EV) where
+	[
+		$CLOSE_EV.status != CLOSED
+		AND $CLOSE_EV.CLASS within [PORTAL_PARAMETER_STATE_CHANGE_OFFLINE, PORTAL_PARAMETER_STATE_CHANGE_BLACKOUT]
+		AND $CLOSE_EV.mc_host_class == $EV.mc_host_class
+		AND $CLOSE_EV.mc_host == $EV.mc_host
+		AND $CLOSE_EV.mc_object_class == $EV.mc_object_class
+		AND $CLOSE_EV.mc_object == $EV.mc_object
+		AND $CLOSE_EV.mc_parameter == $EV.mc_parameter
+		AND $CLOSE_EV.mc_tool_class == $EV.mc_tool_class
+		AND $CLOSE_EV.mc_tool == $EV.mc_tool
+	]
+	{
+		$CLOSE_EV.status = CLOSED;
+		$STR = concat( ['CLOSURE_REASON: ', $EV.msg] );
+		opadd($CLOSE_EV, 'EVENT_CLOSED', $STR);
+#		ntadd($CLOSE_EV, $STR);
+    }
+END
+

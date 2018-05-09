@@ -1,0 +1,28 @@
+#
+# File name: ibrsd_bem_categorization.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+refine create_index_for_dda_match : EVENT($NEW)
+{
+	$IBRSD_RecordIndex.Index = $NEW.mc_host_class || ":" ||  $NEW.mc_object_class;
+}
+END
+
+refine get_cti_from_dda : EVENT($NEW)
+using 
+{ 
+	BEM_PRODUCT_CATEGORIZATION($BPC) where
+	[
+		$IBRSD_RecordIndex.Index == $BPC.Key	
+	]
+} 
+{
+	$NEW.itsm_category = $BPC.product_tier1;
+	$NEW.itsm_type = $BPC.product_tier2;
+	$NEW.itsm_item = $BPC.product_tier3;
+}
+END
+	
+
+

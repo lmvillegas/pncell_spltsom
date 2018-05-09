@@ -1,0 +1,18 @@
+#!/bin/sh
+#set -x
+#################################################################################
+# BMC Impact Integration for ARS
+# Date			: March 08, 2005
+# Author		: SMS Pune Integration Connect Team
+# Description	: Executable for remote aciton "Trigger Remedy Incident For Component"					
+# Revision		: 		
+# Copyright 1998-2009 BMC Software, Inc.  All rights reserved.
+#################################################################################
+
+#Remote Action will work on only event of type class SIM_COMPONENT_CHANGE
+
+if [ "$CLASS" = "SIM_COMPONENT_CHANGE" ]; then
+
+$MCELL_HOME/bin/mposter -a IBRSD_REMOTE_ACTION -n $CELL_NAME -r '$severity' -m "Remote Action for $component_udid" -b "comp_id='$component_udid';comp_status='$component_status';comp_priority='$computed_priority';comp_cost=$cost;root_causes=$root_causes;prop_destination=['$1']"
+
+fi

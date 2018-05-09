@@ -1,0 +1,34 @@
+#
+# File name: mc_deprecated_propagation.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+propagate to_policyBasedPropagation:
+	EVENT ($EV) where
+	[
+		$EM_KB_OPTIONS.dpropagation_enabled == YES AND
+		$EV.status != CLOSED
+	]
+	using
+	{
+		DEPRECATED_PROPAGATION_POLICY ($POL) where
+		[
+			$EV.CLASS subclass_of $POL.class AND
+			($POL.low_severity <= $EV.severity AND $EV.severity <= $POL.high_severity) AND
+			($POL.location_list == [] OR $EV.mc_location within $POL.location_list) AND
+			( $POL.schedule_name == "" OR
+			  (($POL.sched_invert == NO AND $POL.schedule_name within $MC_DEPRECATED_SCHEDULES.active_schedule_list) OR
+			   ($POL.sched_invert == YES AND $POL.schedule_name within $MC_DEPRECATED_SCHEDULES.inactive_schedule_list)
+			  )
+			)
+		]
+	}
+to $POL.dest_cell
+	when $EV.severity
+to one_of $POL.one_of_dest_cells
+	when $EV.severity
+to all $POL.all_dest_cells
+
+END

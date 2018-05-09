@@ -1,0 +1,17 @@
+#
+# File name: proactive_device_update.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+
+MC_EV_CLASS: DEVICE_UPDATE_EV ISA EVENT DEFINES
+{
+   result : STRING;
+   uniquename : STRING;
+   parent_device_uniquename : STRING;
+   new_parent_device_uniquename : STRING;
+   groups : LIST_OF STRING, parse = no;
+   new_groups : LIST_OF STRING, parse = no; 
+};
+END

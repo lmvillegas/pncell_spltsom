@@ -1,0 +1,354 @@
+#
+# File name: mc_ci_policies.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#===============================================================================
+# Enrichment from the associated CI policy
+#
+# Uses CI_ENRICH_POLICY entries to control dynamic data enrichment
+#-------------------------------------------------------------------------------
+
+index ci_enrich_index : CI_ENRICH_POLICY sorted [execution_order] END
+
+refine ci_based_enrich_policy_rule:
+        using_policy ALL
+        {
+            index ci_enrich_index [] ($POL) where
+                    [ ($POL.enabled == 1) AND 
+                      $POL.during_schedule == YES ]
+        }
+        $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+	using
+	{
+		BMC_BaseElement ($CI) where [$CI.mc_udid == $EV.mc_smc_id]
+	}
+        {
+                $L = get_list_slotvalues( [$CI], $POL.ci_slots );
+                set_list_slotvalues( [$EV], $POL.event_slots, $L );
+
+                opadd($EV, $POL.name, "CI based enrichment", "");
+
+                if ($POL.trace == YES) then
+                {
+                    ntadd($EV, concat(["CI based enrichment policy: ", $POL.name, 
+                               " enrich event from CI ", $CI.Name, " (", $CI.mc_udid, ")"]));
+                };
+        }
+END
+
+
+#===============================================================================
+# Blackout rule
+#
+# Uses IM_CI_BLACKOUT_POLICY entries to control suppression
+#-------------------------------------------------------------------------------
+refine im_ci_internal_blackout:
+    using_policy ALL
+    {
+        IM_CI_BLACKOUT_POLICY ($POL) where [ ($POL.enabled == 1) AND $POL.during_schedule_op == BLACKOUT AND $POL.during_schedule == YES]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == OPEN ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    {
+	   $EV.status = BLACKOUT;
+	   opadd($EV, $POL.name, "BLACKED_OUT", "");
+	   new_data($BET, IM_BLACKOUT_EVENT_TABLE, [policy_udid = $POL.mc_udid, event_ueid = $EV.mc_ueid]);
+    }
+END
+
+execute im_ci_internal_blackout_create_blackout_table_instance:
+    using_policy ALL
+    {
+        IM_CI_BLACKOUT_POLICY ($POL) where [ $POL.enabled == 1 AND $POL.during_schedule_op == BLACKOUT AND $POL.during_schedule == NO
+		                                     AND ( $POL.start_action != '' OR $POL.end_action != '' ) ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == OPEN ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    when $EV.event_handle
+    {
+	   new_data($BET, IM_BLACKOUT_EVENT_TABLE, [policy_udid = $POL.mc_udid, event_ueid = $EV.mc_ueid]);
+    }
+END
+
+filter im_ci_internal_blackout_filter: NOPASS
+    using_policy ALL
+    {
+        IM_CI_BLACKOUT_POLICY ($POL) where [ $POL.enabled == 1 AND $POL.during_schedule == YES AND $POL.during_schedule_op == FILTER ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status == OPEN ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+END
+
+#===============================================================================
+# Escalation rules
+#
+# Uses IM_CI_ESCALATION_POLICY entries to control escalation/de-escalation
+#-------------------------------------------------------------------------------
+
+new im_ci_internal_escalation:
+    using_policy ALL
+    {
+        IM_CI_ESCALATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.time_limit > 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    triggers
+    {
+        set_timer($EV, $POL.time_limit, Event_Time_Escalate);
+    }
+END
+
+#---------------------------------------
+# Timer pop handling
+#---------------------------------------
+
+timer im_ci_internal_escalation:
+    using_policy ALL
+    {
+        IM_CI_ESCALATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.time_limit > 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where 
+    [ 
+        $EV.status != CLOSED AND $EV.status != BLACKOUT 
+        AND ($POL.escalate_if_ack == 1 OR $EV.status != ACK) 
+        AND ($POL.escalate_if_assigned == 1 OR $EV.status != ASSIGNED)
+    ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    timer_info: equals Event_Time_Escalate
+    {
+        if ($POL.escalation_levels < -5) then
+        {
+            $EV.mc_priority = $POL.escalation_priority;
+            opadd($EV, $POL.name, "ESCALATION_TIME", $POL.escalation_priority);
+        }
+        else
+        {
+            if ($POL.escalation_levels >= 0) then
+            {
+                incr($EV.mc_priority, $POL.escalation_levels, PRIORITY_1);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.escalation_levels), PRIORITY_5);
+            };
+            opadd($EV, $POL.name, "ESCALATION_TIME", $POL.escalation_levels);
+        };
+    }
+END
+
+#---------------------------------------
+# Quntity Escalation handling
+#---------------------------------------
+
+threshold im_ci_internal_escalation:
+    using_policy ALL
+    {
+        IM_CI_ESCALATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND ($POL.quantity_esc_limit > 0) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    when $POL.quantity_esc_limit within $POL.quantity_esc_time_limit
+    {
+        if ($POL.quantity_esc_levels < -5) then
+        {
+            $EV.mc_priority = $POL.quantity_esc_priority;
+            opadd($EV, $POL.name, "ESCALATION_QUANTITY", $POL.quantity_esc_priority);
+        }
+        else
+        {
+            if ($POL.quantity_esc_levels >= 0) then
+            {
+                incr($EV.mc_priority, $POL.quantity_esc_levels, PRIORITY_1);
+            }
+            else
+            {
+                decr($EV.mc_priority, abs($POL.quantity_esc_levels), PRIORITY_5);
+            };
+            opadd($EV, $POL.name, "ESCALATION_QUANTITY", $POL.quantity_esc_levels);
+        };
+    }
+END
+
+
+#===============================================================================
+# Notification rule
+#
+# Uses IM_CI_NOTIFICATION_POLICY entries to control escalation/de-escalation
+#-------------------------------------------------------------------------------
+
+execute im_ci_internal_notification:
+    using_policy ALL
+    {
+        IM_CI_NOTIFICATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != BLACKOUT ]
+    using
+    { 
+        $POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]
+        IM_NOTIFICATION_SERVICE ($SERV) where [ $SERV.name == $POL.notification_service ]
+    }
+    when $EV.status within $POL.notify_on_operations
+    {
+        if ($POL.notify_msg_format != "") then
+        {
+            $MSG = mapslots([$EV], $POL.notify_msg_format, $POL.notify_msg_slots);
+        }
+        else
+        {
+            $MSG = "";
+        };
+        if ($POL.notify_subject_format != "") then
+        {
+            $ESUBJECT = mapslots([$EV], $POL.notify_subject_format, $POL.notify_subject_slots);
+        }
+        else
+        {
+            $ESUBJECT = " ";
+        };
+		  if ($POL.notify_source != "") then
+        {
+            $ESOURCE = $POL.notify_source;
+        }
+        else
+        {
+            $ESOURCE = " ";
+        };
+        $EM_KB_WORK_AREA.targets = "";
+        $EM_KB_WORK_AREA.index   = 0;
+		$LAST = listlen($POL.notify_targets);
+		listwalk($POL.notify_targets, $TARG);
+		$EM_KB_WORK_AREA.index = $EM_KB_WORK_AREA.index + 1;
+		$EM_KB_WORK_AREA.targets = concat([$EM_KB_WORK_AREA.targets,cond($EM_KB_WORK_AREA.index == 1, "", ", "),$TARG]);
+		if ($EM_KB_WORK_AREA.index == $LAST) then
+		{
+            if ($SERV.type == SERVICE_TYPE_GATEWAY) then
+            {
+                $TARGET_PARM = concat(["NOTIFY_TARGETS=","[",$EM_KB_WORK_AREA.targets,"]"]);
+                $MSG_PARM    = concat(["NOTIFY_MSG=",$MSG]); 
+                send_to($SERV.service, $EV, [$TARGET_PARM, $MSG_PARM]);
+            }
+            else
+            {
+                if ($SERV.type == SERVICE_TYPE_COMMAND) then
+                {
+                    $POM_ENABLED = cellinfo( POMEnabled ) ;
+                    $DISPLAY_DATE_PARM = time_stamp_to_str( $EV.date_reception, $POL.date_format );
+                    execute($EV, $SERV.service, [$EM_KB_WORK_AREA.targets, $MSG, $DISPLAY_DATE_PARM, $POM_ENABLED, $ESOURCE, $ESUBJECT], 'NO', 'NO');
+                };
+            };
+            opadd($EV, $POL.name, "NOTIFICATION_REQUEST", concat([$SERV.name,":",$EM_KB_WORK_AREA.targets]));
+            add_to_list(concat([time_stamp_to_str(time_stamp(),'%c')," ","Notification requested via ",$SERV.name," for ",$EM_KB_WORK_AREA.targets]), $EV.mc_notification_history);
+            if ($POL.auto_ack == 1) then
+            {
+                perform($EV, "im_operations.Acknowledge", []);
+            };
+            if ($POL.auto_assign == 1) then
+            {
+                perform($EV, "im_operations.AssignTo", [$POL.assign_to_user]);
+            };
+		}
+    }
+    when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value, $POL.from_operator, $POL.from_value, $POL.change_only)
+    {
+        if ($POL.notify_msg_format != "") then
+        {
+            $MSG = mapslots([$EV], $POL.notify_msg_format, $POL.notify_msg_slots);
+        }
+        else
+        {
+            $MSG = "";
+        };
+        if ($POL.notify_subject_format != "") then
+        {
+            $ESUBJECT = mapslots([$EV], $POL.notify_subject_format, $POL.notify_subject_slots);
+        }
+        else
+        {
+            $ESUBJECT = " ";
+        };
+		  if ($POL.notify_source != "") then
+        {
+            $ESOURCE = $POL.notify_source;
+        }
+        else
+        {
+            $ESOURCE = " ";
+        };
+        $EM_KB_WORK_AREA.targets = "";
+        $EM_KB_WORK_AREA.index   = 0;
+		$LAST = listlen($POL.notify_targets);
+		listwalk($POL.notify_targets, $TARG);
+		$EM_KB_WORK_AREA.index = $EM_KB_WORK_AREA.index + 1;
+		$EM_KB_WORK_AREA.targets = concat([$EM_KB_WORK_AREA.targets,cond($EM_KB_WORK_AREA.index == 1, "", ", "),$TARG]);
+		if ($EM_KB_WORK_AREA.index == $LAST) then
+		{
+            if ($SERV.type == SERVICE_TYPE_GATEWAY) then
+            {
+                $TARGET_PARM = concat(["NOTIFY_TARGETS=","[",$EM_KB_WORK_AREA.targets,"]"]);
+                $MSG_PARM    = concat(["NOTIFY_MSG=",$MSG]); 
+                send_to($SERV.service, $EV, [$TARGET_PARM, $MSG_PARM]);
+            }
+            else
+            {
+                if ($SERV.type == SERVICE_TYPE_COMMAND) then
+                {
+                    $POM_ENABLED = cellinfo( POMEnabled ) ;
+                    $DISPLAY_DATE_PARM = time_stamp_to_str( $EV.date_reception, $POL.date_format );
+                    execute($EV, $SERV.service, [$EM_KB_WORK_AREA.targets, $MSG, $DISPLAY_DATE_PARM, $POM_ENABLED, $ESOURCE, $ESUBJECT], 'NO', 'NO');
+                };
+            };
+            opadd($EV, $POL.name, "NOTIFICATION_REQUEST", concat([$SERV.name,":",$EM_KB_WORK_AREA.targets]));
+            add_to_list(concat([time_stamp_to_str(time_stamp(),'%c')," ","Notification requested via ",$SERV.name," for ",$EM_KB_WORK_AREA.targets]), $EV.mc_notification_history);
+            if ($POL.auto_ack == 1) then
+            {
+                perform($EV, "im_operations.Acknowledge", []);
+            };
+            if ($POL.auto_assign == 1) then
+            {
+                perform($EV, "im_operations.AssignTo", [$POL.assign_to_user]);
+            };
+		}
+    }
+END
+
+#===============================================================================
+# Propagation rule
+#
+# Uses IM_CI_PROPAGATION_POLICY entries to control escalation/de-escalation
+#-------------------------------------------------------------------------------
+
+propagate im_ci_internal_propagation:
+    using_policy ALL
+    {
+        IM_CI_PROPAGATION_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    to all $POL.all_of_propagation_list
+       when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value, $POL.from_operator, $POL.from_value, $POL.change_only)
+    to one_of $POL.one_of_propagation_list
+       when(EV, $POL.when_slot, $POL.when_operator, $POL.when_value, $POL.from_operator, $POL.from_value, $POL.change_only)
+END
+
+
+
+new im_ci_internal_remoteexecution:
+    using_policy ALL
+    {
+        IM_CI_DREA_POLICY ($POL) where
+        [ ($POL.enabled == 1) AND $POL.during_schedule == YES ]
+    }
+    $POL.selector_ecf ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT ]
+    using {$POL.ci_selector ($CI) where [$EV.mc_smc_id == $CI.mc_udid]}
+    triggers
+    {
+    	opadd($EV, $POL.name, "Automated Remote Execution", $POL.action_name);
+	perform($EV,$POL.action_name,[]);
+    }
+END

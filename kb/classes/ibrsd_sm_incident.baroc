@@ -1,0 +1,54 @@
+#
+# File name: ibrsd_sm_incident.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#  Description:	System definitions extensions
+#---------------------------------------------------------------------
+
+MC_EV_CLASS :
+	IBRSD_SM_INCIDENT ISA EVENT
+	DEFINES 
+	{
+		comp_id 					: STRING;
+		comp_name 					: STRING;
+		comp_class 					: STRING;
+		comp_category 					: STRING;
+		comp_type 					: STRING;
+		comp_item					: STRING;
+		comp_status 				: SIM_NOTIFICATION_STATUS;
+		comp_sub_status 			: SIM_NOTIFICATION_STATUS;
+		comp_priority 				: MC_PRIORITY;
+		comp_cost 					: REAL;
+		root_causes					: LIST_OF STRING;
+		prop_destination        	: LIST_OF STRING;
+		manually_created_incident	: INTEGER , default=0;
+		incident_for				: STRING;		
+		status_incident 			: STRING;
+		status_reason 				: STRING;
+		priority_urgency_option 	: INTEGER;
+		status_impact_option		: INTEGER;
+		cell_name					: STRING;
+		policy_name					: STRING;
+		company_name				: STRING;
+		bOrphanedRoot				: INTEGER, default=0;
+		mc_smc_impact				: default=NON_ELECTABLE, parse=no;
+		isSubStatusEnabled				:STRING;
+		causal_mc_ueid				: STRING;
+		causal_mc_udid				: STRING;
+	};
+END
+
+MC_EV_CLASS :
+	IBRSD_SM_INCIDENT_CLOSE ISA EVENT
+	DEFINES
+	{
+		comp_id 					: STRING;
+		mc_smc_impact				: default=NON_ELECTABLE, parse=no;
+	};
+END
+
+
+MC_EV_CLASS :
+	IBRSD_REMOTE_ACTION ISA IBRSD_SM_INCIDENT;
+END

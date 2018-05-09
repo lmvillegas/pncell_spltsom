@@ -1,0 +1,60 @@
+#
+# File name: admin_rec_options.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+#  Central Administration options record
+#
+#  This record is used to hold options for central
+#  administration.
+#
+#
+#----------------------------------------------------
+
+
+RECORD ADMIN_OPTIONS DEFINES 
+   {
+      all_of_propagation_list	: LIST_OF STRING, default = ['IAC'];
+      IAC_enabled					: MC_YESNO, default = 'YES';
+      os_class						: ADMIN_OS_CLASS, default = UNKNOWN;
+      object_type					: STRING;
+      default_read				: LIST_OF STRING, default = ['BPPM Administrators','BPPM Model Administrators', 'BPPM Monitoring Administrators','Cloud Administrators','Service Administrators'];
+      default_write				: LIST_OF STRING, default = ['BPPM Administrators','BPPM Model Administrators', 'BPPM Monitoring Administrators','Cloud Administrators','Service Administrators'];
+      start_skip_flag			: MC_YESNO, default = 'NO';
+      id	: STRING ;
+   }
+END
+
+
+RECORD GLOBAL_LOGICAL_ID DEFINES
+ {
+	id: STRING ;
+	hbid: STRING ;
+	simcellid: STRING;
+	simcellproviderid: STRING;
+	simcellconsumerid: STRING;
+	simcellcompproviderid: STRING;
+	emcellid: STRING;
+	emcellproviderid: STRING;
+	emcellconsumerid: STRING;
+	emcellcompproviderid: STRING;
+	adapcellid: STRING;
+	adapcellproviderid: STRING;
+	adapcellconsumerid: STRING;
+	adapcellcompproviderid: STRING;	
+	hbidfound: MC_YESNO, default = 'NO' ;
+	acelllistfound: MC_YESNO, default = 'NO' ;
+	simcellserverfound: MC_YESNO, default = 'NO' ;
+	emcellserverfound: MC_YESNO, default = 'NO' ;
+	adapcellserverfound: MC_YESNO, default = 'NO' ;
+	simcellrelationship: MC_YESNO, default = 'NO';
+	emcellrelationship: MC_YESNO, default = 'NO';
+	adapcellrelationship: MC_YESNO, default = 'NO';
+	simcellcomprelationship: MC_YESNO, default = 'NO';
+	emcellcomprelationship: MC_YESNO, default = 'NO';
+	adapcellcomprelationship: MC_YESNO, default = 'NO';
+ }
+END

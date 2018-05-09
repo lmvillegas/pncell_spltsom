@@ -1,0 +1,156 @@
+#
+# File name: mc_actions.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: mc_actions.mrl
+# Version: 9.5.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: mc_actions.mrl
+# Version: -v
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+# This file used to define the actions available to User Console
+# dependent on the User Groups assigned the operator and the class of the
+# current event selection.  Following is the formation of an action
+# definition
+# --------------------------------------------------------------------
+#
+# action <Action Name>
+#    { [ UserGroup1, UserGroup2,... ] }
+#    : ClassName
+#    <Action> ['arg1', 'arg2', ...]
+# END
+#
+#
+action 'Ping EVENT mc_host_address' :
+{ 
+	['Full Access','BPPM Administrators', 'Administrators','Cloud Administrators', 'Data Collection Administrator','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Event Administrator', 'Event Operator','BPPM Operators', 'Operators', 'Data Collection Operator', 'Event Operator Supervisor', 'Data Collection Supervisor','BPPM Supervisors', 'Supervisors', 'Service Administrators','BPPM Model Administrators', 'Model Administrators'] 
+} : EVENT($EV)
+	mc_ping []
+END
+
+action 'TraceRoute to EVENT mc_host_address' :
+{
+	['Full Access','BPPM Administrators', 'Administrators','Cloud Administrators', 'Data Collection Administrator','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Event Administrator', 'Event Operator','BPPM Operators', 'Operators', 'Data Collection Operator', 'Event Operator Supervisor', 'Data Collection Supervisor','BPPM Supervisors', 'Supervisors', 'Service Administrators','BPPM Model Administrators', 'Model Administrators'] 
+} : EVENT
+	mc_traceroute []
+END
+
+action 'Send EVENT as SMTP E-mail' : 
+  {
+  	['Full Access','BPPM Administrators', 'Administrators','Cloud Administrators', 'Data Collection Administrator','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Event Administrator', 'Event Operator','BPPM Operators', 'Operators', 'Data Collection Operator', 'Event Operator Supervisor', 'Data Collection Supervisor','BPPM Supervisors', 'Supervisors' ,  'Service Administrators','BPPM Model Administrators', 'Model Administrators']
+  }
+  ['Send To (user@domain.com)':STRING($SENDTOUSR),'Send From (user@domain.com)':STRING($FROMUSR),'Subject':STRING($SUBJECT)] :
+  EVENT($E)
+  {
+     if ( cellinfo(POMEnabled) ) then
+     {
+        $POM_ENABLED = Yes;
+        $KEY_SUBJ = MAIL_DefaultSubjectPN;
+     }
+     else
+     {
+        $POM_ENABLED = No;
+        $KEY_SUBJ = MAIL_DefaultSubjectIM;
+     };
+     time_stamp_to_str($E.date_reception,'%c',$DISPLAY_DATE);
+     $LOC = action_locale();
+     $VAL_SEV = 'ENUMVAL.SEVERITY.'||$E.severity;
+     $LOC_SEV = localize(kb,$LOC,[$VAL_SEV]);
+     $VAL_STAT = 'ENUMVAL.STATUS.'||$E.status;
+     $VAL_CLS = 'CLASS.'||$E.CLASS;
+     if ( strip($SUBJECT) == '' ) then
+     {
+        $LOC_SUBJ = localize(kb,$LOC,[$KEY_SUBJ,'s',$LOC_SEV,'c',$E.event_handle]);
+     }
+     else
+     {
+        $LOC_SUBJ = $SUBJECT;
+     };
+     execute($E,mc_sendmail,[
+        '-mp',$POM_ENABLED,
+        '-ft',localize(kb,$LOC,[MAIL_To]),$SENDTOUSR,
+        '-ff',localize(kb,$LOC,[MAIL_From]),$FROMUSR,
+        '-fd',localize(kb,$LOC,[MAIL_Date]),$DISPLAY_DATE,
+        '-fs',localize(kb,$LOC,[MAIL_Subject]),$LOC_SUBJ,
+        '-fm',localize(kb,$LOC,[MAIL_Msg]),$E.msg,
+        '-fr',localize(kb,$LOC,['ENUM.SEVERITY']),$LOC_SEV,
+        '-fa',localize(kb,$LOC,['ENUM.STATUS']),localize(kb,$LOC,[$VAL_STAT]),
+        '-fc',localize(kb,$LOC,['SLOT.CORE_EVENT.CLASS']),localize(kb,$LOC,[$VAL_CLS])
+        ],YES,NO);
+  }
+  MC_CELL_CONTROL($E)
+  {
+     if ( cellinfo(POMEnabled) ) then
+     {
+        $POM_ENABLED = Yes;
+        $KEY_SUBJ = MAIL_DefaultSubjectPN;
+     }
+     else
+     {
+        $POM_ENABLED = No;
+        $KEY_SUBJ = MAIL_DefaultSubjectIM;
+     };
+     time_stamp_to_str($E.date_reception,'%c',$DISPLAY_DATE);
+     $LOC = action_locale();
+     $VAL_SEV = 'ENUMVAL.SEVERITY.'||$E.severity;
+     $LOC_SEV = localize(kb,$LOC,[$VAL_SEV]);
+     $VAL_STAT = 'ENUMVAL.STATUS.'||$E.status;
+     $VAL_CLS = 'CLASS.'||$E.CLASS;
+     if ( $SUBJECT == '' ) then
+     {
+        $LOC_SUBJ = localize(kb,$LOC,[$KEY_SUBJ,'s',$LOC_SEV,'c',$E.event_handle]);
+     }
+     else
+     {
+        $LOC_SUBJ = $SUBJECT;
+     };
+     execute($E,mc_sendmail,[
+        '-mp',$POM_ENABLED,
+        '-ft',localize(kb,$LOC,[MAIL_To]),$SENDTOUSR,
+        '-ff',localize(kb,$LOC,[MAIL_From]),$FROMUSR,
+        '-fd',localize(kb,$LOC,[MAIL_Date]),$DISPLAY_DATE,
+        '-fs',localize(kb,$LOC,[MAIL_Subject]),$LOC_SUBJ,
+        '-fm',localize(kb,$LOC,[MAIL_Msg]),$E.msg,
+        '-fr',localize(kb,$LOC,['ENUM.SEVERITY']),$LOC_SEV,
+        '-fa',localize(kb,$LOC,['ENUM.STATUS']),localize(kb,$LOC,[$VAL_STAT]),
+        '-fc',localize(kb,$LOC,['SLOT.CORE_EVENT.CLASS']),localize(kb,$LOC,[$VAL_CLS])
+        ],YES,NO);
+  }
+
+END
+
+action 'Modify Slot Value':
+   { ['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators', 'Data Collection Administrator','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Event Administrator', 'Event Operator Supervisor', 'Data Collection Supervisor','BPPM Supervisors', 'Supervisors'] }
+   ['Slot Name':STRING($SLTNM),'New Value':STRING($VAL)] :
+   EVENT($E)
+   {
+      set_list_slotvalues([$E],[$SLTNM],[$VAL]);
+   }
+   MC_CELL_CONTROL($E)
+   {
+      set_list_slotvalues([$E],[$SLTNM],[$VAL]);
+   }
+END
+
+action 'Show Remote Action Environment':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators', 'Data Collection Administrator','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Event Administrator', 'Event Operator','BPPM Operators', 'Operators', 'Data Collection Operator', 'Event Operator Supervisor', 'Data Collection Supervisor','BPPM Supervisors', 'Supervisors']
+} : EVENT
+	mc_showenv []
+END
+
+action 'Setup Sending SMTP E-mails - Windows Only ':
+{
+	['Service Administrators','BPPM Model Administrators', 'Model Administrators','Full Access','BPPM Administrators', 'Administrators','Cloud Administrators', 'Data Collection Administrator','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Event Administrator', 'Event Operator','BPPM Operators', 'Operators', 'Data Collection Operator', 'Event Operator Supervisor', 'Data Collection Supervisor','BPPM Supervisors', 'Supervisors']
+} : EVENT
+	mc_setup_mail ['SMTP Server', 'Send From (user@domain.com)' ]
+END
+
+

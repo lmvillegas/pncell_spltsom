@@ -1,0 +1,513 @@
+#
+# File name: mcxp.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+################################################################################
+#
+# BMC Impact Exchange for PATROL rules
+#
+# Date     : January 29th, 2003
+# Revision : December 23rd, 2004
+#
+################################################################################
+
+new es_priority : PATROL_EV($NEW) where [
+		status:		equals OPEN,
+		pes:		equals 1
+	]
+	updates PATROL_EV($OLD) where [
+		mc_origin_key:		equals $NEW.mc_origin_key,
+		p_origin:		equals $NEW.p_origin,
+		mc_host_address:	equals $NEW.mc_host_address,
+		pes:			equals 0,
+		status:			not_equals CLOSED
+	]
+	{
+		# Set PKM4EM slots
+
+		$OLD.mc_parameter_value	= $NEW.mc_parameter_value ;
+
+		$OLD.pes 			= $NEW.pes ;
+		$OLD.pes_tcp_port		= $NEW.pes_tcp_port ;
+		$OLD.pes_udp_port		= $NEW.pes_udp_port ;
+		$OLD.pes_icon_name		= $NEW.pes_icon_name ;
+		$OLD.pes_parent_instance	= $NEW.pes_parent_instance ;
+		$OLD.pes_param_status		= $NEW.pes_param_status ;
+		$OLD.pes_alert_date		= $NEW.pes_alert_date ;
+		$OLD.pes_alert_time		= $NEW.pes_alert_time ;
+		$OLD.pes_tz			= $NEW.pes_tz ;
+		$OLD.pes_last10			= $NEW.pes_last10 ;
+		$OLD.pes_ave10			= $NEW.pes_ave10 ;
+		$OLD.pes_last10_ts		= $NEW.pes_last10_ts ;
+		$OLD.pes_last10_tp		= $NEW.pes_last10_tp ;
+		$OLD.pes_user_defined		= $NEW.pes_user_defined ;
+		$OLD.pes_alarm_min		= $NEW.pes_alarm_min ;
+		$OLD.pes_alarm_max		= $NEW.pes_alarm_max ;
+		$OLD.pes_patrol_home		= $NEW.pes_patrol_home ;
+		drop_new;
+	}
+END
+
+# Uncomment next rules if some parameters are missing from PKM4EM
+#
+#new es_fixing_bugs : PATROL_EV($NEW) where [
+#		status:		not_equals CLOSED,
+#		pes:		equals 0
+#	]
+#	updates duplicate ($OLD) where [
+#		pes:			equals 1,
+#		status:			not_equals CLOSED
+#	]
+#	{
+#		# The following settings are used to fixed PKM4EM bugs
+#
+#		$OLD.severity		= $NEW.severity ;
+#		$OLD.mc_origin_sev	= $NEW.mc_origin_sev ;
+#		$OLD.p_type		= $NEW.p_type ;
+#	}
+#END
+
+
+################################################################################
+#
+# update duplicates: after pes rules but before other rules...
+#
+################################################################################
+
+
+# note we close instead of drop_new so we can see the events that came in and
+# were duplicated. This should be changed to drop_new once it's verified that
+# the dup_detect slots really are working (ie: make sure events that were
+# duplicated really were duplicates)
+
+new patrol_duplicates : PATROL_EV ($EV) updates duplicate ($dup)
+where [ $dup.status != CLOSED ]
+	{
+		$dup.p_diary		= $EV.p_diary;
+		$dup.p_status		= $EV.p_status;
+		$dup.repeat_count 	= $dup.repeat_count + 1;
+		drop_new;
+	}
+END
+
+
+##############################
+## Original adapt_param_status
+##############################
+
+#new adapt_param_status : PATROL_EV($NEW) where [
+#		p_catalog:	within [0,STD,STANDARD],
+#		p_class: 	within [9,11,16,39,UpdParState]
+#	]
+#	updates ALL PATROL_EV($OLD) where [
+#		p_origin:		equals $NEW.p_origin,
+#		p_class:		within [9,11,16,39,UpdParState],
+#		mc_host_address:	equals $NEW.mc_host_address,
+#		status:			not_equals CLOSED,
+#		p_catalog:		within [0,STD,STANDARD]
+#		#severity:		greater_than $NEW.severity
+#	]
+#	{
+#		$OLD.status	= CLOSED ;
+#		#drop_new ;
+#	}
+#END
+
+#############################
+## Indexed adapt_param_status
+#############################
+
+new adapt_param_status :
+	PATROL_EV($NEW)
+		where
+		[
+        #p_catalog:	within [0,STD,STANDARD],
+        p_class:	within [9,11,16,39,UpdParState]
+		]
+	using ALL
+	{
+		PATROL_IDX ($IDX)
+			where
+			[
+				$IDX.p_origin == $NEW.p_origin AND
+				$IDX.p_agent_port == $NEW.p_agent_port AND
+				$IDX.mc_host_address == $NEW.mc_host_address
+			]
+		PATROL_EV ($OLD)
+			where
+			[
+				$OLD.status !=	CLOSED AND
+				$OLD.mc_ueid == $IDX.patrol_ueid AND
+				$OLD.p_class within [9,11,16,39,UpdParState]
+				#AND $OLD.p_catalog within [0,STD,STANDARD]
+			]
+	}
+	triggers
+	{
+		$OLD.status = CLOSED ;
+	}
+END
+
+
+#################################
+## Original adapt_instance_status
+#################################
+
+#new adapt_instance_status : PATROL_EV($NEW) where [
+#		p_class: equals UpdInstState
+#	]
+#	updates ALL PATROL_EV($OLD) where [
+#		p_origin:		equals $NEW.p_origin,
+#		p_class:		equals UpdInstState,
+#		mc_host_address:	equals $NEW.mc_host_address,
+#		status:			not_equals CLOSED,
+#		p_catalog:		within [0,STD,STANDARD]
+#		#severity:		greater_than $NEW.severity
+#	]
+#	{
+#		$OLD.status	= CLOSED ;
+#		#drop_new ;
+#	}
+#END
+
+################################
+## Indexed adapt_instance_status
+################################
+
+new adapt_instance_status :
+	PATROL_EV($NEW)
+		where
+		[
+			#p_catalog:	within [0,STD,STANDARD],
+     		p_class:	equals UpdInstState
+		]
+	using ALL
+	{
+		PATROL_IDX ($IDX)
+			where
+			[
+				$IDX.p_origin == $NEW.p_origin AND
+				$IDX.p_agent_port == $NEW.p_agent_port AND
+				$IDX.mc_host_address == $NEW.mc_host_address
+			]
+		PATROL_EV ($OLD)
+			where
+			[
+				$OLD.status !=	CLOSED AND
+				$OLD.mc_ueid == $IDX.patrol_ueid AND
+				$OLD.p_class == UpdInstState
+				#AND $OLD.p_catalog within [0,STD,STANDARD]
+			]
+	}
+	triggers
+	{
+        $OLD.status    = CLOSED ;
+	}
+END
+
+new adapt_patrol_disconnect :
+	PATROL_EV($NEW)
+		where
+		[
+     		p_class:	equals IS_CONNECT
+		]
+	using ALL
+	{
+		PATROL_IDX ($IDX)
+			where
+			[
+				$IDX.p_origin == $NEW.p_origin AND
+				$IDX.p_agent_port == $NEW.p_agent_port AND
+				$IDX.mc_host_address == $NEW.mc_host_address
+			]
+		PATROL_EV ($OLD)
+			where
+			[
+				$OLD.mc_ueid == $IDX.patrol_ueid AND
+				$OLD.p_class equals IS_DISCONNECT
+			]
+	}
+	triggers
+	{
+        $OLD.status    = CLOSED ;
+		$NEW.status = CLOSED ;
+	}
+END
+
+###################################################################################################
+#
+# Close IS_CONNECT events after processing IS_DISCONNECT
+#
+###################################################################################################
+
+new CloseIS_ConnectINFO : PATROL_EV ($EV)
+	where [ $EV.p_class == IS_CONNECT AND $EV.status != CLOSED AND $EV.severity == INFO ]
+	triggers
+	{
+		$EV.status = CLOSED;
+	}
+END
+	
+####################################
+## Original adapt_application_status
+####################################
+
+#new adapt_application_status : PATROL_EV($NEW) where [
+#		p_class: equals UpdAppState
+#	]
+#	updates ALL PATROL_EV($OLD) where [
+#		p_origin:		equals $NEW.p_origin,
+#		p_class:		within [WorstApp, UpdAppState],
+#		mc_host_address:	equals $NEW.mc_host_address,
+#		status:			not_equals CLOSED,
+#		p_catalog:		within [0,STD,STANDARD]
+#		#severity:		greater_than $NEW.severity
+#	]
+#	{
+#		$OLD.status	= CLOSED ;
+#		#drop_new ;
+#	}
+#END
+
+###################################
+## Indexed adapt_application_status
+###################################
+
+new adapt_application_status :
+	PATROL_EV($NEW)
+		where
+		[
+			#p_catalog:	within [0,STD,STANDARD],
+     		p_class:	equals UpdAppState
+		]
+	using ALL
+	{
+		PATROL_IDX ($IDX)
+			where
+			[
+				$IDX.p_origin == $NEW.p_origin AND
+				$IDX.p_agent_port == $NEW.p_agent_port AND
+				$IDX.mc_host_address == $NEW.mc_host_address
+			]
+		PATROL_EV ($OLD)
+			where
+			[
+				$OLD.status !=	CLOSED AND
+				$OLD.mc_ueid == $IDX.patrol_ueid AND
+				$OLD.p_class within [WorstApp, UpdAppState]
+				#AND $OLD.p_catalog within [0,STD,STANDARD]
+			]
+	}
+	triggers
+	{
+        $OLD.status    = CLOSED ;
+	}
+END
+
+
+#############################
+## Original adapt_host_status
+#############################
+
+#new adapt_host_status : PATROL_EV($NEW) where [
+#		p_class: equals UpdMachineState
+#	]
+#	updates ALL PATROL_EV($OLD) where [
+#		p_origin:		equals $NEW.p_origin,
+#		p_class:		equals UpdMachineState,
+#		mc_host_address:	equals $NEW.mc_host_address,
+#		status:			not_equals CLOSED,
+#		p_catalog:		within [0,STD,STANDARD]
+#		#severity:		greater_than $NEW.severity
+#	]
+#	{
+#		$OLD.status	= CLOSED ;
+#		#drop_new ;
+#	}
+#END
+
+############################
+## Indexed adapt_host_status
+############################
+
+new adapt_host_status :
+	PATROL_EV($NEW)
+		where
+		[
+			#p_catalog:	within [0,STD,STANDARD],
+     		p_class:	equals UpdMachineState
+		]
+	using ALL
+	{
+		PATROL_IDX ($IDX)
+			where
+			[
+				$IDX.p_origin == $NEW.p_origin AND
+				$IDX.p_agent_port == $NEW.p_agent_port AND
+				$IDX.mc_host_address == $NEW.mc_host_address
+			]
+		PATROL_EV ($OLD)
+			where
+			[
+				$OLD.status !=	CLOSED AND
+				$OLD.mc_ueid == $IDX.patrol_ueid AND
+				$OLD.p_class == UpdMachineState
+				#AND $OLD.p_catalog within [0,STD,STANDARD]
+			]
+	}
+	triggers
+	{
+        $OLD.status    = CLOSED ;
+	}
+END
+
+#
+# When a Console disconnect event is generated, the assocated connect event is closed along with the disconnect event.  
+#
+
+new ClosePAConsoleConnect : PATROL_EV($DIS)
+	where [$DIS.status == OPEN AND $DIS.p_class == 'Disconnect' ]
+	updates PPM_SM_EV($CON)
+	# Search for the event which have mc_origin=<DEV_CONSOLE>:<Console ID with IP address> like T:964.51666@10.129.6.132, same as console ID in the msg of disconnect event
+	where [$CON.status == OPEN,
+	       substring($CON.mc_origin,strpart($CON.mc_origin, ':')) == strextract($DIS.msg,strpart($DIS.msg, ' ') + 1, strnpart($DIS.msg, ' ',2) - (strpart($DIS.msg, ' ') + 1))]
+	{
+		$DIS.status=CLOSED;
+		$CON.status=CLOSED;
+	}
+END
+
+# Close PATROL Agent "Disconnects" that have no corresponding PPM_SM_EV event (pconfig connections to agents)
+new ClosePADisconnects : PATROL_EV($DIS)
+	where [$DIS.status == OPEN AND $DIS.p_class == 'Disconnect' ]
+	triggers
+	{
+		$DIS.status=CLOSED;
+	}
+END
+
+refine adapt_mc_tool : PATROL_EV($EV)
+	{
+		# Now mc_smc_id is set by a SLOT_FORMULA in di_event_mapping.baroc
+		#$EV.mc_smc_id = $EV.mc_host || ':' || $EV.mc_object_class || '.' || $EV.mc_object;
+		
+		$EV.mc_tool_class = $EV.mc_origin_class;
+		$EV.mc_tool = $EV.mc_origin;
+	}
+END
+
+
+################################################################################
+#
+# With default PATROL Agent configuration, no PATROL_EV with class 10,12,40 will be delivered to the Cell
+# The following rule is useless in such case, for optimal performance, it should be disabled.
+# In case the Agent is reconfigured to also pass events of such class, this rule should be re-enabled.
+
+#correlate alarm_and_ra : PATROL_EV($PE_EFFECT) where [
+#		status:		not_equals CLOSED,
+#		p_catalog:	within [0,STD,STANDARD],
+#		p_class:	within [10,12,40]
+#	]
+#	with PATROL_EV($PE_CAUSE) where [
+#			p_catalog:		within [0,STD,STANDARD],
+#			p_class:		within [11,39],
+#			p_origin:		equals $PE_EFFECT.p_origin,
+#			mc_host_address:	equals $PE_EFFECT.mc_host_address
+#		]
+#		within 10 m
+#		when $PE_CAUSE.status: equals CLOSED {
+#			$PE_EFFECT.status = CLOSED ;
+#		}
+#END
+
+
+################################################################################
+#
+# MC_ADAPTER_ rules
+#
+################################################################################
+
+
+# up agent closes down agent
+
+# This rule must be disabled until mc_tool and mc_object are available in EVENT
+
+new agent_up_closes_down : MC_ADAPTER_CONTROL ($NEW) where [
+		$NEW.mc_tool	equals 'AGENT_UP' OR
+		$NEW.mc_tool	equals 'AGENT_DOWN'
+	]
+	updates MC_ADAPTER_CONTROL ($OLD) where [
+		adapter_host:	equals $NEW.adapter_host,
+		mc_object:	equals $NEW.mc_object,
+		mc_tool_class:	equals $NEW.mc_tool_class,
+		$OLD.mc_tool	equals 'AGENT_UP' OR
+		$OLD.mc_tool	equals 'AGENT_DOWN',
+		status:		not_equals CLOSED
+	]
+	{
+		$OLD.status = CLOSED;
+	}
+END
+
+
+
+################################################################################
+#
+# Manual index managing rules
+#
+################################################################################
+
+
+execute add_to_patrol_idx : PATROL_EV($PE)
+	when $PE.status == OPEN
+	{
+		new_data($D, PATROL_IDX,[
+				p_origin	= $PE.p_origin,
+				p_agent_port	= $PE.p_agent_port,
+				mc_host_address	= $PE.mc_host_address,
+				patrol_ueid	= $PE.mc_ueid
+			]);
+	}
+END
+
+
+################################################################################
+#
+# Remove PATROL index record for PATROL events when they are closed
+#
+################################################################################
+
+execute remove_from_patrol_idx : PATROL_EV($PE)
+	using
+	{
+		PATROL_IDX ($D) where [$D.patrol_ueid == $PE.mc_ueid]
+	}
+	when $PE.status == CLOSED
+	{
+		remove_data($D);
+	}
+END
+
+
+delete delete_from_patrol_idx : PATROL_EV($PE) 
+	where [$PE.status == OPEN]
+	using
+	{
+		PATROL_IDX ($D) where [$D.patrol_ueid == $PE.mc_ueid]
+	}
+	{
+		remove_data($D);
+	}
+END
+
+
+#Refine rule specifically needed for AO (ESX w/f)
+refine esx_event_for_mc_host : PATROL_EV($NEW) where [ $NEW.status != CLOSED AND  $NEW.mc_object_class == "VSM_VC" AND $NEW.p_instance != ''] 
+{
+	$P_INST=$NEW.p_instance;
+	$NEW.mc_host = $P_INST;
+##$NEW.mc_host = substring($NEW.p_instance,0,strpart($P_INST,"@") - 1);
+}
+END
+

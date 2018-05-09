@@ -1,0 +1,29 @@
+#
+# File name: itda.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: Events for "ITDA_Event Analytic s"
+#
+#----------------------------------------------------
+
+# ---- This is the super class for all "ITDA_Event Analytics" events ----
+
+MC_EV_CLASS:
+   ITDA_Event ISA EVENT
+   DEFINES
+   {
+        itda_searchQuery            : STRING;
+        itda_search_data_starttime          : INTEGER, representation = date;
+        itda_search_data_endtime              : INTEGER, representation = date;
+        itda_condition_operator                : STRING;
+        itda_condition_value          : STRING;
+        itda_search_tags            : LIST_OF STRING;   
+		itda_search_name			: STRING;
+		app_ID						: INTEGER, dup_detect=yes, read_only = yes; 
+		app_name					: STRING;
+		
+		event_identification_type :STRING, hidden = yes, read_only = yes, default = "Default";
+    };
+END

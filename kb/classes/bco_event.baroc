@@ -1,0 +1,55 @@
+#
+# File name: bco_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+
+ENUMERATION BCO_METRIC_TYPE
+    0	OTHER
+   10   FILESYSTEM
+   20   MEMORY
+   30   CPU
+   40   DATASTORE
+END
+
+ENUMERATION BCO_ENTITY
+   0 OTHER
+   1 LPAR
+   2 LDOM
+   3 CLUSTER
+   4 DATASTORE
+   5 HOST
+   6 VM
+   7 PHYSICAL_SERVER 
+END
+
+
+#----------------------------------------------------
+
+# Description	: Class information for BCO Event
+#		  Maps the BCO attributes received to cell event.
+MC_EV_CLASS	: BCO_EV	ISA PPM_EV DEFINES
+{
+	entity						: BCO_ENTITY;
+	metric 						: BCO_METRIC_TYPE;
+	unique_identifier			: STRING;
+	event_type					: STRING;
+	metric_utilization			: STRING;
+	utilization_measurment_unit	: STRING;
+	days_to_reach_threshold		: STRING, read_only=yes;
+	threshold_value				: STRING;
+	threshold_measurment_unit	: STRING;
+	is_predictive				: BOOLEAN, default=FALSE;
+	cluster_name				: STRING;
+	partition_name				: STRING;
+	file_system_name			: STRING;
+	datastore_name				: STRING;
+	VM_name						: STRING;
+	host_name					: STRING;
+	data_store_hosts_affected	: STRING;
+	mc_timeout		: default = 86400;    #Default timeout in sec for BCO events to get closed
+};
+END

@@ -1,0 +1,49 @@
+#
+# File name: ibrsd_ci_incidentinfo.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#  Description	: System definitions extensions
+#  Author		: Anuradha Kumbhar
+#  Created		: 19th Oct 2005
+#----------------------------------------------------
+
+MC_EV_CLASS : 	CI_INCIDENT_INFO ISA EVENT 	DEFINES  	
+{		
+		component_id 			: STRING;		
+		#component_name 			: STRING;		
+		component_status		: STRING;		
+		incident_submitter		: STRING;		
+		incident_id 			: STRING;		
+		incident_status 		: STRING;		
+		incident_assignee 		: STRING;		
+		date_time				: INTEGER, representation = date;
+		manually_created_incident	: INTEGER , default=0;
+		cell_name				: STRING;
+		policy_name				: STRING;
+		bOrphanedRoot			: INTEGER, default=1;
+		incident_priority 		:STRING;
+		prop_destination                : LIST_OF STRING;
+        status_incident                 : STRING;
+		status_reason                           : STRING;
+		priority_urgency_option         : INTEGER;
+		status_impact_option     : INTEGER;
+		event_mc_ueid			: STRING;
+		event_ids				: LIST_OF STRING;
+		mc_smc_impact           : default=NON_ELECTABLE, parse=no;
+		Temp01 					: STRING;
+		Temp02 					: STRING;
+		Temp03 					: STRING;
+		Temp04 					: STRING;
+		Temp05 					: STRING;
+		Temp06 					: STRING;
+		Temp07 					: STRING;
+		Temp08 					: STRING;
+		Temp09 					: STRING;		
+		Temp10 					: STRING;
+
+	}; END
+ 
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

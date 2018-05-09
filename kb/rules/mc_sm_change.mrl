@@ -1,0 +1,49 @@
+#
+# File name: mc_sm_change.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+new update_msg : 
+	SIM_COMPONENT_CHANGE($SIM_EV) 
+			where [ $SIM_EV.client_data == TSPS ]
+	using
+	{
+		BMC_BusinessService ($COMP) where [ ($COMP.mc_udid equals $SIM_EV.component_udid) ]
+	}
+	triggers
+	{
+		$SIM_EV.msg = localize(kb,[sim_change_msg,'s',$COMP.Name]);
+	}
+END
+
+new update_old_sim_change : SIM_COMPONENT_CHANGE($SIM_EV) 
+			where [$SIM_EV.client_data == TSPS AND $SIM_EV.status != CLOSED ]
+	updates SIM_COMPONENT_CHANGE($OLD_SIM_EV)
+			where [ $OLD_SIM_EV.component_udid == $SIM_EV.component_udid AND $OLD_SIM_EV.status != CLOSED 
+			         AND $OLD_SIM_EV.client_data == TSPS ]
+	{
+		$OLD_SIM_EV.component_status = $SIM_EV.component_status;
+		$OLD_SIM_EV.component_sub_status = $SIM_EV.component_sub_status;
+		$OLD_SIM_EV.component_manual_status = $SIM_EV.component_manual_status;
+		$OLD_SIM_EV.component_computed_status = $SIM_EV.component_computed_status;
+		$OLD_SIM_EV.component_self_status = $SIM_EV.component_self_status;
+		$OLD_SIM_EV.component_impact_status = $SIM_EV.component_impact_status;
+		$OLD_SIM_EV.severity = $SIM_EV.severity;
+		$OLD_SIM_EV.status = $SIM_EV.status;
+		$OLD_SIM_EV.msg = $SIM_EV.msg;
+		
+		if ($SIM_EV.component_status == OK) then
+		{
+			$OLD_SIM_EV.status = CLOSED;
+		};
+		drop_new;
+	}
+END
+
+new close_ok_sim_change : SIM_COMPONENT_CHANGE($SIM_EV) 
+			where [ $SIM_EV.client_data == TSPS AND $SIM_EV.status != CLOSED AND $SIM_EV.component_status == OK ]
+triggers	
+	{
+		drop_new;
+	}
+END

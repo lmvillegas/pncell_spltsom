@@ -1,0 +1,109 @@
+#
+# File name: ips.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+new IpsStartIpsError : IPS_START($EV)
+	where [ $EV.status == OPEN,
+		$EV.mc_parameter == status,
+		$EV.mc_parameter_value == started]
+	updates IPS_ERROR($OLD_EV)
+	where [ $OLD_EV.mc_object == $EV.mc_object,
+		$OLD_EV.mc_object_class == $EV.mc_object_class]
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new IpsStartIpsStop : IPS_START($EV)
+	where [ $EV.status == OPEN,
+		$EV.mc_parameter == status,
+		$EV.mc_parameter_value == started]
+	updates ALL IPS_STOP($OLD_EV)
+	where [ $OLD_EV.status == OPEN,
+	        $OLD_EV.mc_object == $EV.mc_object,
+		$OLD_EV.mc_object_class == $EV.mc_object_class,
+		$OLD_EV.mc_parameter == $EV.mc_parameter]
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new IpsStopIpsStart : IPS_STOP($EV)
+	where [ $EV.status == OPEN]
+	updates IPS_START($OLD_EV)
+	where [ $OLD_EV.status == OPEN,
+	        $OLD_EV.mc_object == $EV.mc_object,
+		$OLD_EV.mc_object_class == $EV.mc_object_class,
+		$OLD_EV.mc_parameter == $EV.mc_parameter]
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new IpsStopIpsStop : IPS_STOP($EV)
+	where [ $EV.status == OPEN]
+	updates ALL IPS_STOP($OLD_EV)
+	where [ $OLD_EV.status == OPEN,
+	        $OLD_EV.mc_object == $EV.mc_object,
+		$OLD_EV.mc_object_class == $EV.mc_object_class,
+		$OLD_EV.mc_parameter == $EV.mc_parameter]
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new IpsStartIpsStart : IPS_START($EV)
+	where [ $EV.status == OPEN]
+	updates IPS_START($OLD_EV)
+	where [ $OLD_EV.status == OPEN,
+	        $OLD_EV.mc_object == $EV.mc_object,
+		$OLD_EV.mc_object_class == $EV.mc_object_class,
+		$OLD_EV.mc_parameter == $EV.mc_parameter]
+
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new UpdateIpsClassInfo : IPS_CLASSINFO($EV) updates duplicate ($ORIG)
+	{
+		$ORIG.severity = $EV.severity;
+		$ORIG.request_result = $EV.request_result;
+		$ORIG.result_msg = $EV.result_msg;
+		$ORIG.msg = $EV.msg;	
+		drop_new;
+	}
+END
+
+new UpdateIpsPublish : IPS_PUBLISH($EV) updates duplicate ($ORIG)
+	{
+		$ORIG.severity = $EV.severity;
+		$ORIG.request_result = $EV.request_result;
+		$ORIG.result_msg = $EV.result_msg;
+		$ORIG.msg = $EV.msg;	
+		drop_new;
+	}
+END
+
+new UpdateIpsCellPublish : IPS_CELL_PUBLISH($EV) updates duplicate ($ORIG)
+	{
+		$ORIG.severity = $EV.severity;
+		$ORIG.request_result = $EV.request_result;
+		$ORIG.result_msg = $EV.result_msg;
+		$ORIG.msg = $EV.msg;	
+		drop_new;
+	}
+END
+
+new UpdateIpsEnv : IPS_ENV($EV) updates duplicate ($ORIG)
+	{
+		$ORIG.severity = $EV.severity;
+		$ORIG.request_result = $EV.request_result;
+		$ORIG.result_msg = $EV.result_msg;
+		$ORIG.msg = $EV.msg;	
+		drop_new;
+	}
+END

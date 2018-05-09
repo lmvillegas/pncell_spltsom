@@ -1,0 +1,38 @@
+#
+# File name: mc_automated_ci_policies.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#  Description: Automated Component Based Blackout Policy related class definitions
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Common definitions
+#---------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+#  Automated Component Based Blackout policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS:
+    IM_AUTOMATED_CI_BLACKOUT_POLICY ISA IM_CI_BLACKOUT_POLICY
+DEFINES
+{
+# Variable to store start time of the blackout policy. Automated blackout policy will have only one time frame.     
+     start_time: STRING;
+
+# Variable to store end time of the blackout policy. Automated blackout policy will have only one time frame.
+     end_time: STRING;
+
+# Variable to store device mcudid of the blackout policy. Automated blackout policy will have only one device configureds.
+     ci_mcudid: STRING;
+
+};
+END
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

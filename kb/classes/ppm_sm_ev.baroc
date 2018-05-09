@@ -1,0 +1,40 @@
+#
+# File name: ppm_sm_ev.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------------
+#  Baroc definition for Self Monitoring events.
+#  Krishna
+#  28th Dec 2012	
+#----------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+#  Base class for admin events
+#---------------------------------------------------------------------
+
+#
+# mc_object_class specifies the bppm component that is facing issues.
+#
+
+#
+# mc_object_id specifies the specific component identified by <component-type>:host:[port]
+#
+# Example: IS:vw-pun-ngp-dv14:12124
+#
+
+
+# Event class for Self Monitoring
+MC_EV_CLASS: 
+	PPM_SM_EV ISA EVENT DEFINES
+	{
+		mc_object_class : STRING, default = "PROACTIVENET_COMPONENT"	;	
+     		mc_origin_class : STRING, default = "PROACTIVENET_SLFMON_COMPONENT";
+	};
+END
+
+
+
+

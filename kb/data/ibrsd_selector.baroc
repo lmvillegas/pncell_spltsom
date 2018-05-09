@@ -1,0 +1,12 @@
+#
+# File name: ibrsd_selector.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SELECTOR;
+	based_on='SIM_COMPONENT_CHANGE';
+	name='IBRSD.Component_Change';
+	description='Selector for SIM Component Change Events';
+	ecfs=[SIM_COMPONENT_CHANGE];
+	ecfs_descr=[''];
+END

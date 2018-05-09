@@ -1,0 +1,37 @@
+#
+# File name: di_timeframes.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+# Example time frames - US Weekdays:
+#ACTIVE_TIME_FRAME;
+#	description='Weekday Days';
+#	name='Weekdays';
+#	dtstart='20040622T000000';
+#	duration='P1D';
+#	rrule=['FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR;WKST=SU'];
+#END
+
+#ACTIVE_TIME_FRAME;
+#	description='Weekend Days';
+#	name='Weekend';
+#	dtstart='20040622T000000';
+#	duration='P1D';
+#	rrule=['FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,SA;WKST=SU'];
+#END
+
+# Example (outdated) time frames:
+#ACTIVE_TIME_FRAME;
+#	description='U.S. Holiday days for 2004';
+#	name='US_Holidays_2004';
+#	dtstart='20040101T000000';
+#	duration='P1D';
+#	rdate=[20040101,20040119,20040216,20040531,20040705,20040906,20041011,20041111,20041125,20041224];
+#END
+#ACTIVE_TIME_FRAME;
+#	description='U.S. Holiday days for 2005';
+#	name='US_Holidays_2005';
+#	dtstart='20050101T000000';
+#	duration='P1D';
+#	rdate=[20050103,20050117,20050221,20050530,20050704,20050905,20051010,20051111,20051124,20051226];
+#END

@@ -1,0 +1,40 @@
+#
+# File name: mc_sm_custom.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------
+#
+# Data classes provided in the default KB
+# and supporting the Service Management Model
+#
+# The parent classes are system defined (internal classes)
+#
+#====================================================
+# MAPPING CLASSES
+#====================================================
+#
+#	1=COMPONENT_CREATION
+#
+#-----+------------------------+---------------------
+# 1   | raw_class              | [super-]class of the raw event
+#     | auto_create            | component autocreate switch
+#     | component_type         | type to be used for the component
+#     | component_sub_type     | sub-type of the component
+#-----+------------------------+---------------------
+# Note:
+# This table is used by the component autocreate mechanism
+# to determine which type (and sub-type) should be used.
+# The 'raw_class' should be a super-class whenever possible
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+	COMPONENT_CREATION ISA MC_SM_CUSTOM DEFINES
+	{
+		raw_class: STRING, key = yes;
+		auto_create: MC_YESNO, default = YES;
+		component_type: STRING;
+		component_sub_type: STRING, default = 'default';
+	};
+END
+

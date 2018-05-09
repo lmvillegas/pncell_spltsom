@@ -1,0 +1,18 @@
+#
+# File name: email_to_event.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+new update_E2E_event : EMAIL2EVENT($E2E_EVENT_NEW) 
+where [ $E2E_EVENT_NEW.status != 'CLOSED' ]
+ 
+  updates EMAIL2EVENT($E2E_EVENT_OLD)
+  where [$E2E_EVENT_NEW.msg_id != 0 AND $E2E_EVENT_NEW.mc_host == $E2E_EVENT_OLD.mc_host AND $E2E_EVENT_NEW.msg_id == $E2E_EVENT_OLD.msg_id AND $E2E_EVENT_OLD.status != 'CLOSED']
+  {	
+    $E2E_EVENT_OLD.severity = $E2E_EVENT_NEW.severity;
+	$E2E_EVENT_OLD.mc_priority = $E2E_EVENT_NEW.mc_priority;
+	$E2E_EVENT_OLD.status = $E2E_EVENT_NEW.status;
+	drop_new;
+  }	
+		
+END

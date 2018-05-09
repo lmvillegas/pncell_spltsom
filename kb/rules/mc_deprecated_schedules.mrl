@@ -1,0 +1,87 @@
+#
+# File name: mc_deprecated_schedules.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+execute reset_schedules_record:
+	MC_CELL_TICK ($EV)
+	when $EV.repeat_count
+	{
+		$MC_DEPRECATED_SCHEDULES.tick_count = $MC_DEPRECATED_SCHEDULES.tick_count + 1;
+		if ($MC_DEPRECATED_SCHEDULES.tick_count == $MC_DEPRECATED_SCHEDULES.refresh_period)
+		then
+		{
+			$MC_DEPRECATED_SCHEDULES.active_schedule_list = [];
+			$MC_DEPRECATED_SCHEDULES.inactive_schedule_list = [];
+		};
+	}
+END
+	
+execute check_all_schedules:
+	MC_CELL_TICK ($EV) where
+	[
+		$MC_DEPRECATED_SCHEDULES.tick_count == $MC_DEPRECATED_SCHEDULES.refresh_period
+	]
+	using ALL
+	{
+		DEPRECATED_SCHEDULE ($SCHED)
+	}
+	when $EV.repeat_count
+	{
+		$TS_TZO = time_stamp() + (($SCHED.sched_utc_offset - $MC_DEPRECATED_SCHEDULES.cell_utc_offset) * 3600);
+		$DT_TZO = time_stamp_to_str($TS_TZO, "%w:%H:%M");
+		$DT_LST = strtolist($DT_TZO, ":");
+		$DAYCODE = listgetelt($DT_LST, 1);
+		if ($DAYCODE == 0)
+		then { $WDAY = 7; }
+		else { $WDAY = stringtoint($DAYCODE); };
+		$HR = stringtoint(listgetelt($DT_LST, 2));
+		$MN = stringtoint(listgetelt($DT_LST, 3));
+		
+		$BEG_ELT = listgetelt($SCHED.is_active_from,  $WDAY);
+		$END_ELT = listgetelt($SCHED.is_active_until, $WDAY);
+		
+		$DAY_BEG = cond($BEG_ELT != ":", $BEG_ELT, "");
+		$DAY_END = cond($END_ELT != ":", $END_ELT, "");
+		
+		if ($DAY_BEG == "" AND $DAY_END == "")
+		then { add_to_list($SCHED.schedule_name, $MC_DEPRECATED_SCHEDULES.inactive_schedule_list); }
+		else
+		{
+			if ($DAY_BEG != "" AND $DAY_END != "")
+			then
+			{
+				$DAY_BEG_L = strtolist($DAY_BEG, ":");
+				$DAY_END_L = strtolist($DAY_END, ":");
+				
+				if (listlen($DAY_BEG_L) == 2 AND listlen($DAY_END_L) == 2)
+				then
+				{
+					$DAY_BEG_HR = stringtoint(listgetelt($DAY_BEG_L, 1));
+					$DAY_BEG_MN = stringtoint(listgetelt($DAY_BEG_L, 2));
+					$DAY_END_HR = stringtoint(listgetelt($DAY_END_L, 1));
+					$DAY_END_MN = stringtoint(listgetelt($DAY_END_L, 2));
+				
+					if ((($DAY_BEG_HR  < $HR) OR
+						 ($DAY_BEG_HR == $HR AND $DAY_BEG_MN < $MN)) AND
+						(($DAY_END_HR  > $HR) OR
+						 ($DAY_END_HR == $HR AND $DAY_END_MN > $MN)))
+					then { add_to_list($SCHED.schedule_name, $MC_DEPRECATED_SCHEDULES.active_schedule_list); }
+					else { add_to_list($SCHED.schedule_name, $MC_DEPRECATED_SCHEDULES.inactive_schedule_list); };
+				};
+#				else the schedule is not properly formatted -> ignore!
+			};
+#			else the schedule is not properly formatted -> ignore!
+		};
+	}
+END
+
+execute reset_tick_count:
+	MC_CELL_TICK ($EV)
+	when $EV.repeat_count
+	{
+		if ($MC_DEPRECATED_SCHEDULES.tick_count == $MC_DEPRECATED_SCHEDULES.refresh_period)
+		then { $MC_DEPRECATED_SCHEDULES.tick_count = 0; };
+	}
+END

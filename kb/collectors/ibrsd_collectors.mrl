@@ -1,0 +1,152 @@
+#
+# File name: ibrsd_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ibrsd_collectors.mrl
+# Version: 8.0.00
+# Copyright 1998-2009 BMC Software, Inc. All Rights Reserved
+#
+
+
+collector 'Generated Incidents' :
+{
+        r['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators', 'BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        w['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators', 'BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        x['BPPM Administrators', 'Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Model Administrators', 'Model Administrators', 'BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+}
+END
+
+#*********************************************************************************************************************************
+#BEM USE CASE - Collector for EVENT_INCIDENT_INFO by status
+#*********************************************************************************************************************************
+collector 'Generated Incidents'.'Event Incidents By Status' :
+EVENT_INCIDENT_INFO
+END
+
+#collector for manually created EVENT_INCIDENT_INFO events
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created':
+EVENT_INCIDENT_INFO 
+where [
+	$THIS.manually_created_incident == 1 
+]
+END
+
+#collector for auto created EVENT_INCIDENT_INFO events
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created':
+EVENT_INCIDENT_INFO 
+where [
+	$THIS.manually_created_incident == 0
+]
+END
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'New' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'New':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'New']
+END	
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'Assigned' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'Assigned':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Assigned']
+END	
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'In Progress' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'In Progress':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'In Progress']
+END	
+
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'Pending' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'Pending':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Pending']
+END	
+
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'Resolved' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'Resolved':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Resolved']
+END	
+
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'Closed' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'Closed':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Closed']
+END	
+
+
+# collector for manually created EVENT_INCIDENT_INFO events - 'Cancelled' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Manually Created'.'Cancelled':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Cancelled']
+END	
+
+
+############################################################################################
+# collector for Auto created EVENT_INCIDENT_INFO events - 'New' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'New':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'New']
+END	
+
+
+# collector for Auto created EVENT_INCIDENT_INFO events - 'Assigned' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'Assigned':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Assigned']
+END	
+
+
+# collector for Auto created EVENT_INCIDENT_INFO events - 'In Progress' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'In Progress':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'In Progress']
+END	
+
+
+# collector for Auto created EVENT_INCIDENT_INFO events - 'Pending' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'Pending':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Pending']
+END	
+
+
+# collector for Auto created EVENT_INCIDENT_INFO events - 'Resolved' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'Resolved':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Resolved']
+END	
+
+
+# collector for Auto created EVENT_INCIDENT_INFO events - 'Closed' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'Closed':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Closed']
+END	
+
+
+# collector for Auto created EVENT_INCIDENT_INFO events - 'Cancelled' incident_status
+collector 'Generated Incidents'.'Event Incidents By Status'.'Auto Created'.'Cancelled':
+EVENT_INCIDENT_INFO 
+where [$THIS.incident_status == 'Cancelled']
+END	
+
+collector 'Generated Incidents'.'Incident Errors' :
+IBRSD_ERROR
+END
+
+
+collector 'Generated Incidents'.'Incident Errors'.'Event Incident Errors':
+IBRSD_ERROR 
+where [$THIS.use_case == 'BEM']
+END	
+

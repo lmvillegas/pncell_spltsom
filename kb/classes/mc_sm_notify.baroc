@@ -1,0 +1,245 @@
+#
+# File name: mc_sm_notify.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#==============================================================================
+# Notification registering 
+#==============================================================================
+
+# type of notifications
+
+ENUMERATION SIM_NOTIFICATION_TYPE
+  10 COMPONENT_CHANGE
+  20 COMPONENT_DELETE
+  25 COMPONENT_OVERWRITE
+  30 RELATIONSHIP_CHANGE
+  40 RELATIONSHIP_DELETE
+END
+
+
+ENUMERATION SIM_NOTIFICATION_MODE
+  10 DELTA
+  20 FULL
+END
+
+ENUMERATION SIM_CAUSAL_EVENT_NOTIFICATION_MODE
+  10 FULL
+  20 DELTA
+  30 NONE
+END
+
+#------------------------------------------------------------------------------
+# CLASS SIM_NOTIFICATION_REGISTRY_INT
+#------------------------------------------------------------------------------
+# each instance represent a registration for notification
+# client			list of clients (defined in mcell.dir) 
+#				A notification will be sent to one of this client
+# requested_notifications	list of notification type that must be sent 
+#
+# REMARK:instances are manipulated by actions
+# 
+# sim_operations.register_all_notifications,
+# sim_operations.register_notifications, 
+# sim_operations.unregister_notifications
+# sim_operations.update_notification_clients
+#
+# Instances should not be manually manipulated. 
+# For manual mgt use SIM_NOTIFICATION_REGISTRY instead
+#
+#------------------------------------------------------------------------------
+
+MC_DATA_CLASS: 
+	SIM_NOTIFICATION_REGISTRY_INT ISA MC_CELL_DATA DEFINES 
+	{ 
+		client_data: STRING, key=yes, read_only=yes;
+		clients: LIST_OF STRING; # name of a clients defined   in mcell.dir where the notification must be sent 
+		requested_notifications: LIST_OF SIM_NOTIFICATION_TYPE,	
+    			default=[COMPONENT_CHANGE,COMPONENT_DELETE,COMPONENT_OVERWRITE,RELATIONSHIP_CHANGE,RELATIONSHIP_DELETE]; 
+		notification_mode:       SIM_NOTIFICATION_MODE, default=DELTA, read_only=YES;
+		notifications_at_registration: MC_YESNO, default=NO;
+		asset_filter: STRING;
+		causal_event_notification_mode: SIM_CAUSAL_EVENT_NOTIFICATION_MODE, default=NONE;
+		all_causes_notification_mode: MC_YESNO, default=NO;
+	}; 
+END
+
+
+#------------------------------------------------------------------------------
+# CLASS SIM_NOTIFICATION_REGISTRY
+#------------------------------------------------------------------------------
+# same as SIM_NOTIFICATION_REGISTRY_INT but are validated
+#
+MC_DATA_CLASS: 
+	SIM_NOTIFICATION_REGISTRY ISA SIM_NOTIFICATION_REGISTRY_INT;
+END
+
+#==============================================================================
+# Notification events
+#==============================================================================
+
+ENUMERATION SIM_NOTIFICATION_STATUS 
+	00      '' 
+	01	NONE			
+	10	BLACKOUT		
+	20	UNKNOWN			
+	30	OK			
+	40	INFO			
+	50	WARNING			
+	60	MINOR			
+	70	IMPACTED		
+	80	UNAVAILABLE		
+END
+
+ENUMERATION SIM_CO_FUNCTION_NOTIFICATION 
+  00 '' 
+  10 HIGHEST_VAL 
+  20 SELF_PREFERRED 
+END
+
+ENUMERATION SIM_NOTIFICATION_YESNO
+    0	NO
+    1	YES
+    2	''
+END
+
+ENUMERATION SIM_NOTIFICATION_PRIORITY
+   00   ''
+   10   PRIORITY_5
+   20   PRIORITY_4
+   30   PRIORITY_3
+   40   PRIORITY_2
+   50   PRIORITY_1
+END
+
+ENUMERATION SIM_NOTIFICATION_SCHEDULE_STATUS
+	00   ''
+        10	IN
+        20	OUT
+END
+
+
+#------------------------------------------------------------------------------
+# CLASS SIM_NOTIFICATION_EVENT
+#------------------------------------------------------------------------------
+# Base class of the notification events
+#
+# change_number			the change nb of the object 
+#				0 correspond to the creation of the object
+# occurence_time		time of the last change
+#------------------------------------------------------------------------------
+
+MC_EV_CLASS : 
+	SIM_NOTIFICATION_EVENT ISA MC_CELL_EVENT DEFINES {
+	occurrence_time : INTEGER, representation = date;
+	change_number : INTEGER;
+	mc_smc_impact: default=NON_ELECTABLE;
+	client_data: STRING ;
+} ; END
+
+#------------------------------------------------------------------------------
+# CLASS SIM_COMPONENT_CHANGE
+#------------------------------------------------------------------------------
+# component_udid		udid of the component that has change
+# component_status		new status or '' if unchanged
+# component_sub_status		new sub_status or '' if unchanged
+# component_manualstatus	new manual_status or '' if unchanged
+# componentcomputed__status	new computed_status or '' if unchanged
+# component_self_status		new self_status or '' if unchanged
+# component_impact_status	new impact_status or '' if unchanged
+# manual_comment		comment associated to the manual_status or '' if unchanged
+# consolidate_function          consolidate function or '' id unchanged
+#------------------------------------------------------------------------------
+
+MC_EV_CLASS : 
+	SIM_COMPONENT_CHANGE ISA SIM_NOTIFICATION_EVENT DEFINES 
+	{ 
+		component_udid : STRING; 
+		component_status: SIM_NOTIFICATION_STATUS, 		default='';
+		component_sub_status: SIM_NOTIFICATION_STATUS, 		default='';
+		component_manual_status: SIM_NOTIFICATION_STATUS, 	default='';
+		component_computed_status: SIM_NOTIFICATION_STATUS, 	default='';
+		component_self_status: SIM_NOTIFICATION_STATUS, 	default='';
+		component_impact_status: SIM_NOTIFICATION_STATUS, 	default=''; 
+		manual_comment: STRING; 
+		manual_user: STRING; 
+		consolidate_function: SIM_CO_FUNCTION_NOTIFICATION, 	default=''; 
+#additional slots in 7.0
+		maintenance_mode: SIM_NOTIFICATION_YESNO,		default='';
+		root_causes: 	LIST_OF STRING, default=['']; 
+		all_causes: 	LIST_OF STRING, default=['']; 
+		self_priority: 	SIM_NOTIFICATION_PRIORITY, default='';
+		impact_priority:SIM_NOTIFICATION_PRIORITY, default='';
+		computed_priority:SIM_NOTIFICATION_PRIORITY, default='';
+		raw_impact_priority:        REAL, default = -1 ;
+		cost: 			    REAL, default = -1 ;
+		schedule_status:            SIM_NOTIFICATION_SCHEDULE_STATUS, default='';
+		causal_events: LIST_OF STRING, default=[''];
+#additional slots in 7.4
+		old_causal_events: LIST_OF STRING, default=[];
+		new_causal_events: LIST_OF STRING, default=[];
+}; 
+END
+
+#------------------------------------------------------------------------------
+# CLASS SIM_COMPONENT_DELETE
+#------------------------------------------------------------------------------
+# component_udid		udid of the component that has been deleted
+# delete_timestamp		deletion time
+# change_nb			final change nb
+
+MC_EV_CLASS : 
+	SIM_COMPONENT_DELETE ISA SIM_NOTIFICATION_EVENT DEFINES 
+	{ 
+		component_udid : STRING;
+	}; 
+END
+
+#------------------------------------------------------------------------------
+# CLASS SIM_COMPONENT_OVERWRITE
+#------------------------------------------------------------------------------
+# component_udid		udid of the component that has been deleted
+# delete_timestamp		deletion time
+# change_nb			final change nb
+
+MC_EV_CLASS : 
+	SIM_COMPONENT_OVERWRITE ISA SIM_NOTIFICATION_EVENT DEFINES 
+	{ 
+		component_udid : STRING;
+		new_component_udid: STRING;
+	}; 
+END
+
+#------------------------------------------------------------------------------
+# CLASS SIM_RELATIONSHIP_CHANGE
+#------------------------------------------------------------------------------
+# provider_udid			udid of the provider
+# consumer_udid			udid of the consumer
+# change_timestamp		timestamp of the last change
+# change_nb 			the change nb of the relationship
+# true_impact			true_impact value of the relationship
+
+MC_EV_CLASS : 
+	SIM_RELATIONSHIP_CHANGE ISA SIM_NOTIFICATION_EVENT DEFINES 
+	{ 
+		provider_udid : STRING; 
+		consumer_udid : STRING; 
+		true_impact: MC_YESNO; 
+	}; 
+END
+
+#------------------------------------------------------------------------------
+# CLASS SIM_RELATIONSHIP_DELETE
+#------------------------------------------------------------------------------
+# provider_udid			udid of the provider
+# consumer_udid			udid of the consumer
+# delete_timestamp		deletion time
+# change_nb			final change nb
+
+MC_EV_CLASS : 
+	SIM_RELATIONSHIP_DELETE ISA SIM_NOTIFICATION_EVENT DEFINES 
+	{ 
+		provider_udid : STRING; 
+		consumer_udid : STRING; 
+	}; 
+END

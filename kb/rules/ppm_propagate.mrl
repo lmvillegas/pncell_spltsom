@@ -1,0 +1,78 @@
+#
+# File name: ppm_propagate.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ppm_propagate.mrl
+# Version: 9.0.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+
+propagate to_ngp_gateway:
+EVENT ($RAW_EVENT) where [cellinfo(POMEnabled)]
+   using ALL
+    {
+        MC_CELL_DIR_COMPONENT ($ENTRIES) where
+        [ $ENTRIES.type == "gateway" AND $ENTRIES.subtype == "pn_server"]
+        
+    }
+    to $ENTRIES.name
+    
+END
+
+
+propagate admin_event_to_ngp_gateway:
+MC_CELL_CONTROL ($RAW_EVENT) where [ cellinfo(POMEnabled) ]
+    using ALL
+    {
+        MC_CELL_DIR_COMPONENT ($ENTRIES) where
+        [ $ENTRIES.type == "gateway" AND $ENTRIES.subtype == "pn_server"]
+        
+    }
+    to $ENTRIES.name
+    
+END
+
+propagate to_ngp_gateway_db_clean_up_events:
+MC_CELL_DB_CLEANUP where [cellinfo(POMEnabled)]
+ using ALL
+    {
+        MC_CELL_DIR_COMPONENT ($ENTRIES) where
+        [ $ENTRIES.type == "gateway" AND $ENTRIES.subtype == "pn_server"]
+        
+    }
+    to $ENTRIES.name
+END
+
+propagate to_ngp_gateway_sim_notification_events:
+SIM_NOTIFICATION_EVENT where [cellinfo(POMEnabled)]
+ using ALL
+    {
+        MC_CELL_DIR_COMPONENT ($ENTRIES) where
+        [ $ENTRIES.type == "gateway" AND $ENTRIES.subtype == "pn_server"]
+        
+    }
+    to $ENTRIES.name
+END
+
+#De-duplication rule for JSERVER CellConnectStatus events
+new LOGFILE_Duplicates_JSERVER: 
+    LOGFILE_BASE ($EV) where [$EV.status != CLOSED AND $EV.mc_object == "JSERVER" ]
+    	updates duplicate ($dup) where [ $dup.status != CLOSED AND $dup.mc_parameter_value == $EV.mc_parameter_value ]
+	{
+		$dup.repeat_count 	= $dup.repeat_count + 1;
+		drop_new;
+	}
+END
+
+#De-duplication rule for RATE CellConnectStatus events
+new LOGFILE_Duplicates_RATE: 
+    LOGFILE_BASE ($EV) where [$EV.status != CLOSED AND $EV.mc_object == "RATE" ]
+    	updates duplicate ($dup) where [ $dup.status != CLOSED AND $dup.mc_parameter_value == $EV.mc_parameter_value ]
+	{
+		$dup.repeat_count 	= $dup.repeat_count + 1;
+		drop_new;
+	}
+	
+END

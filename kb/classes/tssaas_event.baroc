@@ -1,0 +1,25 @@
+#
+# File name: tssaas_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: This class is added to process events coming from TrueSight SaaS application.
+#---------------------------------------------------------------------------------------
+# tssaas_tenant_id		  - Pulse internal tenant Id associated with that event
+# tssaas_parameter_id	  - attribute id representation for mc_parameter sent by Pulse
+# tssaas_event_status     - status of the Pulse event received
+# tssaas_event_class      - event class/category of Pulse event
+#---------------------------------------------------------------------------------------
+#
+
+MC_EV_CLASS:
+   TSSAAS_EVENT ISA EVENT
+   DEFINES
+   {
+		tssaas_tenant_id     :  STRING;
+		tssaas_parameter_id  :  STRING;
+		tssaas_event_status  :  STATUS,     default = OPEN;
+		tssaas_event_class   :  STRING;
+    };
+END

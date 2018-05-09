@@ -1,0 +1,143 @@
+#
+# File name: mc_ci_policies.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#  Description: Policy related class definitions
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Common definitions
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS:
+    IM_CI_POLICY ISA IM_POLICY DEFINES
+    {
+	ci_selector		 : QUERY BMC_BaseElement;
+    };
+END
+
+
+
+#---------------------------------------------------------------------
+#  Blackout policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS:
+    IM_CI_BLACKOUT_POLICY ISA IM_CI_POLICY
+DEFINES
+{
+     start_action: BLACKOUT_START_ACTION;
+     end_action: BLACKOUT_END_ACTION;
+     during_schedule_op: BLACKOUT_DURING_SCHEDULE_OP, default=BLACKOUT ;
+     recurrence_mode: STRING;
+};
+END
+
+#---------------------------------------------------------------------
+#  Notification policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS: IM_CI_NOTIFICATION_POLICY ISA IM_CI_POLICY
+    DEFINES
+    {
+        notification_service    : STRING;
+        notify_targets          : LIST_OF STRING;
+        notify_source           : STRING;
+        notify_subject_format   : STRING;
+        notify_subject_slots    : LIST_OF STRING;
+        notify_on_operations    : LIST_OF STATUS, default=[OPEN];
+        notify_msg_format       : STRING;
+        notify_msg_slots        : LIST_OF STRING;
+        auto_ack                : INTEGER, default=0;
+        auto_assign             : INTEGER, default=0;
+        assign_to_user          : STRING;
+        date_format             : STRING, default="%c";
+        when_slot               : STRING;
+        when_operator           : STRING;
+        when_value              : STRING;
+        from_operator           : STRING;
+        from_value              : STRING;
+	change_only		: MC_YESNO, default=NO;
+    };
+END
+   
+MC_DATA_CLASS: IM_CI_NOTIFICATION_SERVICE ISA MC_CELL_DATA
+    DEFINES
+    {
+        name                    : STRING, key = yes, read_only = yes;
+        description             : STRING;
+        type                    : NOTIFICATION_SERVICE_TYPE, default=SERVICE_TYPE_COMMAND;
+        service                 : STRING;
+        available_targets       : LIST_OF STRING;
+    };
+END
+
+
+#---------------------------------------------------------------------
+#  Propagation policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS: IM_CI_PROPAGATION_POLICY ISA IM_CI_POLICY
+    DEFINES
+    {
+        all_of_propagation_list : LIST_OF STRING;
+        one_of_propagation_list : LIST_OF STRING;
+	when_slot		: STRING, default=status;
+	when_operator		: STRING;
+	when_value		: STRING;
+        from_operator           : STRING;
+        from_value              : STRING;
+	change_only		: MC_YESNO, default=NO;
+    };
+END
+
+
+#---------------------------------------------------------------------
+#  Escalation policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS: IM_CI_ESCALATION_POLICY ISA IM_CI_POLICY
+    DEFINES
+    {
+        time_limit              : INTEGER, default=0;
+        time_scale              : TIME_SCALING_FACTOR, default=SECONDS;
+        escalate_if_ack         : INTEGER, default=0;
+        escalate_if_assigned    : INTEGER, default=0;
+        escalation_levels       : INTEGER, default=0;
+        escalation_priority     : MC_PRIORITY, default=PRIORITY_4;
+        quantity_esc_limit      : INTEGER, default=0;
+        quantity_esc_time_limit : INTEGER, default=0;
+        quantity_esc_time_scale : TIME_SCALING_FACTOR, default=SECONDS;
+        quantity_esc_levels     : INTEGER, default=0;
+        quantity_esc_priority   : MC_PRIORITY, default=PRIORITY_4;
+    };
+END
+
+
+#---------------------------------------------------------------------
+#  Dynamic Remote Action policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS: IM_CI_DREA_POLICY ISA IM_CI_POLICY
+        DEFINES
+        {
+                action_name     : STRING;
+         };
+END
+
+
+#---------------------------------------------------------------------
+#  Custom policy
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS: 
+    IM_CI_BASE_CUSTOM_POLICY ISA IM_CI_POLICY;
+END
+
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

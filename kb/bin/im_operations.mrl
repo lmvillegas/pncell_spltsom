@@ -1,0 +1,1449 @@
+#
+# File name: im_operations.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: im_operations.mrl
+# Version: 9.5.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#
+#-------------------------------------------------------------------------------
+# This file used to define the operations available to the Impact Consoles
+# dependent on the User Groups assigned the operator and the class of the
+# current event selection.  Following is the formation of an operation
+# definition
+# ------------------------------------------------------------------------------
+#
+# action <Operation_Name>:
+#    { [ UserGroup1, UserGroup2,... ] }
+#    <Action> ['arg1', 'arg2', ...] :
+#    ClassName ($<Var>)
+#    { <CallList> }
+# END
+#
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+#
+# Acknowledge operation - Acknowledges the event (sets the event status to ACK)
+#
+action im_operations.Acknowledge: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [] :
+    EVENT ($EV)
+    {
+        if ($EV.status == OPEN) then
+        {
+            $EV.status = ACK;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "ACKNOWLEDGED", "");
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                action_return(1, "The event has already been acknowledged.");
+            }
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($EV.status == OPEN) then
+        {
+            $EV.status = ACK;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "ACKNOWLEDGED", "");
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                action_return(1, "The event has already been acknowledged.");
+            }
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# AcknowledgeAndAddNote operation - Acknowledges the event (sets the event status to ACK) and adds note to mc_operations.
+#
+action im_operations.AcknowledgeAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($NOTE)] :
+    EVENT ($EV)
+    {
+        if ($EV.status == OPEN) then
+        {
+            $EV.status = ACK;
+            $EV.pn_detail_diag = 0;
+            
+            if($NOTE != "") then
+            {
+            	opadd($EV, "ACKNOWLEDGED: " || $NOTE, "");
+            }else
+            {
+            	opadd($EV, "ACKNOWLEDGED", "");
+            }
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                action_return(1, "The event has already been acknowledged.");
+            }
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($EV.status == OPEN) then
+        {
+            $EV.status = ACK;
+            $EV.pn_detail_diag = 0;
+            if($NOTE != "") then
+            {
+            	opadd($EV, "ACKNOWLEDGED: " || $NOTE, "");
+            }else
+            {
+            	opadd($EV, "ACKNOWLEDGED", "");
+            }
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                action_return(1, "The event has already been acknowledged.");
+            }
+        }
+    }
+END
+
+
+#-------------------------------------------------------------------------------
+#
+# Take Ownership operation - Assigns requesting userid as owner of event
+#
+action im_operations.TakeOwnership: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [] :
+    EVENT ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+            
+            if ($EV.status within [OPEN, ACK]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                opadd($EV, "OWNERSHIP_TAKEN", "");
+            }
+            else 
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER != $EV.mc_owner) then
+                    {
+                        action_return(2, "The event currently assigned to someone else.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED, BLACKOUT]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "The event status is not OPEN or ACK.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            action_return(9, "TakeOwnership cannot be performed by a rule.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+            
+            if ($EV.status within [OPEN, ACK]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                opadd($EV, "OWNERSHIP_TAKEN", "");
+            }
+            else 
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER != $EV.mc_owner) then
+                    {
+                        action_return(2, "The event currently assigned to someone else.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED, BLACKOUT]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "The event status is not OPEN or ACK.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            action_return(9, "TakeOwnership cannot be performed by a rule.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# TakeOwnershipAndAddNote operation - Assigns requesting userid as owner of event
+#
+action im_operations.TakeOwnershipAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($NOTE)] :
+    EVENT ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+            
+            if ($EV.status within [OPEN, ACK]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                
+                if($NOTE != "") then
+		{
+		    opadd($EV, "OWNERSHIP_TAKEN: " || $NOTE, "");
+                }
+                else
+                {
+                    opadd($EV, "OWNERSHIP_TAKEN", "");
+                }
+            }
+            else 
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER != $EV.mc_owner) then
+                    {
+                        action_return(2, "The event currently assigned to someone else.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED, BLACKOUT]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "The event status is not OPEN or ACK.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            action_return(9, "TakeOwnership cannot be performed by a rule.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+            
+            if ($EV.status within [OPEN, ACK]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                if($NOTE != "") then
+		{
+			opadd($EV, "OWNERSHIP_TAKEN: " || $NOTE, "");
+		}
+		else
+		{
+			opadd($EV, "OWNERSHIP_TAKEN", "");
+		}
+            }
+            else 
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER != $EV.mc_owner) then
+                    {
+                        action_return(2, "The event currently assigned to someone else.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED, BLACKOUT]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "The event status is not OPEN or ACK.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            action_return(9, "TakeOwnership cannot be performed by a rule.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# Decline Ownership operation - Clears event owner if requestor is owner or if "OVERRIDE" option is used
+#
+action im_operations.DeclineOwnership: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($OPT)] :
+    EVENT ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($EV.status == ASSIGNED) then
+            {
+                if ($USER == $EV.mc_owner) then
+                {
+                    $EV.mc_owner = "";
+                    $EV.status = ACK;
+            	    $EV.pn_detail_diag = 0;
+                    opadd($EV, "OWNERSHIP_DECLINED", "");
+                }
+                else 
+                {
+                    if ($OPT == "OVERRIDE") then
+                    {
+                        $EV.mc_owner = "";
+                        $EV.status = ACK;
+            		$EV.pn_detail_diag = 0;
+                        opadd($EV, "OWNERSHIP_DECLINED", $OPT);
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+            }
+            else
+            {
+                action_return(1, "The event is not assigned.");
+            }
+        }
+        else
+        {
+            action_return(9, "DeclineOwnership cannot be performed by a rule.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($EV.status == ASSIGNED) then
+            {
+                if ($USER == $EV.mc_owner) then
+                {
+                    $EV.mc_owner = "";
+                    $EV.status = ACK;
+            	    $EV.pn_detail_diag = 0;
+                    opadd($EV, "OWNERSHIP_DECLINED", "");
+                }
+                else 
+                {
+                    if ($OPT == "OVERRIDE") then
+                    {
+                        $EV.mc_owner = "";
+                        $EV.status = ACK;
+            		$EV.pn_detail_diag = 0;
+                        opadd($EV, "OWNERSHIP_DECLINED", $OPT);
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+            }
+            else
+            {
+                action_return(1, "The event is not assigned.");
+            }
+        }
+        else
+        {
+            action_return(9, "DeclineOwnership cannot be performed by a rule.");
+        }
+    }
+END
+
+
+#-------------------------------------------------------------------------------
+#
+# DeclineOwnershipAndAddNote operation - Clears event owner if requestor is owner or if "OVERRIDE" option is used
+#
+action im_operations.DeclineOwnershipAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($OPT),Option:STRING($NOTE)] :
+    EVENT ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($EV.status == ASSIGNED) then
+            {
+                if ($USER == $EV.mc_owner) then
+                {
+                    $EV.mc_owner = "";
+                    $EV.status = ACK;
+            	    $EV.pn_detail_diag = 0;
+                    
+                    if($NOTE != "") then
+                    {
+                        opadd($EV, "OWNERSHIP_DECLINED: " || $NOTE, "");
+                    }                    
+                    else
+                    {
+                    	opadd($EV, "OWNERSHIP_DECLINED", "");
+                    }
+                }
+                else 
+                {
+                    if ($OPT == "OVERRIDE") then
+                    {
+                        $EV.mc_owner = "";
+                        $EV.status = ACK;
+            		$EV.pn_detail_diag = 0;
+                        
+                        if($NOTE != "") then
+                        {
+                           opadd($EV, "OWNERSHIP_DECLINED: " || $NOTE, $OPT);
+                        }      
+                        else
+                        {
+                           opadd($EV, "OWNERSHIP_DECLINED", $OPT);
+                        }
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+            }
+            else
+            {
+                action_return(1, "The event is not assigned.");
+            }
+        }
+        else
+        {
+            action_return(9, "DeclineOwnership cannot be performed by a rule.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($EV.status == ASSIGNED) then
+            {
+                if ($USER == $EV.mc_owner) then
+                {
+                    $EV.mc_owner = "";
+                    $EV.status = ACK;
+            	    $EV.pn_detail_diag = 0;
+            	    if($NOTE != "") then
+            	    {
+            	    	opadd($EV, "OWNERSHIP_DECLINED: " || $NOTE, "");
+            	    }
+            	    else
+            	    {
+                    	opadd($EV, "OWNERSHIP_DECLINED", "");
+                    }
+                }
+                else 
+                {
+                    if ($OPT == "OVERRIDE") then
+                    {
+                        $EV.mc_owner = "";
+                        $EV.status = ACK;
+            	    	$EV.pn_detail_diag = 0;
+            	    	if($NOTE != "") then
+            	    	{
+                        	opadd($EV, "OWNERSHIP_DECLINED: " || $NOTE, $OPT);
+                        }
+                        else
+                        {
+                        	opadd($EV, "OWNERSHIP_DECLINED", $OPT);
+                        }
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+            }
+            else
+            {
+                action_return(1, "The event is not assigned.");
+            }
+        }
+        else
+        {
+            action_return(9, "DeclineOwnership cannot be performed by a rule.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# CloseAndAddNote operation - Closes event if requestor is owner or if "OVERRIDE" option is used
+#
+action im_operations.CloseAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($OPT),Option:STRING($NOTE)] :
+    EVENT ($EV) where [ $EV.CLASS != ABNORMALITY ]
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($OPT == "OVERRIDE") then
+            {
+                if (($EV.status == ASSIGNED) AND ($USER == $EV.mc_owner)) then
+                {
+                    $EV.status = CLOSED;
+            	    $EV.pn_detail_diag = 0;
+                    if($NOTE != "") then
+                    {
+                       opadd($EV, "OPERATOR_CLOSED: " || $NOTE, "");
+                    }                    
+                    else
+                    {
+                    	opadd($EV, "OPERATOR_CLOSED", "");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status outside [CLOSED]) then
+                    {
+                        $EV.status = CLOSED;
+                        
+            	    	$EV.pn_detail_diag = 0;
+                        if($NOTE != "") then
+                        {
+                            opadd($EV, "OVERRIDE_CLOSED: " || $NOTE, "");
+                        }                        
+                        else
+                        {
+                            opadd($EV, "OVERRIDE_CLOSED", "");
+                        }
+                    }
+                    else
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                }
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER == $EV.mc_owner) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+                        if($NOTE != "") then
+                        {
+                           opadd($EV, "OPERATOR_CLOSED: " || $NOTE, "");
+                        }                        
+                        else
+                        {
+                           opadd($EV, "OPERATOR_CLOSED", "");
+                        }
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "You must take ownership of the event before closing it.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            $EV.status = CLOSED;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "RULE_CLOSED", "");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($OPT == "OVERRIDE") then
+            {
+                if (($EV.status == ASSIGNED) AND ($USER == $EV.mc_owner)) then
+                {
+                    $EV.status = CLOSED;
+            	    $EV.pn_detail_diag = 0;
+            	    if($NOTE != "") then
+            	    {
+            	    	opadd($EV, "OPERATOR_CLOSED: " || $NOTE, "");
+            	    }
+            	    else
+            	    {
+            	    	opadd($EV, "OPERATOR_CLOSED", "");
+            	    }
+                }
+                else 
+                {
+                    if ($EV.status outside [CLOSED]) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+						if($NOTE != "") then
+						{						
+							opadd($EV, "OVERRIDE_CLOSED: " || $NOTE, "");
+						}
+						else
+						{
+							opadd($EV, "OVERRIDE_CLOSED", "");
+						}
+                    }
+                    else
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                }
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER == $EV.mc_owner) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+            	    	if($NOTE != "") then
+            	    	{
+                          opadd($EV, "OPERATOR_CLOSED: " || $NOTE, "");
+                        }
+                        else
+                        {
+                          opadd($EV, "OPERATOR_CLOSED", "");
+                        }
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "You must take ownership of the event before closing it.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            $EV.status = CLOSED;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "RULE_CLOSED", "");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# Close operation - Closes event if requestor is owner or if "OVERRIDE" option is used
+#
+action im_operations.Close: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($OPT)] :
+    EVENT ($EV) where [ $EV.CLASS != ABNORMALITY ]
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($OPT == "OVERRIDE") then
+            {
+                if (($EV.status == ASSIGNED) AND ($USER == $EV.mc_owner)) then
+                {
+                    $EV.status = CLOSED;
+            	    $EV.pn_detail_diag = 0;
+                    opadd($EV, "OPERATOR_CLOSED", "");
+                }
+                else 
+                {
+                    if ($EV.status outside [CLOSED]) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+                        opadd($EV, "OVERRIDE_CLOSED", "");
+                    }
+                    else
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                }
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER == $EV.mc_owner) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+                        opadd($EV, "OPERATOR_CLOSED", "");
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "You must take ownership of the event before closing it.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            $EV.status = CLOSED;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "RULE_CLOSED", "");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        action_requestor($REQUESTOR);
+        if (strpart($REQUESTOR, ':') == 0) then
+        {
+            $POS = strpart($REQUESTOR, '@');
+            if ($POS == 0) then
+            {
+                $USER = $REQUESTOR;
+            }
+            else
+            {
+                $USER = substring($REQUESTOR,0,$POS-1);
+            };
+        
+            if ($OPT == "OVERRIDE") then
+            {
+                if (($EV.status == ASSIGNED) AND ($USER == $EV.mc_owner)) then
+                {
+                    $EV.status = CLOSED;
+            	    $EV.pn_detail_diag = 0;
+                    opadd($EV, "OPERATOR_CLOSED", "");
+                }
+                else 
+                {
+                    if ($EV.status outside [CLOSED]) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+                        opadd($EV, "OVERRIDE_CLOSED", "");
+                    }
+                    else
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                }
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                    if ($USER == $EV.mc_owner) then
+                    {
+                        $EV.status = CLOSED;
+            	    	$EV.pn_detail_diag = 0;
+                        opadd($EV, "OPERATOR_CLOSED", "");
+                    }
+                    else
+                    {
+                        action_return(2, "You are not the event owner.");
+                    }
+                }
+                else 
+                {
+                    if ($EV.status within [CLOSED]) then
+                    {
+                        action_return(1, "The event is not open.");
+                    }
+                    else
+                    {
+                        action_return(1, "You must take ownership of the event before closing it.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            $EV.status = CLOSED;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "RULE_CLOSED", "");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# AssignToAndAddNote operation - Assigns specified userid as owner of event
+#
+action im_operations.AssignToAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors']
+    } ["Operator Name":STRING($USER),Option:STRING($NOTE)] :
+    EVENT ($EV)
+    {
+        if ($USER != "") then
+        {
+            if ($EV.status within [OPEN, ACK, ASSIGNED]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                if($NOTE != "") then
+		{
+		    opadd($EV, "ASSIGNED_TO: " || $NOTE || " " ,$USER );
+                }
+                else
+                {
+                    opadd($EV, "ASSIGNED_TO", $USER);
+                }
+            }
+            else 
+            {
+                if ($EV.status within [CLOSED, BLACKOUT]) then
+                {
+                    action_return(1, "The event is not open.");
+                }
+                else
+                {
+                    action_return(1, "The event status is not OPEN or ACK.");
+                }
+            }
+        }
+        else
+        {
+            action_return(3, "No operator userid specified.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($USER != "") then
+        {
+            if ($EV.status within [OPEN, ACK, ASSIGNED]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+            	if($NOTE != "") then
+		{
+			opadd($EV, "ASSIGNED_TO: " || $NOTE || " ", $USER);
+		}
+		else
+		{
+                	opadd($EV, "ASSIGNED_TO", $USER);
+                }
+            }
+            else 
+            {
+                if ($EV.status within [CLOSED, BLACKOUT]) then
+                {
+                    action_return(1, "The event is not open.");
+                }
+                else
+                {
+                    action_return(1, "The event status is not OPEN or ACK.");
+                }
+            }
+        }
+        else
+        {
+            action_return(3, "No operator userid specified.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# Assign To operation - Assigns specified userid as owner of event
+#
+action im_operations.AssignTo: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors']
+    } ["Operator Name":STRING($USER)] :
+    EVENT ($EV)
+    {
+        if ($USER != "") then
+        {
+            if ($EV.status within [OPEN, ACK, ASSIGNED]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                opadd($EV, "ASSIGNED_TO", $USER);
+            }
+            else 
+            {
+                if ($EV.status within [CLOSED, BLACKOUT]) then
+                {
+                    action_return(1, "The event is not open.");
+                }
+                else
+                {
+                    action_return(1, "The event status is not OPEN or ACK.");
+                }
+            }
+        }
+        else
+        {
+            action_return(3, "No operator userid specified.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($USER != "") then
+        {
+            if ($EV.status within [OPEN, ACK, ASSIGNED]) then
+            {
+                $EV.mc_owner = $USER;
+                $EV.status = ASSIGNED;
+            	$EV.pn_detail_diag = 0;
+                opadd($EV, "ASSIGNED_TO", $USER);
+            }
+            else 
+            {
+                if ($EV.status within [CLOSED, BLACKOUT]) then
+                {
+                    action_return(1, "The event is not open.");
+                }
+                else
+                {
+                    action_return(1, "The event status is not OPEN or ACK.");
+                }
+            }
+        }
+        else
+        {
+            action_return(3, "No operator userid specified.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# Set Priority operation - Sets the event's priority to the specified value
+#
+action im_operations.SetPriority: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors']
+    } ["New Priority":MC_PRIORITY ($PRI)] :
+    EVENT ($EV)
+    {
+        if ($EV.status outside [CLOSED, BLACKOUT]) then
+        {
+            $EV.mc_priority = $PRI;
+            opadd($EV, "PRIORITY_SET", $PRI);
+        }
+        else
+        {
+            action_return(1, "The event is not open.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($EV.status outside [CLOSED, BLACKOUT]) then
+        {
+            $EV.mc_priority = $PRI;
+            opadd($EV, "PRIORITY_SET", $PRI);
+        }
+        else
+        {
+            action_return(1, "The event is not open.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# SetPriorityAndAddNote operation - Sets the event's priority to the specified value
+#
+action im_operations.SetPriorityAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors']
+    } ["New Priority":MC_PRIORITY ($PRI),Option:STRING($NOTE)] :
+    EVENT ($EV)
+    {
+        if ($EV.status outside [CLOSED, BLACKOUT]) then
+        {
+            $EV.mc_priority = $PRI;
+            if($NOTE != "") then
+            {
+            	opadd($EV, "PRIORITY_SET: " || $NOTE || " ",$PRI );
+            }
+            else
+            {
+            	opadd($EV, "PRIORITY_SET", $PRI);
+            }
+        }
+        else
+        {
+            action_return(1, "The event is not open.");
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($EV.status outside [CLOSED, BLACKOUT]) then
+        {
+            $EV.mc_priority = $PRI;
+            if($NOTE != "") then
+	    {
+	    	opadd($EV, "PRIORITY_SET: " || $NOTE || " " ,$PRI);
+	    }
+	    else
+	    {
+            	opadd($EV, "PRIORITY_SET", $PRI);
+            }
+        }
+        else
+        {
+            action_return(1, "The event is not open.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# ReOpen operation - Re-opens event (sets event status back to OPEN) if not currently open
+#
+action im_operations.ReOpen: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors']
+    } [] :
+    EVENT ($EV) where [ NOT cellinfo(POMEnabled) ]
+    {
+        if ($EV.status != OPEN) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            if ($EV.mc_owner != "") then
+            {
+                $EV.mc_owner = "";
+            };
+            opadd($EV, "REOPENED", "");
+        }
+        else
+        {
+            action_return(1, "The event is already in OPEN status.");
+        }
+    }
+    MC_CELL_CONTROL ($EV) where [ NOT cellinfo(POMEnabled) ]
+    {
+        if ($EV.status != OPEN) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            if ($EV.mc_owner != "") then
+            {
+                $EV.mc_owner = "";
+            };
+            opadd($EV, "REOPENED", "");
+        }
+        else
+        {
+            action_return(1, "The event is already in OPEN status.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# ReOpen operation - Re-opens event (sets event status back to OPEN) if not currently open
+# and adds note
+#
+action im_operations.ReOpenAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors']
+    } [Option:STRING($NOTE)] :
+    EVENT ($EV) where [ NOT cellinfo(POMEnabled) ]
+    {
+        if ($EV.status != OPEN) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            if ($EV.mc_owner != "") then
+            {
+                $EV.mc_owner = "";
+            };
+
+            if($NOTE != "") then
+            {
+               opadd($EV, "REOPENED: " || $NOTE, "");
+            }
+            else
+            {
+               opadd($EV, "REOPENED", "");
+            }
+        }
+        else
+        {
+            action_return(1, "The event is already in OPEN status.");
+        }
+    }
+    MC_CELL_CONTROL ($EV) where [ NOT cellinfo(POMEnabled) ]
+    {
+        if ($EV.status != OPEN) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            if ($EV.mc_owner != "") then
+            {
+                $EV.mc_owner = "";
+            };
+
+            if($NOTE != "") then
+            {
+               opadd($EV, "REOPENED: " || $NOTE, "");
+            }
+            else
+            {
+               opadd($EV, "REOPENED", "");
+            }
+        }
+        else
+        {
+            action_return(1, "The event is already in OPEN status.");
+        }
+    }
+END
+
+#-------------------------------------------------------------------------------
+#
+# UnAcknowledgeAndAddNote operation - opens the event (sets the event status to Open)
+#
+
+action im_operations.UnAcknowledgeAndAddNote: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [Option:STRING($NOTE)] :
+
+    EVENT ($EV)
+    {
+        if ($EV.status == ACK) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            if($NOTE != "") then
+            {
+                opadd($EV, "UNACKNOWLEDGED: " || $NOTE, "");
+            }            
+            else
+            {
+            	opadd($EV, "UNACKNOWLEDGED", "");
+            }
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                        action_return(1, "Assigned event cannot be unacknowledged.");
+                }
+                else
+                {
+                        action_return(1, "The event has already been open.");
+                }
+            }
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($EV.status == ACK) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            if($NOTE != "") then
+            {
+                opadd($EV, "UNACKNOWLEDGED: " || $NOTE, "");
+            }            
+            else
+            {
+            	opadd($EV, "UNACKNOWLEDGED", "");
+            }
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                        action_return(1, "Assigned event cannot be unacknowledged.");
+                }
+                else
+                {
+                        action_return(1, "The event has already been open.");
+                }
+            }
+        }
+    }
+END
+
+
+#-------------------------------------------------------------------------------
+#
+# UnAcknowledge operation - opens the event (sets the event status to Open)
+#
+
+action im_operations.UnAcknowledge: 
+    {
+        ['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','Cloud Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators', 'Service Operators - Senior','BPPM Supervisors', 'Supervisors','Service Operators','BPPM Operators', 'Operators']
+    } [] :
+
+    EVENT ($EV)
+    {
+        if ($EV.status == ACK) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "UNACKNOWLEDGED", "");
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                        action_return(1, "Assigned event cannot be unacknowledged.");
+                }
+                else
+                {
+                        action_return(1, "The event has already been open.");
+                }
+            }
+        }
+    }
+    MC_CELL_CONTROL ($EV)
+    {
+        if ($EV.status == ACK) then
+        {
+            $EV.status = OPEN;
+            $EV.pn_detail_diag = 0;
+            opadd($EV, "UNACKNOWLEDGED", "");
+        }
+        else 
+        {
+            if ($EV.status within [CLOSED, BLACKOUT]) then
+            {
+                action_return(1, "The event is not open.");
+            }
+            else
+            {
+                if ($EV.status == ASSIGNED) then
+                {
+                        action_return(1, "Assigned event cannot be unacknowledged.");
+                }
+                else
+                {
+                        action_return(1, "The event has already been open.");
+                }
+            }
+        }
+    }
+END

@@ -1,0 +1,60 @@
+#
+# File name: di_severity_map_default_providers.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+DEFAULT_PROVIDERS_SEV;
+        provider_class=PATROL_EV;
+        severity=STATE_CHANGE;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=PATROL_EV;
+        severity=INFORMATION;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=PATROL_EV;
+        severity=ERROR;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=PATROL_EV;
+        severity=WARNING;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=PATROL_EV;
+        severity=ALARM;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=ITDA_Event;
+        severity=OK;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=ITDA_Event;
+        severity=INFO;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=ITDA_Event;
+        severity=MINOR;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=ITDA_Event;
+        severity=MAJOR;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=ITDA_Event;
+        severity=WARNING;
+END
+
+DEFAULT_PROVIDERS_SEV;
+        provider_class=ITDA_Event;
+        severity=CRITICAL;
+END
+

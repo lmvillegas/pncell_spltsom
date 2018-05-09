@@ -1,0 +1,191 @@
+#
+# File name: euem_refine.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------
+# drop PlatformError Traps with severity CONDITION and INFO
+#----------------------------------------------------
+new drop_severity : SNMP_notificationAlertsPlatformError ($EV)
+	where [($EV.snmpv_platformErrorSeverity == "CONDITION" OR $EV.snmpv_platformErrorSeverity == "INFO") AND $EV.status != BLACKOUT AND $EV.status != CLOSED]
+	triggers{
+		drop_new;
+	}
+END	
+
+#----------------------------------------------------
+# set PlatformError event severity based on snmpv_platformErrorSeverity
+#----------------------------------------------------
+refine set_new_severity : SNMP_notificationAlertsPlatformError ($EV)
+	where [$EV.msg == "EUEM - System Event - platform error" AND $EV.status != BLACKOUT AND $EV.status != CLOSED]
+	{
+		if($EV.snmpv_platformErrorSeverity == 'ATTENTION') then
+		{
+			$EV.severity = 'WARNING';
+		}
+		else
+		{
+			if($EV.snmpv_platformErrorSeverity == 'ERROR') then
+			{
+				$EV.severity = 'MAJOR';
+			}
+			else
+			{
+				if($EV.snmpv_platformErrorSeverity == 'CRITICAL') then
+				{
+					$EV.severity = 'CRITICAL';
+				}
+				else
+				{
+					$EV.severity = 'INFO';
+				}
+			}
+		}
+	}
+END
+
+#---------------------------------------------------------------------------------------
+# set PlatformError event message, description, Monitoring tool (mc_tool_uri) & severity
+#---------------------------------------------------------------------------------------
+refine set_new_platform_message : SNMP_notificationAlertsPlatformError ($EV)
+	where [$EV.status != BLACKOUT AND $EV.status != CLOSED]
+	{
+		#set monitoring tool link to ssl decryption page in TrueSight
+		$MSG2 = $EV.mc_host_address;
+		concat( ["https://" , $MSG2, "/admin/status.do"], $MSG0);
+		$EV.mc_tool_uri = $MSG0;
+		$EV.mc_long_msg = $EV.snmpv_platformErrorDescription;
+		concat( ["BMC EUEM - ", $EV.snmpv_platformErrorSeverity], $MC_TOOL);
+		$EV.mc_tool = $MC_TOOL;		
+		#$EV.mc_tool_sev = $EV.snmpv_platformErrorSeverity;
+		$EV.mc_tool_key = $EV.snmpv_platformErrorState;		
+		$EV.mc_origin_key = $EV.snmpv_platformErrorName;
+	}	
+END
+
+#-----------------------------------------------------------------------------
+# mc_tool_key is used to store platform error state (snmpv_platformErrorState) value CLEARED/RAISED.
+# mc_origin_key is used to store platformErrorName
+# when we create an event where mc_tool_key == 'CLEARED' we search for event with the 
+# same  mc_origin_key (platformErrorName) and close it, this event (mc_tool_key == 'CLEARED') is also droped.
+#-----------------------------------------------------------------------------
+index platformIndex : SNMP_notificationAlertsPlatformError hashed [mc_origin_key] END
+
+new close_platform_event : SNMP_notificationAlertsPlatformError ($EV)
+   where [$EV.mc_tool_key == 'CLEARED' AND $EV.status != BLACKOUT AND $EV.status != CLOSED]
+	using {index platformIndex [$EV.mc_origin_key] ($EV_OLD) where [$EV_OLD.status != BLACKOUT]}
+	triggers {
+	  $EV_OLD.status = CLOSED;
+	  drop_new;
+	}
+END
+
+#----------------------------------------------------------------------------
+# set SslDecryptionError message, Description & Monitoring tool (mc_tool_uri)
+#----------------------------------------------------------------------------
+refine set_ssl_decryption_message : SNMP_notificationAlertsSslDecryptionError ($EV)
+	where [$EV.status != BLACKOUT AND $EV.status != CLOSED]
+	{
+		#set monitoring tool link to ssl decryption page in TrueSight
+		$MSG4 = $EV.mc_host_address;
+		concat( ["https://" , $MSG4, "/admin/security/ssl/view.jsf"], $MSG5);
+		$EV.mc_tool_uri = $MSG5;
+		$EV.mc_long_msg = $EV.snmpv_sslDecryptionErrorDescription;	
+	}	
+END
+
+#----------------------------------------------
+# filter the URI based on snmpv_incidentAimLink
+#----------------------------------------------
+refine set_aim_link : SNMP_notificationAlertsIncident ($EV)
+	where [$EV.status != BLACKOUT AND $EV.status != CLOSED]
+	{
+		#set WatchPoint name in the message
+		$MSG6 = $EV.snmpv_incidentWatchpoint;
+		$MSG7 = $EV.snmpv_incidentType;
+		concat( ["EUEM-Watchpoint Event- " , $MSG6, " - ", $MSG7], $MSG8);
+		
+		$EV.msg = $MSG8;
+		$EV.mc_long_msg = $EV.snmpv_incidentSummary;
+		$EV.mc_parameter = $EV.snmpv_incidentType;
+		$EV.mc_tool_key = $EV.snmpv_incidentStatus;
+	
+		$CMDB_HLEN = len($EV.snmpv_incidentAimCMDBCIID);
+		if ($CMDB_HLEN > 0) then
+		{
+			$CMDB_ID_DELIMITER = ':';
+			$CMDB_ZPOS = strpart($EV.snmpv_incidentAimCMDBCIID, $CMDB_ID_DELIMITER);
+			$TOKEN_ID = substring($EV.snmpv_incidentAimCMDBCIID, $CMDB_ZPOS, $CMDB_HLEN - $CMDB_ZPOS);	
+			$CMDB_CLASS_TYPE = "BMC_Activity";
+			concat( [$CMDB_CLASS_TYPE, $CMDB_ID_DELIMITER, $TOKEN_ID], $CORRECT_ALIAS);
+			$EV.mc_smc_alias = $CORRECT_ALIAS;
+#			$EV.mc_smc_type = $CMDB_CLASS_TYPE;
+		};
+		
+		# when we first get incidents from TrueSight, some of the traps are closing incidents, 
+		# we want to set these events status to closed. 
+		if($EV.snmpv_incidentStatus == 'COMPLETED') then
+		{
+			$EV.status = CLOSED;
+		};
+		
+		# set link to TrueSight UI Incident page
+		$HLEN = len($EV.snmpv_incidentAimLink);
+		$ZPOS = strpart($EV.snmpv_incidentAimLink, ':');
+
+		if ($HLEN == 0 OR $ZPOS == 0 OR $ZPOS == $HLEN) then
+		{
+			$EV.mc_tool_uri = "Unknown";
+		}
+		else
+		{
+			$EV.mc_tool_uri = substring($EV.snmpv_incidentAimLink, $ZPOS, $HLEN - $ZPOS);
+		};
+	}
+END
+
+#-----------------------------------------------------------------------------
+# set incident id for allowing us identify the closing event for each incident
+#-----------------------------------------------------------------------------
+refine set_incident_id : SNMP_notificationAlertsIncident ($EV)
+	where [$EV.status != BLACKOUT AND $EV.status != CLOSED]
+	{
+		# set link to TrueSight UI Incident page
+		$INCIDENT_VALUE_END_POS = strpart($EV.snmpv_incidentAimLink, '&');
+		# this is the starting index of incident id value (imediately after "incidentId=" inside aim link string
+		$INCIDENT_ID_START_POS = strpart($EV.snmpv_incidentAimLink, "incidentId=");
+
+		if ($INCIDENT_VALUE_END_POS == 0 OR $INCIDENT_ID_START_POS == 0 OR $INCIDENT_ID_START_POS == $INCIDENT_VALUE_END_POS) then
+		{
+			$EV.mc_origin_key = "Unknown";
+		}
+		else
+		{
+			# we need to increment $INCIDENT_ID_START_POS + 10 because it's the length of "incidentId=", the original value of $INCIDENT_ID_START_POS 
+			# is the starting index of "incidentId=" and we need the index of the actual value of incident id.
+			$INCIDENT_VALUE_START_POS = $INCIDENT_ID_START_POS + 10;
+			$INCIDENT_VALUE_LENGTH = $INCIDENT_VALUE_END_POS - $INCIDENT_VALUE_START_POS - 1;
+			$EV.mc_origin_key = substring($EV.snmpv_incidentAimLink, $INCIDENT_VALUE_START_POS, $INCIDENT_VALUE_LENGTH);
+		};
+	}
+END
+
+#-----------------------------------------------------------------------------
+# mc_tool_key is used to store incident status (snmpv_incidentStatus) value.
+# mc_origin_key is used to store incidentId (ectracted from the AIM link we got in the trap)
+# when we create an event where incident status == 'COMPLETED' we search for event with the 
+# same incident id and close it, this event (status == 'COMPLETED') is also droped.
+#-----------------------------------------------------------------------------
+index myindex : SNMP_notificationAlertsIncident hashed [mc_host,mc_origin_key] END
+
+new close_old_event : SNMP_notificationAlertsIncident ($EV)
+   where [$EV.mc_tool_key == 'COMPLETED' AND $EV.status != BLACKOUT AND $EV.status != CLOSED AND $EV.mc_origin_key != '' AND $EV.mc_origin_key != "Unknown"]
+	using {index myindex [$EV.mc_host,$EV.mc_origin_key] ($EV_OLD) where [$EV_OLD.status != BLACKOUT]}
+	triggers {
+	  $EV_OLD.status = CLOSED;
+	  drop_new;
+	}
+END
+
+
+

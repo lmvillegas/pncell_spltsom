@@ -1,0 +1,27 @@
+#
+# File name: bped_em.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description : This file defines an event class used for propagating 
+#               BMC Performance Exception Detector events to a Cell
+#--------------------------------------------------------
+
+MC_EV_CLASS:
+   BPED_ExceptionEvents ISA EVENT
+   DEFINES
+   {
+        bped_detector_id		: STRING, default="--";
+        bped_detector_name		: STRING, default="--";
+        bped_detector_description		: STRING, default="--";
+        bped_detector_plat_type		: STRING, default="--";
+        bped_detector_object_type		: STRING, default="--";
+        bped_detector_rules		: LIST_OF STRING;
+        bped_detector_sensitivity		: STRING, default="--";
+        bped_detector_data_source		: STRING, default="--";
+        bped_detector_data_server		: STRING, default="--";
+        bped_detector_object_name		: STRING, default="--";
+        bped_detector_exception_date	: INTEGER, representation = date;
+    };
+END

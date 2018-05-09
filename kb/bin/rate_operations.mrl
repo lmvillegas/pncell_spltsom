@@ -1,0 +1,68 @@
+#
+# File name: rate_operations.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: rate_operations.mrl
+# Version: 
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#
+#-------------------------------------------------------------------------------
+# This file used to define the operations available to the rate
+# These operations must not be deleted.
+# They can be altered but there signature must remains
+# ------------------------------------------------------------------------------
+#
+action rate_operations.ChangeSeverity   [Severity:SEVERITY($SEV),Message:STRING($MSG)] :
+    ALARM ($EV)
+    {
+	if ($EM_KB_OPTIONS.rate_overwrite_msg == YES) then
+	{
+		$EV.msg = $MSG;
+	}
+	else
+	{
+	opadd($EV, "RATE_SEVERITY_CHANGE", $EV.severity || ' -> ' || $SEV || ' (' || $MSG || ')');
+	};
+	$EV.pn_old_severity=$EV.severity;
+	$EV.severity = $SEV;
+	if ($SEV > $EV.pn_highest_severity) then
+	{
+		$EV.pn_highest_severity = $SEV;	
+	};
+	$EV.pn_invoke_alarm_rule = TRUE;
+    }
+    ABNORMALITY ($EV)
+    {
+	if ($EM_KB_OPTIONS.rate_overwrite_msg == YES) then
+	{
+		$EV.msg = $MSG;
+	}
+	else
+	{
+	opadd($EV, "RATE_SEVERITY_CHANGE", $EV.severity || ' -> ' || $SEV || ' (' || $MSG || ')');
+	};
+	$EV.severity = $SEV;
+	$EV.pn_invoke_alarm_rule = TRUE;
+    }
+END
+
+action rate_operations.Close   [Reason:STRING($NOTE)] :
+    ALARM ($EV) where [$EV.status != CLOSED]
+    {
+     $EV.status = CLOSED;
+     $EV.pn_old_severity=$EV.severity;
+     opadd($EV, "RATE_CLOSED: " || $NOTE, "");
+     $EV.pn_invoke_alarm_rule = TRUE;
+    }
+    ABNORMALITY ($EV) where [$EV.status != CLOSED]
+    {
+     $EV.status = CLOSED;
+     opadd($EV, "RATE_CLOSED: " || $NOTE, "");
+     $EV.pn_invoke_alarm_rule = TRUE;
+    }
+END
+
+ 

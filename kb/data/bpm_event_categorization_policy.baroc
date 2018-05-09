@@ -1,0 +1,340 @@
+#
+# File name: bpm_event_categorization_policy.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------------
+# Next Generation Platform
+# Copyright 2009 BMC Software, Inc.  All rights reserved.
+# Filename :    bpm_event_categorization_policy
+# Author   :    Nitin Rathod
+#----------------------------------------------------------
+#
+#  Used for Next Generation Platform [NGP]
+
+SELECTOR;	
+	based_on='PORTAL_PARAMETER_STATE_CHANGE';
+	name='BPM_STATE_CHANGE';
+	description='BPM_STATE_CHANGE event from BPM';
+	ecfs=[PORTAL_PARAMETER_STATE_CHANGE];
+	ecfs_descr=[''];
+END
+
+SELECTOR;
+	based_on='PORTAL_RSM_STATE_CHANGE';
+	name='BPM_RSM_STATE_CHANGE';
+	description='';
+	ecfs=[PORTAL_RSM_STATE_CHANGE];
+	ecfs_descr=['RSM State change Events'];
+END
+
+IM_DDEN_POLICY;
+	name='BPM_Event_Categorization';
+	description='';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='BPM_STATE_CHANGE';
+	selector_class='PORTAL_PARAMETER_STATE_CHANGE';
+	selector_ecf=*BPM_STATE_CHANGE ($EV);
+	ordinal=0;
+	execution_order=5;
+	event_class='PORTAL_PARAMETER_STATE_CHANGE';
+	lookup_table='DDEN_MATCH_TABLE';
+	lookup_table_tag='enrich-tag_5';
+	match_fields=['mc_object_class'];
+	output_fields=['mc_event_subcategory'];
+	trace=NO;
+	data_file='etc/samples/BPM_Category_Table.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+IM_DDEN_POLICY;
+	name='BPM_RSM_STATE_CHANGE';
+	description='';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='BPM_RSM_STATE_CHANGE';
+	selector_class='PORTAL_RSM_STATE_CHANGE';
+	selector_ecf=*BPM_RSM_STATE_CHANGE ($EV);
+	ordinal=0;
+	execution_order=6;
+	event_class='PORTAL_RSM_STATE_CHANGE';
+	lookup_table='DDEN_MATCH_TABLE';
+	lookup_table_tag='enrich-tag_6';
+	match_fields=['mc_object_class'];
+	output_fields=['mc_event_subcategory'];
+	trace=NO;
+	data_file='etc/samples/BPM_RSM_STATE_CHANGE_Category_Table.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_1_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<JBoss>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_2_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<WebSphere>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_3_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Tomcat>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_4_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<WebLogic>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_5_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Oracle E-Business>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_6_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Oracle Fusion>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_7_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<SAP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_8_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Exchange>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_9_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Internet Information Server>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_10_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Apache>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['APPLICATION'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_11_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Active Directory Service>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_12_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Domain Name Server>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_13_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<DHCP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_14_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<DNS>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_15_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Ping>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_16_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<FTP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_17_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<IMAP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_18_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<NNTP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_19_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<POP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_20_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<SMTP>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_21_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<SSH>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_22_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Telnet>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['NETWORK'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_23_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<SQL>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_24_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Oracle>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_25_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Sybase>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_26_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<DB2>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['DATABASE'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_27_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Windows>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_28_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<AIX>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_29_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<HP-UX>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_30_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Linux>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_31_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Solaris>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_32_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Log>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_33_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Citrix>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_34_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['<Virtual>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END
+DDEN_MATCH_TABLE;
+	name='enrich-tag_5_35_2009_5_6_0:37:8PM';
+	tag='enrich-tag_5';
+	input_match=['*<Transaction>*'];
+	ref_instances_classes=['PORTAL_PARAMETER_STATE_CHANGE'];
+	output_expressions=['USER_TRANSACTION'];
+END
+
+DDEN_MATCH_TABLE;
+	name='enrich-tag_6_1_2009_5_13_9:2:53AM';
+	tag='enrich-tag_6';
+	input_match=['<AGENT>'];
+	ref_instances_classes=['PORTAL_RSM_STATE_CHANGE'];
+	output_expressions=['SYSTEM'];
+END

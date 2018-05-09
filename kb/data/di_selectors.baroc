@@ -1,0 +1,114 @@
+#
+# File name: di_selectors.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SELECTOR;
+	based_on='EVENT';
+	name='All_Events';
+	description='All Events';
+	ecfs=[EVENT];
+	ecfs_descr=['All Events'];
+END
+
+SELECTOR;
+	based_on='EVENT';
+	name='Blackout_Events';
+	description='All Blacked-out Events';
+	ecfs=['EVENT ($EV) where [$EV.status == BLACKOUT]'];
+	ecfs_descr=['All Blacked-out Events'];
+END
+
+SELECTOR;
+	based_on='PATROL_EV';
+	name='PATROL_Events';
+	description='Events coming from PATROL agents';
+	ecfs=[PATROL_EV];
+	ecfs_descr=['All PATROL Events'];
+END
+
+SELECTOR;
+	based_on='PATROL_PORTAL_EVENT';
+	name='Default.PATROL_Portal_Events';
+	description='Events coming from PATROL Portal';
+	ecfs=[PATROL_PORTAL_EVENT];
+	ecfs_descr=['All PATROL Portal Events'];
+END
+
+SELECTOR;
+	based_on='PATROL_PORTAL_EVENT';
+	name='Default.PATROL_Portal_OK_Events';
+	description='OK severity events coming from PATROL Portal';
+	ecfs=['PATROL_PORTAL_EVENT ($EV) where [$EV.severity == OK]'];
+	ecfs_descr=['OK Severity PATROL Portal Events'];
+END
+
+SELECTOR;
+	based_on='PORTAL_PARAMETER_STATE_CHANGE_OFFLINE';
+	name='Default.PATROL_Portal_Offline_Events';
+	description='Offline parameter events coming from PATROL Portal';
+	ecfs=[PORTAL_PARAMETER_STATE_CHANGE_OFFLINE];
+	ecfs_descr=['All PATROL Portal Offline Parameter Events'];
+END
+
+SELECTOR;
+	based_on='PORTAL_PARAMETER_STATE_CHANGE_BLACKOUT';
+	name='Default.PATROL_Portal_Blackout_Events';
+	description='Blackout parameter events coming from PATROL Portal';
+	ecfs=[PORTAL_PARAMETER_STATE_CHANGE_BLACKOUT];
+	ecfs_descr=['All PATROL Portal Blackout Parameter Events'];
+END
+
+SELECTOR;
+	based_on='MC_ADAPTER_CONTROL';
+	name='Default.Adapter_Start_Stop';
+	description='Adapter starting and stoping events';
+	ecfs=[MC_ADAPTER_START,MC_ADAPTER_STOP];
+	ecfs_descr=['Adapter Start Event','Adapter Stop Event'];
+END
+
+SELECTOR;
+	based_on='APACHE_LOGIN_FAILED';
+	name='Default.Apache_Login_Failed';
+	description='Apache web server login failed events';
+	ecfs=[APACHE_LOGIN_FAILED];
+	ecfs_descr=['Apache Web server login failed events'];
+END
+
+SELECTOR;
+	based_on='MC_CLIENT_STOP';
+	name='Default.Client_Stop';
+	description='Client Stop Events';
+	ecfs=[MC_CLIENT_STOP];
+	ecfs_descr=['Client Stop Events'];
+END
+SELECTOR;
+	based_on='LOGFILE_BASE';
+	name='PPM.JSERVERCellConnectionStatusSelector';
+	description='';
+	ecfs=['LOGFILE_BASE($EV) where [$EV.mc_object equals ''JSERVER'' AND $EV.mc_parameter_value equals ''3'' ]'];
+	ecfs_descr=[''];
+END
+SELECTOR;
+	based_on='LOGFILE_BASE';
+	name='PPM.RATECellConnectionStatusSelector';
+	description='';
+	ecfs=['LOGFILE_BASE($EV) where [$EV.mc_object equals ''RATE'' AND $EV.mc_parameter_value equals ''3'' ]'];
+	ecfs_descr=[''];
+END
+
+SELECTOR;	
+	based_on='MC_RESOURCE_MONITOR_EV';
+	name='Cell_Resource_Monitor';
+	description='Selector for Cell resource monitoring';
+	ecfs=[MC_RESOURCE_MONITOR_EV];
+	ecfs_descr=['All Cell Resource Monitor Events'];
+END
+
+SELECTOR;
+	based_on=MC_CELL_CONTROL;
+	name='internal_events';
+	description='Selector for internal events';
+	ecfs=[MC_CELL_CLIENT,MC_CELL_CONNECT];
+	ecfs_descr=['Cell Client Event','Cell Connect event'];
+END

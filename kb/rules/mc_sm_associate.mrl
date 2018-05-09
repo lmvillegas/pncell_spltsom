@@ -1,0 +1,234 @@
+#
+# File name: mc_sm_associate.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS RULESET
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE SERVICE MANAGEMENT MODEL
+#----------------------------------------------------
+
+#----------------------------------------------------
+# INIT
+#----------------------------------------------------
+
+refine initialization_steps:
+	EVENT ($RAW_EVENT) where [ $RAW_EVENT.CLASS != 'SMC_STATE_CHANGE' AND $RAW_EVENT.CLASS != 'SIM_COMPONENT_CHANGE' AND $RAW_EVENT.CLASS != 'SIM_COMPONENT_DELETE' ]
+	{
+		$RAW_EVENT.mc_smc_type = "";
+	}
+END
+
+
+#----------------------------------------------------
+# reset the mc_smc_id in case no correspondig CI exists
+# this CI may later be created dynamically thru the rules
+# in mc_sm_dyn.mrl
+#----------------------------------------------------
+
+refine initialization_clear_unmatch_mc_smc_id:
+	EVENT ($EV) where [ $EV.mc_smc_id != '' ]
+	unless { MC_SM_COMPONENT ($C) where [$C.mc_udid == $EV.mc_smc_id] }
+	{
+		$EV.mc_smc_id = '';
+	}
+END
+
+#----------------------------------------------------
+# If mc_smc_alias is set by source find the corresponding alias
+# Build mc_smc_id and save it in event
+#----------------------------------------------------
+
+refine set_mc_smc_id_from_mc_smc_alias:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id == "" AND
+		$RAW_EVENT.mc_smc_alias != ""
+	]
+	using
+	{
+		BMC_SIM_ALIAS ($A) where [$A.ComponentAlias ==  $RAW_EVENT.mc_smc_alias]
+	}
+	{
+		$RAW_EVENT.mc_smc_id = $A.ComponentID;
+	}
+END
+
+#----------------------------------------------------
+# Associate Rate event base on the mc_host_id
+# Build mc_smc_id and save it in event
+#----------------------------------------------------
+index CS_Deviceid_idx : BMC_ComputerSystem hashed [DeviceID] END
+
+refine associate_with_cs_match_mc_host_id:
+	PPM_EV ($EV) where
+	[
+		$EV.mc_smc_id == "" AND
+		$EV.mc_smc_alias == ""
+	]
+	using
+	{
+		index CS_Deviceid_idx [$EV.mc_host_id] ($CS)
+	}
+	{
+		$EV.mc_smc_id = $CS.mc_udid;
+	}
+END
+
+
+#----------------------------------------------------
+# BUILD LOGICAL ID
+# If mc_smc_id not set by source or by previous rule
+# Find most specific alias using the "alias" match table
+# Build mc_smc_id and save it in event
+# Build mc_smc_id and save it in event
+# Build mc_smc_id and save it in event
+#----------------------------------------------------
+
+refine find_most_specific_formulas_and_build_mc_smc_id1:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id == "" AND
+		$RAW_EVENT.mc_smc_alias == ""
+	]
+	using 
+       { BMC_SIM_ALIAS ($ALIAS) where 
+               [$ALIAS.ComponentAlias == listgetelt(find_match( 'BMC_SIM_MATCH_TABLE', 
+	       		      			        'alias',
+							[ listwalk(class_path($RAW_EVENT.CLASS)),
+        						  $RAW_EVENT.mc_host_class,	
+        						  $RAW_EVENT.mc_host, 
+        						  $RAW_EVENT.mc_host_address, 
+        						  $RAW_EVENT.mc_object_class, 
+        						  $RAW_EVENT.mc_object, 
+        						  $RAW_EVENT.mc_parameter ], 
+        						[ $RAW_EVENT ]),
+                                             1)]
+        }
+	{	
+		$RAW_EVENT.mc_smc_alias = $ALIAS.ComponentAlias ;
+		$RAW_EVENT.mc_smc_id = $ALIAS.ComponentID ;
+	}
+END
+
+index CS_host_domain_index : BMC_ComputerSystem sorted [HostName,Domain] END
+
+refine associate_fqdn_ev_to_CS_matching_host_and_domain:
+	PPM_EV ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id == "" AND
+		$RAW_EVENT.mc_smc_alias == "" AND 
+		$RAW_EVENT.mc_host != "" AND 
+		$RAW_EVENT.mc_location outside ["",Unknown]
+	]
+	using 
+        { 
+           index CS_host_domain_index [ cond( ($RAW_EVENT.mc_host contains '.'), 
+                                              substring($RAW_EVENT.mc_host, 0, strpart( $RAW_EVENT.mc_host, '.') - 1), 
+                                              $RAW_EVENT.mc_host),
+                                        $RAW_EVENT.mc_location] ($CI)
+        }
+	{	
+		$RAW_EVENT.mc_smc_id = $CI.mc_udid ;
+	}
+END
+
+refine associate_ev_to_empty_domain_CS_matching_host:
+	PPM_EV ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id == "" AND
+		$RAW_EVENT.mc_smc_alias == "" AND 
+		$RAW_EVENT.mc_host != "" 
+	]
+	using 
+        { 
+           index CS_host_domain_index [ cond( ($RAW_EVENT.mc_host contains '.'), 
+                                              substring($RAW_EVENT.mc_host, 0, strpart( $RAW_EVENT.mc_host, '.') - 1), 
+                                              $RAW_EVENT.mc_host),
+                                        ''] ($CI)
+        }
+	{	
+		$RAW_EVENT.mc_smc_id = $CI.mc_udid ;
+	}
+END
+
+refine associate_non_fqdn_ev_to_any_CS_matching_host:
+	PPM_EV ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id == "" AND
+		$RAW_EVENT.mc_smc_alias == "" AND 
+		$RAW_EVENT.mc_host != "" AND 
+		$RAW_EVENT.mc_location within ["",Unknown] AND
+		NOT $RAW_EVENT.mc_host contains '.'
+	]
+	using 
+        { 
+           index CS_host_domain_index [ $RAW_EVENT.mc_host] ($CI)
+        }
+	{	
+		$RAW_EVENT.mc_smc_id = $CI.mc_udid ;
+	}
+END
+
+
+#----------------------------------------------------
+# GET COMPONENT TYPE
+# Find component matching logical ID and 
+# - save its type into the event
+# - set in case its mc_smc_alias is empty set it to mc_smc_id
+# - if associated to a BMC_ComputerSystem set its mc_host_id to the DeviceId of this CI
+#   and the pn_device_name to the CI Name for a POM enabled cell
+# - copy the CI's UsingOrganization and UsingOrganizationID to the event 
+#----------------------------------------------------
+
+refine associate_new_event:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id != ""
+	]
+	using
+	{
+		BMC_BaseElement ($COMP) where
+		[
+			$COMP.mc_udid == $RAW_EVENT.mc_smc_id
+		]
+	}
+	{
+		if ($RAW_EVENT.mc_smc_type == '') then
+		{
+			$RAW_EVENT.mc_smc_type = $COMP.CLASS;
+		};
+
+		if ($RAW_EVENT.mc_smc_alias == '') then
+		{
+		   $RAW_EVENT.mc_smc_alias = $RAW_EVENT.mc_smc_id;
+		};
+
+		if ($COMP.CLASS subclass_of BMC_ComputerSystem) then
+		{
+			$RAW_EVENT.mc_host_id = $COMP.DeviceID;
+			cellinfo(POMEnabled,$PE);
+			if( $PE == "Yes" ) then
+			{
+				$RAW_EVENT.pn_device_name = $COMP.Name;
+			};
+		};
+
+		if ($RAW_EVENT.mc_using_organization == '') then
+		{
+			$RAW_EVENT.mc_using_organization = $COMP.UsingOrganization;
+		};
+		if ($RAW_EVENT.mc_using_organization_id == '') then
+		{
+			$RAW_EVENT.mc_using_organization_id = $COMP.UsingOrganizationId;
+		};
+		if ($RAW_EVENT.itsm_company == '') then
+		{
+			$RAW_EVENT.itsm_company = $COMP.Company;
+		}
+		
+	}
+END
+

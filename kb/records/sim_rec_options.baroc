@@ -1,0 +1,35 @@
+#
+# File name: sim_rec_options.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# contains KB global controls and default values
+#
+# 1=SIM_KB_OPTIONS
+#
+#-----+--------------------------+------------------------
+# 1   | maintenance_enabled      | controls mc_sm_maintenance.mrl
+#     | maint_filter_new_events  | controls filter rule in mc_sm_maintenance.mrl
+#     +--------------------------+------------------------
+#     | no_sched_sla_utc_offset  | optional sla utc offset to be used
+#     |                          | in mc_sm_eod_timers.mrl and mc_sm_sla.mrl
+#     |                          | if no schedule attached to sla
+#     +--------------------------+------------------------
+#     | update_impacting_event_mc_priority  | indicate if compoenent impact_priority 
+#     |                                     | should be copied to mc_priority of impacting (aka causal) events          
+#     |                                     | with mc_original_priority=PRIORITY_5 and mc_priority=PRIORITY_5 
+#     |                                     | at the time the event becomes causal. 
+#-----+--------------------------+------------------------
+
+RECORD SIM_KB_OPTIONS DEFINES
+{
+	maintenance_enabled:      MC_YESNO, default = YES;
+	maint_filter_new_events:  MC_YESNO, default = NO;
+	sla_functions_enabled:    MC_YESNO, default = YES;
+	no_sched_sla_utc_offset:  INTEGER, default = 0;
+	update_impacting_event_mc_priority: MC_YESNO,default = YES;
+}
+END

@@ -1,0 +1,107 @@
+#
+# File name: mv_admin.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#####################################################################
+##
+##         Element:  IIMCADMN
+##          Author:  Gregg Berg gregg_berg@bmc.com
+##
+##         Comment:  New Classes to support Central Admin Console
+##
+##         Created:  03/23/2010 13:43:40 AM EDT
+##        Modified:  03/23/2010
+##
+#####################################################################
+ 
+ 
+ 
+#####################################################################
+#
+#
+#   MV_EVENT_(mainview_event_types): Describes subclasses specific
+#   MAINVIEW AutoOPERATOR and IMZ for events that are stateless
+#
+#   all are a subclass of MV_EVENT. In most cased these subclasses to
+#   not have any additional slots but are broken in subclasses for ease
+#   of use and for future expansion.
+#
+#   Note: Descriptions of "IMF" and "AMF" variables can be found in the
+#      MAINVIEW AutoOPERATOR Basic Automation Guide.
+#
+#
+#   Classes in this file:
+#   =====================
+#
+#
+#   MV_ADMIN:                Super class of Central Admin Console
+#                            related events
+#
+#   MV_ADMIN_START:          MV AO / BIIZ Start-up event for Central
+#                            Admin Console
+#
+#   MV_ADMIN_STOP:           MV AO / BIIZ shutdown event for Central
+#                            Admin Console
+#
+#   MV_ADMIN_ERROR;          MV AO / BIIZ error event for Central
+#                            Admin Console
+#                            ** Not implemented at this time **
+#
+#
+#
+#   Class hierarchy
+#   ===============
+#   EVENT                   <--- BMC IM root EVENT class (CEF data)
+#     |
+#     +--- MV_ADMIN
+#           |
+#           +--- MV_ADMIN_START
+#           |
+#           +--- MV_ADMIN_STOP
+#           |
+#           +--- MV_ADMIN_ERROR
+#
+#
+#####################################################################
+ 
+ 
+#####################################################################
+#    MV_ADMIN:                This event is the root for
+#                             the CAC status events.
+#####################################################################
+MC_EV_CLASS :
+   MV_ADMIN ISA EVENT
+   DEFINES {
+      mc_event_category : default = OPERATIONS_MANAGEMENT;
+      severity : default = "OK";
+   };
+END
+ 
+ 
+#####################################################################
+#    MV_ADMIN_START:          This event provides startup status to
+#                             the CAC.
+#####################################################################
+MC_EV_CLASS :
+   MV_ADMIN_START ISA MV_ADMIN;
+END
+ 
+ 
+#####################################################################
+#    MV_ADMIN_STOP:           This event provides shutdown status to
+#                             the CAC.
+#####################################################################
+MC_EV_CLASS :
+   MV_ADMIN_STOP ISA MV_ADMIN;
+END
+ 
+ 
+#####################################################################
+#    MV_ADMIN_ERROR:          This event provides error status to
+#                             the CAC.
+#####################################################################
+MC_EV_CLASS :
+   MV_ADMIN_ERROR ISA MV_ADMIN;
+END
+

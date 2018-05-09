@@ -1,0 +1,567 @@
+#
+# File name: blackout_conf.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+# To differentiate between new policy and update policy request we can check the udid of the policy.
+# if policy udid is not present, its new request otherwise update request.
+
+refine get_blackout_policy_udid : BLACKOUT_EV($BO)
+where[$BO.blackout_name != '' ]
+using 
+{
+   	IM_BLACKOUT_POLICY($POL)
+		where [ $POL.name == $BO.blackout_name]	
+} 
+{
+	$BO.blackout_policy_udid = $POL.mc_udid;
+	
+	if( ($BO.selector_name == '' AND $BO.based_on_class ==  '') OR ($BO.based_on_class == $POL.selector_ecf) )
+	then
+	{
+		$BO.selector_name = $POL.selector_name;
+	};
+}
+END
+
+
+refine invalid_delete_blackout : BLACKOUT_EV($BO)
+where[$BO.blackout_policy_udid equals '' AND $BO.delete_blackout == YES]
+{		
+			if( $BO.blackout_name == '')
+			then
+			{
+				#Add note "Error in delete blackout operation, blackout name can not be empty, please provide valid blackout name"
+				ntadd($BO,localize(kb,['BMC_TS-IMC000012E']));				
+			}
+			else
+			{
+				#Add note "Error in delete blackout operation, can not find blackout configured with given name"
+				ntadd($BO,localize(kb,['BMC_TS-IMC000011E','s',$BO.blackout_name]));				
+			};
+			
+			$BO.operation_status=REJECTED;	
+			$BO.severity=WARNING;
+}
+END
+
+
+# Delete the existing blackout on user request
+# If we find any existing event for given blackout policy, update existing event and drop new event else keep new event.
+new delete_blackout : BLACKOUT_EV($BO)
+where[$BO.blackout_policy_udid not_equals '' AND $BO.delete_blackout == YES  AND $BO.operation_status != REJECTED ]
+using 
+{
+   IM_BLACKOUT_POLICY($POL) where [$POL.mc_udid equals $BO.blackout_policy_udid]
+} 
+triggers
+{		
+		remove_data($POL);						
+		$BO.operation_status=PASS;	
+		$BO.status=CLOSED;
+		#Add note "Successfully deleted the blackout policy"
+		ntadd($BO,localize(kb,['BMC_TS-IMC000001I','s',$BO.blackout_name]));
+}
+updates duplicate($ORG)
+{
+
+		#Update original event
+		$ORG.status=CLOSED;		
+		#Add note "Successfully deleted the blackout policy"
+		ntadd($ORG,localize(kb,['BMC_TS-IMC000001I','s',$BO.blackout_name]));
+		$ORG.operation_status=PASS;		
+		$ORG.delete_blackout=YES;
+		
+		#Increment repeat count and drop new event
+		$ORG.repeat_count 	= $ORG.repeat_count + 1;
+		drop_new;
+}
+END
+
+
+
+#Rules to create and update blackout 
+#check required slots in refine rule, if not present set blackout_status add notes
+refine check_blackout_format : BLACKOUT_EV($BO)
+where [ $BO.delete_blackout == NO AND $BO.status == OPEN AND ( $BO.blackout_name == '' OR  (listlen($BO.include_time_frames) == 0  AND $BO.blackout_duration == '' ) AND 
+		 $BO.blackout_policy_udid == '') ]
+{
+	
+	if ($BO.blackout_name equals '' )
+	then
+	{
+		#Add note "Blackout rejected: Blackout name is empty,provide blackout name to configure"				
+		ntadd($BO,localize(kb,['BMC_TS-IMC000005E']));						
+	};
+	
+	#validate time frame data
+	if (listlen($BO.include_time_frames) == 0  AND $BO.blackout_duration == ''  )
+	then
+	{	
+		#Add note "Blackout rejected: Slot required for time frame (blackout_duration or include_time_frames) is not provided."
+		ntadd($BO,localize(kb,['BMC_TS-IMC000006E']));
+	};	
+
+	$BO.operation_status=REJECTED;
+	$BO.severity=WARNING;
+}
+END
+
+#validate slot values for start_action,end_action and during_schedule_op 
+#If mc_bad_slot_names any one of above slot name then reject the blackout_configuration
+refine validate_actions : BLACKOUT_EV($BO)
+where[$BO.delete_blackout == NO AND $BO.status == OPEN AND listlen($BO.mc_bad_slot_names) != 0 ]
+{
+	if(listmember($BO.mc_bad_slot_names,'start_action'))
+	then
+	{
+		$BO.operation_status=REJECTED;
+		$BO.severity=WARNING;
+		#Add note "Blackout rejected: Wrong value for slot start_action."
+		ntadd($BO,localize(kb,['BMC_TS-IMC000017E']));
+	};
+	
+	if(listmember($BO.mc_bad_slot_names,'end_action'))
+	then
+	{
+		$BO.operation_status=REJECTED;
+		$BO.severity=WARNING;
+		#Add note "Blackout rejected: Wrong value for slot end_action."
+		ntadd($BO,localize(kb,['BMC_TS-IMC000018E']));
+	};
+	
+	if(listmember($BO.mc_bad_slot_names,'during_schedule_op'))
+	then
+	{
+		$BO.operation_status=REJECTED;
+		$BO.severity=WARNING;
+		#Add note "Blackout rejected: Wrong value for slot during_schedule_op."
+		ntadd($BO,localize(kb,['BMC_TS-IMC000019E']));
+	};
+}
+END
+
+#If user has given selector name, fetch selector details to set to event for future reference.
+#If user has selector name and selector ECF, ignore ECF.
+refine search_selector : BLACKOUT_EV($BO)
+where [ $BO.operation_status != REJECTED AND $BO.delete_blackout==NO AND  $BO.status == OPEN  AND $BO.selector_name != '' ]
+using 
+{
+   SELECTOR($SEL) 
+   where [$SEL.name == $BO.selector_name]
+}
+{
+	$BO.based_on_class  = $SEL.based_on;
+	if (listlen($SEL.ecfs) >= 1)
+	then
+	{
+		$BO.selector_ecf = listgetelt($SEL.ecfs,1);
+	}
+}
+END
+
+#If given selector not present, reject blackout request
+refine validate_selector : BLACKOUT_EV($BO)
+where [ $BO.operation_status != REJECTED AND  $BO.status == OPEN  AND $BO.delete_blackout==NO  AND $BO.selector_name != ''  AND  $BO.selector_ecf == '']
+{
+		#Add note "Blackout rejected: Given selector is not exist, provide valid selector name"		
+		ntadd($BO,localize(kb,['BMC_TS-IMC000016E','s',$BO.selector_name]));		
+		$BO.operation_status = REJECTED;
+		$BO.severity=WARNING;
+}
+END
+
+#Use case : include/exclude time frame names are provided, blackout_duration not provided
+#refine rule to validate time frame instance in case user provides time frame names
+#Iterate over all time frames, check all include/exclude time frames are present.
+#Create list of all existing inlcude/exclude time frames udids.
+# include/exclude time frame names list length should be same as udids list length.
+refine search_time_frame_instance : BLACKOUT_EV($BO)
+where [ $BO.operation_status != REJECTED AND  $BO.status == OPEN  AND (listlen($BO.include_time_frames) != 0 OR listlen($BO.exclude_time_frames) != 0) AND $BO.delete_blackout == NO ]
+using ALL
+{
+   TIME_FRAME($TF) 
+}
+{
+	#Irrespective its new or update request check if given time frame is exist, if its not exist reject blackout request.		
+	if(listmember($BO.include_time_frames, $TF.name))
+	then
+	{
+		add_to_list($TF.mc_udid,$BO.include_time_frame_udid);
+	};
+	
+	if(listmember($BO.exclude_time_frames,$TF.name))
+	then
+	{
+		add_to_list($TF.mc_udid,$BO.exclude_time_frame_udid);
+	};	
+}
+END
+
+refine validate_time_frame_instance : BLACKOUT_EV($BO)
+where [ $BO.status == OPEN  AND $BO.operation_status != REJECTED AND (listlen($BO.include_time_frames) != 0 OR listlen($BO.exclude_time_frames) != 0)  AND $BO.delete_blackout == NO]
+{
+	if ((listlen($BO.include_time_frames) != listlen($BO.include_time_frame_udid)) OR (listlen($BO.exclude_time_frames) != listlen($BO.exclude_time_frame_udid)))
+	then
+	{
+		$BO.operation_status = REJECTED ;
+		$BO.severity=WARNING;
+		
+		#Add note "Blackout rejected: Some of the time frames given in include_time_frames or exclude_time_frames slot are not exist,please provide valid time frames."	
+		ntadd($BO,localize(kb,['BMC_TS-IMC000007E']));		
+	}
+	else
+	{
+		#Empty the udids list to use if any update comes on the same blackout
+		$BO.include_time_frame_udid = [];
+		$BO.exclude_time_frame_udid = [];
+	};
+}
+END
+
+#If include_time_frame names are given, ignore blackout duration otherwise 
+#format and validate blackout_duration slot value.
+#If duration is given without unit (D,H,M,S) consider default unit as SECOND.
+# Verify whether duration is given in valid format, number followed by unit.
+refine format_and_validate_duration: BLACKOUT_EV($BO)
+where [$BO.status == OPEN  AND $BO.operation_status != REJECTED AND listlen($BO.include_time_frames) == 0 AND $BO.blackout_duration not_equals '' AND $BO.delete_blackout == NO]
+{
+
+	#Check if duration is given without unit (Only number is given without D/H/M/S)
+	$temp = $BO.blackout_duration;
+	if (match_regex($temp, '^[0-9]+$', ''))	
+	then
+	{		
+		$BO.blackout_duration = $temp||'S';
+	};
+	
+	#Check duration is given in valid format, number followed by single character
+	if (match_regex($BO.blackout_duration, '^[0-9]+[a-zA-Z]$', ''))
+	then
+	{
+		$BO.operation_status = PASS;
+	}
+	else
+	{			
+		#Add note "Blackout rejected: provide blackout duration in valid format, number followed by valid character (D,H,M,S)"		
+		ntadd($BO,localize(kb,['BMC_TS-IMC000008E']));		
+		$BO.operation_status = REJECTED;
+		$BO.severity=WARNING;
+	};			
+}
+END
+
+
+##use case , blackout_duration is provided, include time frames are not given => create time frame using blackout_duration slot.
+refine create_time_frame :BLACKOUT_EV($BO)
+where [ $BO.status == OPEN  AND $BO.operation_status != REJECTED AND listlen($BO.include_time_frames) == 0 AND $BO.blackout_duration != ''  AND $BO.delete_blackout == NO]
+{
+	$boDuration =touppercase( $BO.blackout_duration);	
+	strmatch($boDuration , ' %d %c', [ $q1, $unit]);		 
+	$quantity = stringtoint($q1);	 
+	$dur = 'P';	
+
+	$now = time_stamp() ;
+	$tcim = time_stamp_to_str($now,'%Y%m%dT%H%M%S') ;		
+	
+	if ($unit equals "D")
+	then
+	{
+		$duration_end = $now + ($quantity * 86400);
+		$duration='P'||$q1||'D';
+	}
+	else
+	{
+		if ($unit equals "H")
+		then
+		{
+			$duration_end = $now + ($quantity * 3600);
+			$duration='PT'||$q1||'H';
+		}
+		else
+		{
+			if ($unit equals "M")
+			then
+			{
+				$duration_end = $now + ($quantity * 60);
+				$duration='PT'||$q1||'M';
+			}
+			else
+			{
+				if ( $unit equals "S" OR $unit equals "")
+				then
+				{					
+					$duration_end = $now + $quantity;
+					$duration='PT'||$q1||'S';					
+				}
+				else
+				{	
+					#Add note  "Blackout rejected: provide blackout duration in valid format, number followed by valid character (D,H,M,S)"
+					ntadd($BO,localize(kb,['BMC_TS-IMC000008E']));		
+					$BO.operation_status = REJECTED;
+					$BO.severity=WARNING;
+					$duration_end =-1;
+					$duration='-1';
+				};				
+			};
+		};		
+	};
+	
+	#if duration is given in required format create time frame instance.
+	if ($BO.operation_status != REJECTED ) 
+	then
+	{		
+		$end = time_stamp_to_str($duration_end,'%Y%m%dT%H%M%S');
+		$frame = 'FREQ=DAILY;INTERVAL=1;UNTIL='||$end||';WKST=SU' ;
+		
+		#Assign mc_udid with special unique value so that in exception(while creating new policy) we can directly delete time frame 
+		#If we change time frame name, update same in "update_time_frame_instance" and  "delete_unreferenced_time_frames_after_rejection" rules
+		
+		$unique_id = 'TF_' || $BO.blackout_name || '_' || $BO.mc_ueid;
+	
+		$tf_name=  $unique_id;
+
+		if (new_data($X, TIME_FRAME, [ 'mc_udid' = $unique_id,'name' = $tf_name, 'description' = 'Ad hoc scripted blackout', 'dtstart' = $tcim, 'duration' = $duration , 'rrule' = [$frame], 'active' = '1','permanent_time_frame'='NO' ]) )
+		then
+		{
+			#Assign the time frame name and time frame udid to BO event
+			$BO.include_time_frames = [$X.name];
+			#$BO.include_time_frame_udid = [$X.mc_udid];
+		}
+		else
+		{
+			#Add note  "Error occurred while creating new time frame, please provide blackout duration in valid format."
+			ntadd($BO,localize(kb,['BMC_TS-IMC000013E']));		
+			$BO.operation_status = REJECTED;
+			$BO.severity=WARNING;
+		};
+	};
+}
+END
+
+#if user has given ONLY based_on_class or empty based_on_class without selector name, create selector and assign its details to event for future processing.
+refine create_selector : BLACKOUT_EV($BO)
+where [ $BO.operation_status != REJECTED AND  $BO.status == OPEN  AND $BO.delete_blackout==NO AND $BO.selector_name == ''  ]
+{
+
+	if($BO.based_on_class == '')
+	then
+	{
+		$BO.based_on_class = EVENT;
+	};
+
+	if (new_data($X, SELECTOR, ['name'= $BO.blackout_name ||'_'||$BO.event_handle ,'description' = 'Ad hoc selector created for policy ' ||$BO.blackout_name ,'based_on'= $BO.based_on_class, 'ecfs' = [$BO.based_on_class]]))
+	then
+	{
+		$BO.selector_ecf = $BO.based_on_class;
+		$BO.selector_name = $X.name;
+	}
+	else
+	{
+		#Add note "Blackout rejected: Error while creating selector, please provide valid class name for slot based_on_class"		
+		ntadd($BO,localize(kb,['BMC_TS-IMC000015E']));		
+		$BO.operation_status = REJECTED;
+		$BO.severity=WARNING;
+	};
+}
+END
+
+
+#Update the existing blackout
+new update_blackout_request: BLACKOUT_EV($BO)
+where [   $BO.status == OPEN  AND $BO.blackout_policy_udid != '' AND $BO.delete_blackout == NO]
+using
+{
+	IM_BLACKOUT_POLICY($POL) where[$POL.mc_udid == $BO.blackout_policy_udid]
+}
+triggers
+{
+		#In case we dont find any event for given policy and current event slots are not set,
+		#assign the policy details to event for consistency(get policy details using event). 
+
+		if ($BO.operation_status != REJECTED)
+		then
+		{
+			if ($BO. description not_equals '')
+			then
+			{			
+				$POL.description =  $BO.description;
+			}
+			else
+			{
+				$BO.description =  $POL.description;
+			};
+				
+			$POL.enabled = $BO.enabled;
+						
+			if( $BO.selector_name != '')
+			then
+			{		
+				$POL.selector_name = $BO. selector_name;		
+			}
+			else
+			{
+				$BO.selector_name = $POL. selector_name;		
+			};
+						
+			if( $BO.selector_ecf !=  '')
+			then
+			{		
+				$POL.selector_ecf = $BO. selector_ecf;		
+			}
+			else
+			{
+				$BO.selector_ecf = $POL. selector_ecf;		
+			};
+									
+			if( $BO.based_on_class != '')
+			then
+			{		
+				$POL.selector_class = $BO. based_on_class;		
+			}
+			else
+			{
+				$BO.based_on_class = $POL. selector_class;		
+			};
+			
+			if($BO.start_action  not_equals '')
+			then
+			{			
+				$POL.start_action = $BO. start_action;	
+			}
+			else
+			{
+				$BO.start_action = $POL. start_action;	
+			};
+			
+			if($BO.end_action not_equals '')
+			then
+			{		
+				$POL. end_action= $BO. end_action;		
+			}
+			else
+			{
+				$BO. end_action= $POL. end_action;		
+			};
+			
+			#if user has given new time frame name without duration, use new time frame name, this time frame is  validated  in earlier refine rule
+			if( listlen($BO.include_time_frames) != 0  )		
+			then
+			{			
+				$POL.active_timeframes=$BO.include_time_frames;
+			}
+			else
+			{
+				$BO.include_time_frames= $POL.active_timeframes;
+			};
+			
+			if( listlen($BO.exclude_time_frames) != 0  )		
+			then
+			{			
+				$POL.except_timeframes=$BO.exclude_time_frames;
+			}
+			else
+			{
+				$BO.exclude_time_frames= $POL.except_timeframes;
+			};
+					
+			$POL. during_schedule_op= $BO.during_schedule_op ;			
+						
+			$BO.operation_status = PASS ;
+			
+			#Add note "Successfully updated the blackout policy "	
+			ntadd($BO,localize(kb,['BMC_TS-IMC000009I','s',$BO.blackout_name]));					
+		};		
+}
+#To keep consistency with policy data we are updating the old event and dropping new event.
+updates duplicate($ORG_DUP)
+where [   $BO.status == OPEN  AND $BO.blackout_policy_udid != '' AND $BO.delete_blackout == NO]
+{
+	if (  $BO.operation_status != REJECTED )
+	then
+	{
+		$ORG_DUP.description = $BO.description ;				
+		$ORG_DUP.enabled = $BO.enabled ;
+		$ORG_DUP.based_on_class = $BO. based_on_class;		
+		$ORG_DUP.selector_name = $BO.selector_name;
+		$ORG_DUP.selector_ecf =$BO.selector_ecf;
+		$ORG_DUP.start_action = $BO. start_action;				
+		$ORG_DUP. end_action= $BO. end_action;					
+		
+		$ORG_DUP.include_time_frames = $BO.include_time_frames;
+		$ORG_DUP.exclude_time_frames= $BO.exclude_time_frames;
+		$ORG_DUP.include_time_frame_udid = $BO.include_time_frame_udid;
+		$ORG_DUP.exclude_time_frame_udid = $BO.exclude_time_frame_udid;
+		$ORG_DUP. during_schedule_op= $BO.during_schedule_op ;							
+		$ORG_DUP.repeat_count = $ORG_DUP.repeat_count +1 ;		
+		$ORG_DUP.operation_status = PASS ;
+		
+		#Add note "Successfully updated the blackout policy "	
+		ntadd($ORG_DUP,localize(kb,['BMC_TS-IMC000009I','s',$BO.blackout_name]));			
+	}
+	else 
+	{
+		$ORG_DUP.operation_status = $BO.operation_status ;
+		$ORG_DUP.severity = WARNING;
+		ntget($BO,0,$TIME,$AUTHOR,$Note);
+		ntadd($ORG_DUP,$Note);			
+	};	
+	drop_new ;
+}
+END
+
+#if blackout events blackout_policy_udid is not set, its new request, create the blackout policy object.
+new create_blackout_request: BLACKOUT_EV($BO)
+where [ $BO.operation_status != REJECTED  AND  $BO.status == OPEN  AND $BO.blackout_policy_udid == '' AND $BO.delete_blackout == NO]
+triggers
+{
+
+		if (new_data($D, IM_BLACKOUT_POLICY, ['name'=$BO.blackout_name,
+			'description'=$BO.description,
+			'enabled'=$BO.enabled,
+			'active_timeframes'=$BO.include_time_frames,
+			'except_timeframes'=$BO.exclude_time_frames,
+			'selector_name'=$BO.selector_name,
+			'selector_class'=$BO.based_on_class,
+		    'selector_ecf'=$BO.selector_ecf,
+			'start_action' = $BO.start_action,
+			'end_action' = $BO.end_action,
+			'during_schedule_op'=$BO.during_schedule_op]) )			
+			then
+			{
+				$BO.blackout_policy_udid = $D.mc_udid;					
+				$BO.operation_status = PASS ;
+				#Add note  "Successfully created the blackout policy "		
+				ntadd($BO,localize(kb,['BMC_TS-IMC000008I','s',$BO.blackout_name]));						
+			}
+			else
+			{					
+				#Add note  "Error occurred while creating new blackout policy, please provide required slots in valid format."
+				ntadd($BO,localize(kb,['BMC_TS-IMC000014E']));		
+				$BO.operation_status = REJECTED;
+				$BO.severity=WARNING;
+			};
+}
+END
+
+
+
+# Delete the unreferenced time frames after rejecting blackout configuration
+new delete_unreferenced_time_frames_after_rejection : BLACKOUT_EV($BO)
+where[$BO.operation_status  equals  REJECTED AND (listlen($BO.include_time_frames) >= 1 AND listgetelt($BO.include_time_frames,1)  == ('TF_' || $BO.blackout_name || '_' || $BO.mc_ueid)) ]
+using 
+{
+   TIME_FRAME($TF) where [ listlen($BO.include_time_frames) >= 1 AND $TF.name == listgetelt($BO.include_time_frames,1) ]
+} 
+triggers
+{
+		remove_data($TF);		
+		$BO.operation_status = REJECTED;
+		$BO.severity=WARNING;
+		
+		$BO.include_time_frames= [];
+		$BO.include_time_frame_udid = [];
+}
+END
+

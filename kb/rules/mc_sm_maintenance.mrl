@@ -1,0 +1,86 @@
+#
+# File name: mc_sm_maintenance.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS RULESET
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE SERVICE MANAGEMENT MODEL
+#----------------------------------------------------
+
+#----------------------------------------------------
+# FILTER EVENTS DURING MAINTENANCE MODE
+#----------------------------------------------------
+
+filter drop_new_events_if_maint_mode_says_so: NOPASS
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id != "" AND
+		$SIM_KB_OPTIONS.maintenance_enabled == YES AND
+		$SIM_KB_OPTIONS.maint_filter_new_events == YES
+	]
+	using
+	{
+		MC_SM_COMPONENT ($COMP) where
+		[
+			$COMP.mc_udid == $RAW_EVENT.mc_smc_id AND
+			$COMP.maintenance_mode == YES
+		]
+	}
+END
+
+#----------------------------------------------------
+# SET MAINTENANCE MODE ON/OFF VIA EVENT
+# Maintenance mode for a component can be set on/off
+# directly from the Console by changing the value of
+# the maintenance_mode slot
+# The support for an external event is to allow
+# another application to take control
+#----------------------------------------------------
+
+new set_maintenance_mode:
+	SMC_MAINTENANCE ($MNT_EVENT) where
+	[
+		$MNT_EVENT.mc_smc_id != "" AND
+		$SIM_KB_OPTIONS.maintenance_enabled == YES
+	]
+	using
+	{
+		MC_SM_COMPONENT ($COMP) where
+		[
+			$COMP.mc_udid == $MNT_EVENT.mc_smc_id AND
+			$COMP.maintenance_mode != $MNT_EVENT.maintenance_mode
+		]
+	}
+	triggers
+	{
+		if ($MNT_EVENT.maintenance_mode == 'YES') then
+		{
+			if ($MNT_EVENT.msg == '') then
+			{
+				$MSG = 'Set in maintenance by SMC_MAINTENANCE event ' || $MNT_EVENT.mc_ueid;
+			}
+			else
+			{
+				$MSG=$MNT_EVENT.msg;
+			};
+			smc_set_maintenance_mode($COMP, $MNT_EVENT.manual_status, $MSG, action_requestor(), $RET);
+		}
+		else
+		{
+			smc_clear_maintenance_mode($COMP);
+		};
+	}
+END
+
+new eliminate_dup_maintenance_event:
+	SMC_MAINTENANCE ($NEW_MNT_EV)
+	updates duplicate ($MNT_EVENT)
+	{
+		$MNT_EVENT.maintenance_mode = $NEW_MNT_EV.maintenance_mode;
+		drop_new;
+	}
+END
+	

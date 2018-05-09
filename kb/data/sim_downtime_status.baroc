@@ -1,0 +1,16 @@
+#
+# File name: sim_downtime_status.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# Data instances provided in the default KB
+#
+
+BMC_DOWNTIME_STATUS_CONFIG;
+  mc_udid=DOWNTIME_STATUS_CONFIG;
+  status=UNAVAILABLE;
+END
+

@@ -1,0 +1,20 @@
+#
+# File name: patrol_enrich.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+MC_DATA_CLASS :
+   PATROL_ENRICHMENT ISA DATA
+   DEFINES 
+   {
+      mc_object: STRING;
+      mc_object_class: STRING;
+      p_agent: STRING;
+      p_agent_port: INTEGER;
+      pn_object_id: INTEGER;
+      pn_object_class_id: INTEGER;
+      mc_smc_alias: STRING;
+   };
+END 
+

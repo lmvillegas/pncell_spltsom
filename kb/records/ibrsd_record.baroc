@@ -1,0 +1,61 @@
+#
+# File name: ibrsd_record.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------
+#  File :	ibrsd_record.baroc
+#  Description:	System definitions extensions
+#---------------------------------------------------------------------
+
+RECORD
+	IBRSD_Record DEFINES {
+	incident_update : INTEGER, default = 0;
+	b_PriorityMatch : INTEGER, default = 0;
+	b_StatusMatch	: INTEGER, default = 0;
+	policy_name : STRING;
+
+	}
+END
+
+
+
+#it will be useful in new/update event creation in remote action
+RECORD
+	REMOTE_ACT_IDS DEFINES {
+	remote_event_update : INTEGER, default = 0;
+	}
+END
+
+
+#it will be useful in new/update event creation for orphaned root cause
+RECORD
+	ORPHANED_ROOT_IDS DEFINES {
+	orphaned_root_update : INTEGER, default = 0;
+	policy_name : STRING;
+	cell_name : STRING;
+	prop_destination : LIST_OF STRING;
+    status_incident : STRING;
+    status_reason : STRING;
+    priority_urgency_option : INTEGER;
+    status_impact_option : INTEGER;
+	causal_mc_ueid : STRING;
+	itsm_incident_id : STRING;
+
+	}
+END
+
+#it will be useful in bem use case remote aciton
+# to propagate event to the destination
+RECORD IBRSD_BEM_REMOTE_ACTION DEFINES
+{
+	destination: STRING;
+}
+END
+
+
+RECORD IBRSD_RecordIndex DEFINES
+{
+	Index: STRING;
+}
+END

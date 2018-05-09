@@ -1,0 +1,109 @@
+#
+# File name: ppm_classes.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------------
+#
+#  Used for PPMEnabled Cell
+
+ENUMERATION BOOLEAN
+    10   FALSE
+    20   TRUE
+END
+
+ENUMERATION BASELINE
+    10   HOURLY
+    20   DAILY
+    30   WEEKLY
+    40   MONTHLY
+    50	 NO
+    60   ALL
+    70   HOURLY_DAILY
+END
+
+ENUMERATION SUPPRESS_MODE
+    10   NORMAL
+    20   WAIT
+    30   SUPPRESSED
+    40   UNSUPPRESSED_WAIT
+    50   SUPPRESSED
+END
+
+ENUMERATION SUPPRESS_TYPE
+    10   NONE
+    20   PRIMARY
+    30   SECONDARY
+    40   BOTH
+    50	 IGNORE
+END
+
+
+MC_EV_CLASS: 
+	PPM_EV ISA EVENT DEFINES
+{
+	severity : SEVERITY, default = WARNING;
+	mc_tool_id : STRING, read_only=yes;
+	pn_object_id : INTEGER, hidden=yes;
+	pn_thresh_above : BOOLEAN, read_only=yes, hidden=yes;
+	pn_baseline_type : BASELINE, read_only=yes;
+	pn_end_time : INTEGER, representation = date, read_only=yes, hidden=yes;
+	pn_group_ids :  LIST_OF INTEGER, hidden=yes;
+	pn_groups : LIST_OF STRING;
+	pn_last_time : INTEGER, representation=date, read_only=yes, hidden=yes;
+	pn_object_class_id : INTEGER, hidden=yes;
+	pn_parameter_id : INTEGER, hidden=yes;
+	pn_thresh_duration : INTEGER, read_only=yes, hidden=yes;
+	pn_thresh_id : INTEGER, read_only=yes, hidden=yes;
+	pn_thresh_type : INTEGER, read_only=yes, hidden=yes;
+	pn_vm_host : STRING, read_only=yes;
+	pn_vm_host_id : INTEGER, read_only=yes, hidden=yes;
+	pn_extremeness : INTEGER, read_only=yes, hidden=yes;
+	pn_device_name : STRING ;
+	pn_invoke_alarm_rule : BOOLEAN, hidden=yes, default=TRUE;
+	event_identification_type :STRING, hidden = yes, read_only = yes, default = "Default";
+};
+END
+
+
+MC_EV_CLASS: 
+	ALARM ISA PPM_EV DEFINES
+{
+	pn_alarm_exec_notify : BOOLEAN, read_only=yes, hidden=yes;
+	pn_alarm_id : INTEGER, read_only=yes;
+	pn_highest_severity : SEVERITY, hidden=yes;
+	pn_is_predicted : BOOLEAN, read_only=yes;
+	pn_old_severity : SEVERITY, hidden=yes;
+	pn_predict_to_occur_time : INTEGER, representation=date, read_only=yes;
+	pn_is_suppressing : BOOLEAN, read_only=yes;
+	pn_suppress_mode : SUPPRESS_MODE, read_only=yes, hidden=yes;
+	pn_suppress_notified : BOOLEAN, read_only=yes, hidden=yes;
+	pn_suppress_primary_alarm_id : STRING, read_only=yes, hidden=yes;
+	pn_suppress_rule_id : INTEGER, read_only=yes, hidden=yes;
+	pn_suppress_type : SUPPRESS_TYPE, read_only=yes, hidden=yes;
+	pn_predicted_severity : PREDICTED_SEVERITY, read_only=yes, default = '';
+};
+END
+
+
+MC_EV_CLASS: 
+	ABNORMALITY ISA PPM_EV DEFINES
+{
+	pn_avg_value : STRING, read_only=yes;
+	pn_baseline_daily_high : STRING, read_only=yes;
+	pn_baseline_daily_low : STRING, read_only=yes;
+	pn_baseline_hourly_high : STRING, read_only=yes;
+	pn_baseline_hourly_low : STRING, read_only=yes;
+	pn_baseline_weekly_high : STRING, read_only=yes;
+	pn_baseline_weekly_low : STRING, read_only=yes;
+	pn_event_score: REAL, read_only=yes;
+	pn_pts_exceeded : INTEGER, read_only=yes, hidden=yes;
+	pn_pts_total : INTEGER, read_only=yes, hidden=yes;
+	mc_smc_impact : default=NON_ELECTABLE, parse=no;
+};
+END
+
+MC_EV_CLASS : 
+   ProactiveNet_Classic_External_Event	ISA EVENT ;
+END

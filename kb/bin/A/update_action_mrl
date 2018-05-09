@@ -1,0 +1,68 @@
+#!/bin/sh
+set +x
+# $1 is action name
+# $2 is ACL
+# $3 is ECF
+# $4 is IAS name
+# $5 is cellname
+
+# $6 is Action Group
+# $7 is Action Label
+# $8 is Lookup in CR (true/false)
+
+# Step 1 get the file
+TEMP_MRL_FILE_DIR="$MCELL_HOME/etc/$5/kb/bin"
+TEMP_MRL_FILE="$MCELL_HOME/etc/$5/kb/bin/basicsolution_actions.mrl"
+#TEMP_MRL_FILE=basicsolution_actions.mrl
+if [ ! -f $TEMP_MRL_FILE ] ;
+then 
+	echo File $TEMP_MRL_FILE not found.
+	exit 1
+fi 
+
+# Step 2 append the file with new action
+ACL2=$2
+#ACL1=$ACL2
+#ACL1=`echo $ACL2 | sed 's/EMPTY//g'`;
+if ["$2" = "EMPTY"];
+then
+ACL=""
+else
+ACL="{[$ACL2]}:"
+fi
+ECF=$3
+ADMIN_EXE_7="admin_execute($4,\$UID,\$PWD,\$EV,$1,[\"$8\",\"$1\"],YES)";
+ADMIN_EXE_5="admin_execute($4,\$EV,$1,[\"$8\",\"$1\"],YES)";
+ACTION="action '$6'.'$7':"
+if [ "$6" = "EMPTY" ] ;
+then
+ACTION="action '$7':"
+fi
+#echo action \'$1\': >> $TEMP_MRL_FILE
+echo $ACTION >> $TEMP_MRL_FILE
+echo $ACL >> $TEMP_MRL_FILE
+echo $ECF >> $TEMP_MRL_FILE
+echo { >> $TEMP_MRL_FILE
+echo '	action_requestor($UID,$PWD,$RLT);' >> $TEMP_MRL_FILE
+echo 	if \( \$RLT == \'\' \) then >> $TEMP_MRL_FILE
+echo 	{ >> $TEMP_MRL_FILE
+echo 		$ADMIN_EXE_7 >> $TEMP_MRL_FILE
+echo 	} >> $TEMP_MRL_FILE
+echo 	else >> $TEMP_MRL_FILE
+echo 	{ >> $TEMP_MRL_FILE
+echo 		$ADMIN_EXE_5 >> $TEMP_MRL_FILE
+echo 	} >> $TEMP_MRL_FILE
+echo } >> $TEMP_MRL_FILE
+echo END >> $TEMP_MRL_FILE
+# type $TEMP_MRL_FILE
+
+echo Return Code = $?
+if [ $? -eq 0 ] ;
+then
+   echo Successfully updated the action MRL file $TEMP_MRL_FILE
+   exit 0;
+else
+   echo Failed to update action MRL file $TEMP_MRL_FILE
+
+fi
+set -x

@@ -1,0 +1,31 @@
+#
+# File name: eye_collector.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#-------------------------------------------------------------------------------------
+# BIM Essential - integration of TM ART Central incidents to BMC Impact Manager events
+#
+#      "TM ART" Collector for class definitions, "art_event" and "art_normalized_event".  
+#      An event tree will have a parent folder labelled "Transaction Management" with
+#      a child folder labelled "TM ART" which in turn has two sub-folders, "Open" and 
+#      "Closed".
+#
+#      Copyright 2006 BMC Software, Inc.  All rights reserved.
+#      Filename:    art_collector.mrl
+#      Version:     1.2.0
+#-------------------------------------------------------------------------------------
+#
+#
+
+collector 'Entuity':
+{
+        r['Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        w['Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+        x['Service Administrators','Service Operators - Senior','Service Operators','Service Managers - Senior','Service Managers']
+}
+END
+
+collector 'Entuity'.'Events':
+EYE_EVENT
+END

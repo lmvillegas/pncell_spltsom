@@ -1,0 +1,45 @@
+#
+# File name: default_outage_policy.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+OUTAGE_POLICY;
+	#Policy name and time frame
+	name='Default_Outage_Policy';
+	description='DO NOT EDIT.';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	ordinal=0;
+	
+	# Selector
+	selector_name='IBRSD.Component_Change';
+	selector_class='SIM_COMPONENT_CHANGE';
+	selector_ecf=*IBRSD.Component_Change($EV);
+	
+	# Options to select specific component
+	all_comp_in_selected_class_option=1;
+	sel_class_name='BMC_BusinessService';
+	all_comp_that_begin_with_option=0;
+	comp_begin_with=[];
+	selected_comp_option=0;
+	component_list=[];
+	
+	# Condition for status and priority of selected component
+	operator_status='>=';
+	component_status=UNAVAILABLE;
+	operator_priority='>=';
+	component_priority=PRIORITY_5;
+	
+	# Destination to which generated outage event will be propagated
+	prop_destination=['ibrsd'];
+	
+	outage_for='Impacted and Causal Components';
+	status_outage='Resolved';
+	
+	cell_name='';
+	site='';
+	company_name='';
+END

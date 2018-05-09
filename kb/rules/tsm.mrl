@@ -1,0 +1,90 @@
+#
+# File name: tsm.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+# TO enable these rules add to the corresponding rules/.load file
+# and recompile the kb.
+
+# Rule for Patrol Event 
+# Consideration as mc_object = 'ORCL_TEST_TNR'
+# so split the mc object as 
+#  mc_object = ORCL
+#  mc_parameter = TEST_TNR
+
+refine split_patrol_oracle_tbsp_event:
+	PATROL_EV ($EV) 
+	where [
+				$EV.status != 'CLOSED' AND
+				$EV.mc_object_class == 'ORACLE_TBSP_INSTANCE'
+			]
+	{
+		strmatch($EV.mc_object, '%s_%s',[$FLD1,$FLD2]);
+		$EV.mc_object    = $FLD1;
+		$EV.mc_parameter = $FLD2;
+	}
+END
+
+# Rule for ALARM event 
+# Consideration as mc_object = 'ORACLE|ORCL_test|TABLESPACES|ORCL_test_TEST_TNR'
+# so split the mc object as 
+#  mc_object = ORCL_test
+#  mc_parameter = TEST_TNR
+
+refine split_alarm_oracle_tbsp_event:
+	ALARM ($EV) 
+	where [
+				$EV.status != 'CLOSED' AND 
+				$EV.mc_object_class == 'ORACLE_TBSP_INSTANCE'
+			]
+	{
+		strmatch($EV.mc_object, '%s|%s|%s|%s',[$FLD1,$FLD2,$FLD3,$FLD4]);
+		$EV.mc_object    = $FLD2;
+		strmatch($FLD4, $FLD2 || '_%s',[$FLD5]); 
+		$EV.mc_parameter = $FLD5;
+	}
+END
+
+# Rule for Abnormality event 
+# Consideration as mc_object = 'SID = ORCL, TableSpace Name = TEST_TNR, Target Device = vm-w23-rds1021.bmc.com'
+# so split the mc object as 
+#  mc_object = ORCL
+#  mc_parameter = TEST_TNR
+
+refine split_abnormality_oracle_tbsp_event:
+	    ABNORMALITY ($EV) 
+	where [
+		   $EV.status != 'CLOSED' AND
+		   $EV.mc_object_class == 'Oracle Table-Space' 
+		   ]
+	{
+		strmatch($EV.mc_object, '%s = %s, %s = %s, %s',[$FLD1,$FLD2,$FLD3,$FLD4, $FLD5]);	
+		$EV.mc_object    = $FLD2;
+		$EV.mc_parameter = $FLD4;
+	}
+END
+
+# Rule for TSM Patrol Event 
+# Consideration as msg='TSM job: STANDARD:PUN-LDOM-RDS94 @ 2010/02/16 15:54:30 is in failure status (domain: <STANDARD>; node: <PUN-LDOM-RDS94>; schedule: <TESTSCH>; mode: <Incremental>; event status: <Missed>; result: <<null>>; state: <Missed>; duration: <0> minutes)';
+# so split the msg slot as 
+#  mc_parameter_value = Job name
+#  mc_object = Node name
+#  mc_object_owner = Schedule name
+#  mc_object_class = Domain name
+
+refine split_tsm_patrol_event:
+	PATROL_EV ($EV) 
+	where [
+				$EV.status != 'CLOSED' AND
+				$EV.mc_object_class == 'TSM_JOB'
+			]
+	{
+		strmatch($EV.msg, '%s(domain: <%s>; node: <%s>; schedule: <%s>%s',[$JOBN,$DOMAIN,$NODE,$SCHEDULE,$OTHER]);
+		$EV.mc_object = $NODE;		
+		$EV.mc_object_owner = $SCHEDULE;
+		$EV.mc_object_class = $DOMAIN;
+		strmatch($JOBN, '%s: %s @ %s %s %s',[$JOBN1,$JOBN2,$JOBN3,$JOBN4,$JOBN5]);
+		$EV.mc_parameter_value = $JOBN2 || ' @ ' || $JOBN3 || $JOBN4;
+	}
+END

@@ -1,0 +1,29 @@
+#
+# File name: mc_sm_cost.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# Defines cost model objects for service components.
+# An instance of MC_SM_COST is related to an instance
+# of MC_SM_COMPONENT via the cost slot on MC_SM_COMPONENT.
+# The cost slot is populated with the mc_udid of the 
+# related MC_SM_COST instance.
+#
+# name              A descriptive name for an MC_SM_COST
+#                   instance.
+# unit              The unit of loss. Such as dollars,
+#                   euros, or transactions.
+# cost_per_second   This specifies a loss rate.
+#                   such as 1.5 units per second
+#----------------------------------------------------
+MC_PUBLISH_DATA_CLASS:
+	MC_SM_COST ISA MC_SM_DATA	DEFINES
+	{
+		name: STRING;
+		unit: STRING, default="dollars"; 
+		cost_per_second: REAL, default=0; 
+	};
+END
+

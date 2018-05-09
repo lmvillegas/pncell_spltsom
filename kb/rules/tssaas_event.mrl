@@ -1,0 +1,36 @@
+#
+# File name: tssaas_event.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#----------------------------------------------------
+# Updating existing TSSAAS_EVENT
+# On receipt of the new TSSAAS_EVENT with existing mc_tool_id, we are closing the existing event and retaining the new one with latest values.
+#----------------------------------------------------
+
+new update_tssaas_old_event : TSSAAS_EVENT($TSSAAS_EVENT)
+   updates TSSAAS_EVENT($TSSAAS_EVENT_OLD)
+	where [ $TSSAAS_EVENT_OLD.mc_tool_id == $TSSAAS_EVENT.mc_tool_id]
+	{
+	   $TSSAAS_EVENT.status = $TSSAAS_EVENT.tssaas_event_status;
+	   $TSSAAS_EVENT.repeat_count = $TSSAAS_EVENT_OLD.repeat_count + 1;
+	    if ( $TSSAAS_EVENT_OLD.status != 'CLOSED' ) then
+        {
+			$TSSAAS_EVENT_OLD.status = 'CLOSED';
+        }
+	}
+END
+
+
+#----------------------------------------------------
+# Updating status field of new TSSAAS_EVENT, 
+# On receipt of new event with 'closed' status in tssaas_event_status field and new mc_tool_id .
+#----------------------------------------------------
+
+new update_tssaas_event : TSSAAS_EVENT($TSSAAS_EVENT)
+	where [$TSSAAS_EVENT.status != $TSSAAS_EVENT.tssaas_event_status ]
+	triggers
+	{
+		$TSSAAS_EVENT.status = $TSSAAS_EVENT.tssaas_event_status;
+	}
+END

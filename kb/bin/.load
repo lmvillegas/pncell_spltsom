@@ -1,0 +1,12 @@
+#
+# File name: .load
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+mc_actions
+im_operations
+basicsolution_actions
+rate_operations
+im_blackout_actions
+sim_operations
+ibrsd_bem_actions

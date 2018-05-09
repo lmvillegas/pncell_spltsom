@@ -1,0 +1,41 @@
+#
+# File name: ibrsd_causal_priority.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#Rule for propagating the correct computed priority of causal component to the respective incident 
+
+execute create_ibrsd_sm_incident_causal_priority : CI_INCIDENT_INFO($INCIDENTOBJ) where [ $INCIDENTOBJ.status != CLOSED ]	
+	using
+	{
+		BMC_BaseElement ($COMP) where [ $COMP.mc_udid equals $INCIDENTOBJ.component_id ]
+	}
+	when $INCIDENTOBJ.bOrphanedRoot != 0
+	{
+		
+			#Create IBRSD_SM_INCIDENT for the component
+			$MSG_INFORMATION=localize(kb,[IBRSD_compute_priority,'s',$COMP.Name]);
+			generate_event( IBRSD_SM_INCIDENT,[ msg 		= $MSG_INFORMATION,
+					   	    cell_name 			= $INCIDENTOBJ.cell_name,
+						    policy_name 		= $INCIDENTOBJ.policy_name,
+						    status_incident 		= $INCIDENTOBJ.status_incident,
+						    status_reason 		= $INCIDENTOBJ.status_reason,
+						    priority_urgency_option 	= $INCIDENTOBJ.priority_urgency_option,
+						    status_impact_option 	= $INCIDENTOBJ.status_impact_option,
+						    causal_mc_ueid		= $INCIDENTOBJ.event_mc_ueid,
+						    bOrphanedRoot		= 1,
+						    comp_id			= $COMP.mc_udid,
+						    comp_status			= $COMP.status,
+							company_name		= $COMP.Company,
+						    comp_priority 		= $COMP.computed_priority,
+						    comp_name 			= $COMP.Name,
+						    severity 			= WARNING,
+						    prop_destination 		= $INCIDENTOBJ.prop_destination ] 
+						);
+			generate_event(IBRSD_SM_INCIDENT_CLOSE,[comp_id=$COMP.mc_udid]);
+		
+	}
+
+	
+
+END

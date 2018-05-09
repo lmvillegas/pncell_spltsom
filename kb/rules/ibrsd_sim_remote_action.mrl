@@ -1,0 +1,101 @@
+#
+# File name: ibrsd_sim_remote_action.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+# BMC Impact Integration for ARS
+# Date			: March 08, 2005
+# Author		: SMS Pune Integration Connect Team
+# Description	: Rule to create IBRSD_SM_INCIDENT event on 
+#				  Remote Action "Trigger Remedy Incident". If already existing event 
+#				  of type IBRSD_SM_INCIDENT, it will close the same and create new one.
+#				  Also drop the event of type "IBRSD_REMOTE_ACTION" which is created 
+#				  to trigger this rule
+# Revisions		: As on 16th June 2006 By Anuradha
+#				  Changed rule file name from ibrsd_remote_aciton to ibrsd_sim_remote_action.mrl
+#				  Moved bem_remote_action rule related to bem remote action to ibrsd_bem_remote_action.mrl		
+#################################################################################
+
+#Initialise flag used to decide event type. 
+#if this flag value = 0 , create new IBRSD_SM_INCIDENT event
+#if this flag value = 1 , create modified/update IBRSD_SM_INCIDENT event
+refine init_event_type :
+    IBRSD_REMOTE_ACTION($REMOTEOBJ) 
+    {
+		$REMOTE_ACT_IDS.remote_event_update = 0;
+	}
+END
+
+
+#check for existing IBRSD_SM_INCIDENT for component. 
+#if it is already existing close the existing IBRSD_SM_INCIDENT 
+#and create new IBRSD_SM_INCIDENT
+#At the same time drop IBRSD_REMOTE_ACTION event, created to trigger this rule 
+new update_old_ibrsd_sm_incident : IBRSD_REMOTE_ACTION ($REMOTEOBJ) where [status:equals OPEN]
+	updates IBRSD_SM_INCIDENT ($SMINCOBJ) where 
+	[
+		$SMINCOBJ.comp_id == $REMOTEOBJ.comp_id AND $SMINCOBJ.status != CLOSED
+	]
+	{
+		#if update, close existing IBRSD_SM_INCIDENT
+		$SMINCOBJ.status = CLOSED;
+		$CLASS_INFORMATION=localize(kb,[IBRSD_trigger_incident,'s',$REMOTEOBJ.comp_id]);
+		
+		#set update flag = 1
+		$REMOTE_ACT_IDS.remote_event_update = 1;
+		
+		#Create new IBRSD_SM_INCIDENT
+		generate_event( IBRSD_SM_INCIDENT,[ msg = $CLASS_INFORMATION,
+												comp_id = $REMOTEOBJ.comp_id,
+												comp_name = '',
+												comp_class = '',
+												comp_status = $REMOTEOBJ.comp_status,
+												comp_priority = $REMOTEOBJ.comp_priority,
+												comp_cost = $REMOTEOBJ.comp_cost,
+												root_causes = $REMOTEOBJ.root_causes,
+												severity = $REMOTEOBJ.severity,
+												manually_created_incident=1,
+												prop_destination = $REMOTEOBJ.prop_destination ] ) ;
+		#Drop IBRSD_REMOTE_ACTION event
+		drop_new;
+	}
+END
+
+
+#If remote_event_update flag value = 0 Create new IBRSD_SM_INCIDENT
+#At the same time drop IBRSD_REMOTE_ACTION event, created to trigger this rule 
+new create_ibrsd_sm_incident :IBRSD_REMOTE_ACTION ($REMOTEOBJ) where [status:equals OPEN]
+	triggers	
+	{	
+		#Create new IBRSD_SM_INCIDENT event, if update flag is 0
+		if($REMOTE_ACT_IDS.remote_event_update == 0) then
+		{
+			$CLASS_INFORMATION=localize(kb,[IBRSD_trigger_incident,'s',$REMOTEOBJ.comp_id]);
+			generate_event( IBRSD_SM_INCIDENT,[ msg = $CLASS_INFORMATION,
+													comp_id = $REMOTEOBJ.comp_id,
+													comp_name = '',
+													comp_class = '',
+													comp_status = $REMOTEOBJ.comp_status,
+													comp_priority = $REMOTEOBJ.comp_priority,
+													comp_cost = $REMOTEOBJ.comp_cost,
+													root_causes = $REMOTEOBJ.root_causes,
+													severity = $REMOTEOBJ.severity,
+													manually_created_incident=1,
+													prop_destination = $REMOTEOBJ.prop_destination ] ) ;
+			
+			#Drop IBRSD_REMOTE_ACTION event created to trigger this rule.
+			drop_new;
+		}
+	}
+END
+
+#If Remote action is performed on SIM_COMPONENT_CHANGE with status other than OPEN
+#it will not create new IBRSD_SM_INCIDENT . And will close IBRSD_REMOTE_ACTION created to trigger rules
+new drop_ibrsd_remote_action :IBRSD_REMOTE_ACTION ($REMOTEOBJ) where [status: not_equals 'OPEN' ]
+	triggers	
+	{	
+		#Drop IBRSD_REMOTE_ACTION event created to trigger this rule.
+		drop_new;
+	}
+END

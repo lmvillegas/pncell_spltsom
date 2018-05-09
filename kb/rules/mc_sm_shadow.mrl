@@ -1,0 +1,173 @@
+#
+# File name: mc_sm_shadow.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#
+# rules related to the components shadow mechanism
+
+new handle_shadow_requests: 
+	MC_SM_SHADOW_REQUEST ($SR)
+	using {
+		MC_SM_COMPONENT ($C) where [$C.mc_udid == $SR.component_id]
+	}
+triggers
+	{
+		if ($SR.class == $C.CLASS) then
+		{
+			if ($SR.operation == ADD) then
+			{	
+				smc_add_shadow_cell($C, $SR.cell);
+			}
+			else
+			{
+				smc_rem_shadow_cell($C, $SR.cell);
+			}
+		}
+		else
+		{
+			$MSG=	'Class "' || 
+				$SR.class  || 
+				'" specified in shadow request ' || 
+				$SR.mc_ueid || 
+				' from cell ' || 
+				$SR.cell || 
+				' does not match class of component ' 
+				|| $SR.component_id || 
+				' (' || $C.CLASS || ')' ;
+			generate_event(MC_SM_SHADOW_REQUEST_ERROR, [msg = $MSG, component_id = $SR.component_id, cell = $SR.cell, operation = $SR.operation, request_ueid=$SR.mc_ueid]);
+		};
+		$SR.status=ACK;
+	}
+END
+
+new bufferize_shadow_requests: 
+	MC_SM_SHADOW_REQUEST ($SR) where [status: == OPEN, operation: == ADD]
+triggers
+	{
+		$SR.status=ACK;
+		new_data($D, MC_SM_SHADOW_REQUEST_DATA, ['request_ueid' = $SR.mc_ueid,
+							'cell' = $SR.cell, 
+							'component_id' = $SR.component_id, 
+							'class' = $SR.class]);
+	}
+END
+new delete_bufferize_shadow_requests: 
+	MC_SM_SHADOW_REQUEST ($SR) where [status: == OPEN, operation: == REM]
+using ALL 
+      {
+	MC_SM_SHADOW_REQUEST_DATA ($D) where [$D.cell == $SR.cell, 
+					      $D.component_id == $SR.component_id]
+	}
+triggers
+	{
+		$SR.status=ACK;
+		remove_data($D);
+	}
+END
+
+
+new generate_shadow_requests_failure: 
+	MC_SM_SHADOW_REQUEST ($SR) where [status: == OPEN]
+triggers
+	{
+		$MSG='Shadow request ' || $SR.mc_ueid || ' from cell ' || $SR.cell || ' refers to a non existing component: ' || $SR.component_id;
+		generate_event(MC_SM_SHADOW_REQUEST_ERROR, [msg = $MSG, component_id = $SR.component_id, cell = $SR.cell, operation = $SR.operation, request_ueid=$SR.mc_ueid]);
+	}
+END
+
+# the following rule drop all ACKed SHADOW_REQUEST so that if the requesting cell is restarted and
+# send the same event again it will not collide with the previous one
+
+new drop_ack_shadow_requests_failure:
+	MC_SM_SHADOW_REQUEST ($SR) where [status: == ACK]
+triggers
+	{
+		drop_new;
+	}
+END
+
+propagate propagate_shadow_requests_failure: 
+	MC_SM_SHADOW_REQUEST_ERROR ($SRF) where [$SRF.cell != cellinfo(ServerName)]
+	to $SRF.cell	
+	when $SRF.status == OPEN
+END
+
+
+new update_shadow_component: 
+	MC_SM_SHADOW_UPDATE ($SU) 
+using {
+	MC_SM_COMPONENT ($C) where [$C.mc_udid == $SU.component_id, 
+				    tolowercase($C.HomeCell) == tolowercase($SU.mc_tool)]
+	}
+triggers
+	{
+		smc_update_shadow_component($C, 
+					    $SU.smc_status,
+					    $SU.smc_sub_status,
+					    $SU.maintenance_mode,
+					    $SU.add_manual_status_providers,
+					    $SU.del_manual_status_providers,
+					    $SU.root_causes,
+					    $SU.add_root_causes,
+					    $SU.del_root_causes,
+						$SU.all_causes,
+					    $SU.add_all_causes,
+					    $SU.del_all_causes,
+					    $SU.propagation_stack,
+					    $SU.indicators_changes
+                                            );
+		drop_new;
+	}
+END
+
+new delete_shadow_component: 
+	MC_SM_SHADOW_DELETE ($SD) 
+using {
+	MC_SM_COMPONENT ($C) where [$C.mc_udid == $SD.component_id, 
+				    tolowercase($C.HomeCell) == tolowercase($SD.mc_tool)]
+	}
+triggers
+	{
+		smc_notify_deleted_shadowed_component($C);
+		$SD.msg = $SD.msg || ' shadow component deleted';
+		$SD.status = ACK;
+	}
+END
+
+new delete_shadow_component_failure: 
+	MC_SM_SHADOW_DELETE ($SD) where [$SD.status == OPEN]
+triggers
+	{
+		$SD.msg = 'shadow component to be removed was not found';
+	}
+END
+
+
+new handle_shadow_request_failure: 
+	MC_SM_SHADOW_REQUEST_ERROR ($SRF) where [$SRF.mc_history != []]
+using {
+	MC_SM_COMPONENT ($C) where [$C.mc_udid == $SRF.component_id, 
+				    tolowercase($SRF.mc_ueid) has_prefix tolowercase($C.HomeCell)]
+	}
+triggers
+	{
+		$C.comment = 'request failed: ' || $SRF.msg || '
+' || $C.comment;
+		$C.component_scope = SHADOW_INVALID;
+	}	
+END
+
+
+new handle_impact_report:
+	MC_SM_IMPACTS_REPORT ($EV)
+triggers
+	{
+		smc_update_remote_impacts($EV.impacts,	
+                                          $EV.impacts_self_priority, 
+                                          $EV.impacts_cost,
+					  $EV.impacts_sla_state );
+		drop_new;
+	}
+END

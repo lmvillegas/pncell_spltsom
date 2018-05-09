@@ -1,0 +1,29 @@
+#
+# File name: biiovo.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#################################################################################
+# Date     	: July , 2005
+# Author		: SMS Pune Integration Connect Team
+# Created	: 2005/07/22
+#
+# Modified	:
+################################################################################
+
+# OVO_EV class
+
+MC_EV_CLASS :
+	OVO_EV ISA EVENT
+	DEFINES 
+	{
+		mc_tool: 		default="HPOVO";
+		mc_tool_class: 	default="HPOVO";
+		mc_origin_class: 	default="HPOVO";
+		mc_Instruction_slot: STRING;
+		correlator_uuid: STRING;
+		correlative_uuid: STRING;
+		msg_type:STRING;
+	};
+END

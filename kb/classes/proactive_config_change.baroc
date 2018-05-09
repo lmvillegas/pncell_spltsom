@@ -1,0 +1,19 @@
+#
+# File name: proactive_config_change.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+MC_EV_CLASS: 
+	PROACTIVE_CONF_CHANGE ISA PPM_EV DEFINES
+{
+	new_value   : STRING;
+	old_value   : STRING;
+	scope       : STRING;
+	scope_value : STRING;
+	scheduled   : STRING;
+	approver    : STRING;
+	impact      : STRING;
+	manually_created : STRING;
+	severity:   default=INFO, parse=no, read_only=yes;
+};
+END

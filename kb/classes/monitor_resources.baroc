@@ -1,0 +1,29 @@
+#
+# File name: monitor_resources.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#Data class to monitor resource 
+MC_DATA_CLASS :
+   MC_RESOURCE_MONITOR ISA MC_CELL_DATA
+   DEFINES 
+   {      
+		resource_type: MC_RESOURCE_TYPE, dup_detect=yes;		#Resource type to monitor, e.g. PropagateBuffer, DestinationBuffer
+ 		resource_name: STRING, dup_detect=yes;							#Resource name name e.g. destination name or '' (empty) for Cell name
+		resource_upper_limit: INTEGER;												#Resource maximum size to monitor, we are not setting resource maximum size limit, we are monitoring for this number
+		resource_warning_prct : INTEGER;											#upper limit resource size percentage to generate Warning event
+		resource_major_prct : INTEGER;		    									#upper limit resource size percentage to generate  MAJOR event
+		resource_critical_prct : INTEGER;	       										#upper limit resource size percentage to generate  CRITICAL event		
+   };
+END
+
+MC_EV_CLASS: 
+	MC_RESOURCE_MONITOR_EV  ISA MC_CELL_RESOURCE 
+	DEFINES
+	{
+		resource_type: MC_RESOURCE_TYPE, dup_detect=yes;		#Resource type to monitor, e.g. PropagateBuffer, DestinationBuffer
+		resource_name: STRING, dup_detect=yes;							#Resource name name e.g. destination name or '' (empty) for Cell name
+	};
+END
+

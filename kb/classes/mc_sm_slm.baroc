@@ -1,0 +1,120 @@
+#
+# File name: mc_sm_slm.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+#
+# Data and event classes provided in the default KB
+# and supporting the Service Management Model
+#
+# The parent classes are system defined (internal classes)
+#
+#====================================================
+
+
+#====================================================
+# SLM Enumerations
+#====================================================
+
+ENUMERATION MC_SM_SLM_AGREEMENT_TYPE
+	10	"Service Level Agreement"
+	20	"Operational Level Agreement"
+	30	"Underpinning Contract"
+END
+
+ENUMERATION MC_SM_SLM_REVIEW_FREQUENCY
+	10	Daily
+	20	Weekly
+	30	Monthly
+	40	Quarterly
+	50	Yearly
+END
+
+#====================================================
+# SLM DATA CLASSES
+#====================================================
+#
+# MC_SM_DATA -> MC_SLM_SLA
+#
+#
+#----------------------------------------------------
+
+MC_PUBLISH_DATA_CLASS:
+    MC_SLM_SLA ISA MC_SM_DATA DEFINES
+    {
+        name:        STRING, key=yes;
+        type:        MC_SM_SLM_AGREEMENT_TYPE;
+        frequency:   MC_SM_SLM_REVIEW_FREQUENCY, key=yes;
+        description: STRING, default='';
+        status:      MC_SM_SLM_SLA_STATUS, default=COMPLIANT;
+        components:  LIST_OF STRING;
+        removed_components:  LIST_OF STRING, hidden=yes;
+    };
+END
+
+
+#====================================================
+# SLM EVENT CLASSES
+#====================================================
+#
+# 1=MC_SLM_EVENT
+#    11=MC_SLM_ASSOCIATE 
+#    12=MC_SLM_STATUS_UPDATE 
+#    13=MC_SLM_DELETE_SLA 
+#
+#----------------------------------------------------
+# INTERNAL EVENT CLASS
+#----------------------------------------------------
+# CLASS        Service Management base class
+##----------------------------------------------------
+
+MC_EV_CLASS:
+    MC_SLM_EVENT ISA MC_CELL_EVENT DEFINES
+    {
+        name:            	STRING;
+        type:            	MC_SM_SLM_AGREEMENT_TYPE;
+        severity:        	default=OK;
+        mc_smc_impact:   	default=NOT_ELECTED;
+    };
+END
+
+MC_EV_CLASS:
+    MC_SLM_ASSOCIATE ISA MC_SLM_EVENT DEFINES
+    {
+        frequency:       	MC_SM_SLM_REVIEW_FREQUENCY;
+        description:     	STRING, default='';
+        current_status:  	STRING, default='Compliant';
+        current_status_enum: MC_SM_SLM_SLA_STATUS, parse=no, default=COMPLIANT;
+        components:      	LIST_OF STRING;
+    };
+END
+    
+MC_EV_CLASS:
+    MC_SLM_STATUS_UPDATE ISA MC_SLM_EVENT DEFINES
+    {
+        frequency:       	MC_SM_SLM_REVIEW_FREQUENCY;
+        old_status: 	 	STRING, default='Compliant';
+        new_status: 	 	STRING, default='Compliant';
+        old_status_enum: 	MC_SM_SLM_SLA_STATUS, parse=no, default=COMPLIANT;
+        new_status_enum: 	MC_SM_SLM_SLA_STATUS, parse=no, default=COMPLIANT;
+    };
+END
+    
+MC_EV_CLASS:
+    MC_SLM_DELETE_SLA ISA MC_SLM_EVENT DEFINES
+    {
+        components:     	LIST_OF STRING, default=[];
+    };
+END
+    
+MC_EV_CLASS:
+    MC_SLM_REMOVE_SLA_FREQUENCY ISA MC_SLM_EVENT DEFINES
+    {
+        frequency:      	MC_SM_SLM_REVIEW_FREQUENCY;
+        components:     	LIST_OF STRING, default=[];
+    };
+END
+
+

@@ -1,0 +1,27 @@
+#
+# File name: change_task_relate.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: change_task_relate.mrl
+# Version: 9.0.00
+# Copyright 1998-2011 BMC Software, Inc. All Rights Reserved
+#
+
+#Relate CAHNGE_INFO to the event,having mc_ueid stored in the mc_relation_source of TASK_EV
+
+new relate_task_to_change : TASK_EV($E)
+ 
+using { CHANGE_EV($CHG_EV) where [$E.changeId == $CHG_EV.changeId AND $E.mc_smc_id == $CHG_EV.mc_smc_id]}
+triggers
+{
+ $E.mc_relation_source = $CHG_EV.mc_ueid;
+ relate($E); 
+}
+END
+
+#UnRelate task event from the change event,having mc_ueid stored in the mc_relation_source of change event
+execute task_event_unrelate : TASK_EV($E)
+      when $E.status == CLOSED { unrelate($E); }
+END

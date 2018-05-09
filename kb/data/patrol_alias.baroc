@@ -1,0 +1,7 @@
+#
+# File name: patrol_alias.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+ddelete BMC_SIM_MATCH_TABLE; tag = 'alias'; name = 'Default Computer System Mapping for Patrol Event'; input_match = ['<PATROL_EV>','*','*<.>*','*','*','*','*']; ref_instances_classes = ['PATROL_EV']; output_expressions = ['sprintf("BMC_ComputerSystem:%s",[$1.mc_host])']; END
+dnew - BMC_SIM_MATCH_TABLE; tag = 'alias'; name = 'Default Computer System Mapping for Patrol Event'; input_match = ['<PATROL_EV>','*','*','*','*','*','*']; ref_instances_classes = ['PATROL_EV']; output_expressions = ['sprintf("BMC_ComputerSystem:%s",[$1.mc_host])'];END

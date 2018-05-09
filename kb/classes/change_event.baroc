@@ -1,0 +1,73 @@
+#
+# File name: change_event.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+
+# Description	: Class information for Change Event generated from ITSM change management
+#		  Maps the ITSM change notification received to cell event.
+#		  Inherited from PROACTIVE_CONF_CHANGE class so that the change events can be utilized for RCA 
+
+MC_EV_CLASS	: CHANGE_EV	ISA PROACTIVE_CONF_CHANGE DEFINES
+{
+	changeId		: STRING;
+	changeCoordinator	: STRING;
+	changeOwner		: STRING;
+	changeCategory		: STRING;
+	changePriority		: STRING;
+	changeReason		: STRING;
+	changeStatus		: STRING;
+	statusReason		: STRING;	
+	impact			: STRING;
+	urgency			: STRING;
+	riskLevel		: STRING;
+	scheduledStartDate	: INTEGER, representation = date;
+	scheduledEndDate	: INTEGER, representation = date;
+	actualStartDate		: INTEGER, representation = date;
+	actualEndDate		: INTEGER, representation = date;
+	completedDate		: INTEGER, representation = date;
+	changeModifiedDate	: INTEGER, representation = date;
+	changeCustomerName	: STRING;
+	changeCompany	: STRING;
+	changeCompanyLocation  : STRING;
+	dataSetId		: STRING;
+	ciClass			: STRING;
+	ciAssociationDate	: INTEGER, representation = date;
+	ciAssociationType	: STRING;
+	changeNotes		: STRING;
+	mc_smc_impact            : default=NON_ELECTABLE, parse=no; # this slot will ensure that this event will not we used for impact calculation
+	
+};
+END
+
+
+# Description	: Class information for Task Event generated from ITSM Change management
+#		  Maps the ITSM change task notification received to cell event.
+#
+
+MC_EV_CLASS	: TASK_EV	ISA PROACTIVE_CONF_CHANGE DEFINES
+{
+	changeId		: STRING;
+	taskName		: STRING;
+	taskNotes		: STRING;
+	taskStatus		: STRING;
+	taskPriority		: STRING;
+	taskId			: STRING;
+	taskType		: STRING;
+	taskStatusReason	: STRING;
+	taskAssigneeCompany	: STRING;
+	taskAssigneeGroup	: STRING;
+	taskAssignee		: STRING;
+	taskActualStartDate	: INTEGER, representation = date;
+	taskActualEndDate	: INTEGER, representation = date;
+	taskModifiedDate	: INTEGER, representation = date;
+	dataSetId		: STRING;
+	ciClass			: STRING;
+	ciAssociationDate	: INTEGER, representation = date;
+	ciAssociationType	: STRING;
+	mc_smc_impact            : default=NON_ELECTABLE, parse=no; # this slot will ensure that this event will not we used for impact calculation
+	
+};
+END

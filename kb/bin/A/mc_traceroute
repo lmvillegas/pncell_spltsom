@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "traceroute $mc_host_address"
+traceroute $mc_host_address
+

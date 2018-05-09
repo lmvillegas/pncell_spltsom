@@ -1,0 +1,77 @@
+#
+# File name: mc_sm_migrate.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+new sim_reassign_migrated_events:
+    MC_CELL_CONTROL ($EV) where [$EV.mc_tool_rule ==  sim_migrate_events]
+	using ALL
+	{
+		EVENT ($RAW_EVENT) where 
+		[
+			$RAW_EVENT.status outside [CLOSED,BLACKOUT] AND
+                        $RAW_EVENT.mc_smc_alias != "" AND
+			$RAW_EVENT.mc_smc_impact != NON_ELECTABLE
+		]
+		BMC_SIM_ALIAS($ALIAS) where
+		[
+			$ALIAS.ComponentAlias == $RAW_EVENT.mc_smc_alias AND
+			$ALIAS.ComponentID != $RAW_EVENT.mc_smc_id
+		]
+	}
+	triggers
+	{
+		$RAW_EVENT.mc_smc_id=$ALIAS.ComponentID;	
+	}
+END
+
+new sim_detach_migrated_events:
+    MC_CELL_CONTROL ($EV) where [$EV.mc_tool_rule ==  sim_migrate_events]
+	using ALL
+	{
+		EVENT ($RAW_EVENT) where 
+		[
+			$RAW_EVENT.status outside [CLOSED,BLACKOUT] AND
+			$RAW_EVENT.mc_smc_id != "" AND
+			$RAW_EVENT.mc_smc_impact within [ATTACHED,IMPACTING]
+		]
+		MC_SM_EVENT_INDEX ($IDX) where 
+		[
+			$RAW_EVENT.mc_ueid == $IDX.event_ueid,
+			$IDX.component_udid != $RAW_EVENT.mc_smc_id
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			mc_udid: == $IDX.component_udid
+		]
+	}
+	triggers
+	{
+		smc_detach($RAW_EVENT, $COMP);	
+	}
+END
+
+new sim_attach_migrated_events:
+    MC_CELL_CONTROL ($EV) where [$EV.mc_tool_rule ==  sim_migrate_events]
+	using ALL
+	{
+		EVENT ($RAW_EVENT) where 
+		[
+			$RAW_EVENT.status outside [CLOSED,BLACKOUT] AND
+			$RAW_EVENT.mc_smc_impact != NON_ELECTABLE
+		]
+		MC_SM_COMPONENT ($COMP) where 
+		[
+			mc_udid: == $RAW_EVENT.mc_smc_id
+		]
+	}
+	triggers
+	{
+		if ($RAW_EVENT.mc_smc_impact == NOT_ELECTED) then
+		{ 
+		 $RAW_EVENT.mc_smc_impact=ELECTED;
+		};		 	
+		smc_attach($RAW_EVENT, $COMP);	
+	}
+END
+

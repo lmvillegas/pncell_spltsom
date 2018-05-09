@@ -1,0 +1,35 @@
+#
+# File name: proactivenet_dm_ev.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: proactivenet_dm_ev.baroc
+# Version: 9.6.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------------
+#  Baroc definition for Deployment Monitoring events.
+#  NandaKumar Chava
+#  26th Sep 2014	
+#----------------------------------------------------------
+#
+# mc_object_class specifies the bppm component that is facing issues.
+#
+
+#
+# mc_origin_class specifies the specific component identified by <component-type>
+#
+#
+
+
+# Event class for Deployment Monitoring
+MC_EV_CLASS: 
+	PROACTIVENET_DM_EV ISA EVENT DEFINES
+	{
+		mc_object_class : STRING, default = "PROACTIVENET_COMPONENT"	;	
+     		mc_origin_class : STRING, default = "PROACTIVENET_DEPLOYMENT_MONITORING_COMPONENT";
+	};
+END
+

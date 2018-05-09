@@ -1,0 +1,58 @@
+#
+# File name: em_rec_options.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# contains KB global controls and default values
+#
+# 1=EM_KB_OPTIONS
+#
+#-----+------------------------------+------------------------
+#     | startup_script_enabled       | controls mc_startup.mrl
+#     +------------------------------+------------------------
+#     | default_location             | location name to be used if event
+#     |                              | has no location and no DNS domain
+#     +------------------------------+------------------------
+#     | rate_overwrite_msg           | controls rate_operations.mrl
+#     +------------------------------+------------------------
+#     | action_result_set_severity   | controls mc_intevt.mrl
+#     | action_result_severity_value | controls mc_intevt.mrl
+#     | action_result_set_priority   | controls mc_intevt.mrl
+#     | action_result_priority_value | controls mc_intevt.mrl
+#     +------------------------------+------------------------
+#     | dfilter_enabled   	         | controls mc_deprecated_filter.mrl
+#     | dnotification_enabled        | controls mc_deprecated_notification.mrl
+#     | dpropagation_enabled         | controls mc_deprecated_propagation.mrl
+#-----+--------------------------+------------------------
+
+RECORD EM_KB_OPTIONS DEFINES
+{
+	startup_script_enabled:	MC_YESNO, default = NO;
+	default_location:       STRING;
+    rate_overwrite_msg:     MC_YESNO, default =YES;
+	action_result_set_severity: MC_YESNO, default = YES;
+	action_result_severity_value: SEVERITY, default = MINOR;
+	action_result_set_priority: MC_YESNO, default = NO;
+	action_result_priority_value: MC_PRIORITY, default = PRIORITY_5;
+#---------------------------------------------------------
+# Deprecated items below
+#
+	dfilter_enabled:        MC_YESNO, default = NO;
+	dnotification_enabled:  MC_YESNO, default = NO;
+	dpropagation_enabled:   MC_YESNO, default = NO;
+}
+END
+
+#-----------------------------------------------------------------------------------------
+RECORD EM_KB_WORK_AREA DEFINES 
+   {
+      targets       : STRING;	# Temporary string for building targets CSV from list
+      index         : INTEGER;  # Temporary integer for indexing a list
+      scratch_str   : STRING;   # Work string
+      scratch_int   : INTEGER;  # Work integer
+   }
+END
+

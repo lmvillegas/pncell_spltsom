@@ -1,0 +1,349 @@
+#
+# File name: di_policies.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+IM_SUPPRESSION_POLICY;
+	name='Blackout_Suppression';
+	description='Suppress Blackout events';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Blackout_Events';
+	selector_class='EVENT';
+	selector_ecf=*Blackout_Events ($EV);
+END
+
+IM_CLOSURE_POLICY;
+	name='PATROL_Portal_Closure_on_OK_Events';
+	description='Close previous Portal events for same managed object after receiving OK events';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.PATROL_Portal_OK_Events';
+	selector_class='PATROL_PORTAL_EVENT';
+	selector_ecf=*Default.PATROL_Portal_OK_Events ($EV);
+	ordinal=0;
+	closed_events=PATROL_PORTAL_EVENT($CLOSE_EV) where [$CLOSE_EV.CLASS equals $EV.CLASS AND $CLOSE_EV.mc_host_class equals $EV.mc_host_class AND $CLOSE_EV.mc_host equals $EV.mc_host AND $CLOSE_EV.mc_object_class equals $EV.mc_object_class AND $CLOSE_EV.mc_object equals $EV.mc_object AND $CLOSE_EV.mc_parameter equals $EV.mc_parameter AND $CLOSE_EV.mc_tool_class equals $EV.mc_tool_class AND $CLOSE_EV.mc_tool equals $EV.mc_tool ];
+	closed_events_descr='Close previous Portal events for same managed object after receiving OK severity events';
+	time_window=0;
+	time_scale=SECONDS;
+	supp_closing_event=0;
+END
+
+IM_TIMEOUT_POLICY;
+	name='PATROL_Portal_Offline_Timeout';
+	description='Time out Portal Offline parameter events';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.PATROL_Portal_Offline_Events';
+	selector_class='PATROL_PORTAL_EVENT';
+	selector_ecf=*Default.PATROL_Portal_Offline_Events ($EV);
+	ordinal=0;
+	timeout_secs=3600;
+	timeout_scale=HOURS;
+END
+
+IM_TIMEOUT_POLICY;
+	name='PATROL_Portal_Blackout_Timeout';
+	description='Time out Portal Blackout parameter events';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.PATROL_Portal_Blackout_Events';
+	selector_class='PATROL_PORTAL_EVENT';
+	selector_ecf=*Default.PATROL_Portal_Blackout_Events ($EV);
+	ordinal=0;
+	timeout_secs=3600;
+	timeout_scale=HOURS;
+END
+
+IM_TIMEOUT_POLICY;
+	name='PATROL_Portal_Timeout';
+	description='Time out OK Portal events';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.PATROL_Portal_OK_Events';
+	selector_class='PATROL_PORTAL_EVENT';
+	selector_ecf=*Default.PATROL_Portal_OK_Events ($EV);
+	ordinal=0;
+    timeout_secs=3600;
+    timeout_scale=HOURS;
+END
+
+IM_RECURRENCE_POLICY;
+	name='Patrol_Portal_DeDup_Policy';
+	description='Handles repeating Portal Events for same managed object';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.PATROL_Portal_Events';
+	selector_class='PATROL_PORTAL_EVENT';
+	selector_ecf=*Default.PATROL_Portal_Events ($EV);
+	ordinal=0;
+	time_window=0;
+	time_scale=SECONDS;
+	update_severity=1;
+	keep_highest_sev=0;
+	update_priority=1;
+	keep_highest_pri=0;
+	update_msg=1;
+	update_parameter=1;
+END
+
+IM_CLOSURE_POLICY;
+	name='Adapter_Start_Stop_Closure';
+	description='Close previous events for same adapter instance';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.Adapter_Start_Stop';
+	selector_class='MC_ADAPTER_CONTROL';
+	selector_ecf=*Default.Adapter_Start_Stop ($EV);
+	ordinal=0;
+	closed_events=MC_ADAPTER_CONTROL($CLOSE_EV) where [$CLOSE_EV.CLASS within [MC_ADAPTER_START, MC_ADAPTER_STOP] AND $CLOSE_EV.mc_host equals $EV.mc_host AND $CLOSE_EV.mc_object_class equals $EV.mc_object_class AND $CLOSE_EV.mc_object equals $EV.mc_object AND $CLOSE_EV.mc_origin_class equals $EV.mc_origin_class AND $CLOSE_EV.mc_origin equals $EV.mc_origin AND $CLOSE_EV.mc_tool_class equals $EV.mc_tool_class AND $CLOSE_EV.mc_tool equals $EV.mc_tool ];
+	closed_events_descr='Close both adapter start & adapter stop events for same instance';
+	time_window=2592000;
+	time_scale=DAYS;
+	supp_closing_event=0;
+END
+
+IM_RECURRENCE_POLICY;
+	name='Apache_Login_Failed_Repeats';
+	description='Handle repeating Apache Login Failed events';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.Apache_Login_Failed';
+	selector_class='APACHE_LOGIN_FAILED';
+	selector_ecf=*Default.Apache_Login_Failed ($EV);
+	ordinal=0;
+	time_window=3600;
+	time_scale=HOURS;
+	update_severity=1;
+	keep_highest_sev=1;
+	update_priority=1;
+	keep_highest_pri=1;
+	update_msg=1;
+	update_parameter=0;
+END
+
+IM_CLOSURE_POLICY;
+	name='Client_Stop_Closes_Start';
+	description='Client Stop events close Client Start events, and themselves';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='Default.Client_Stop';
+	selector_class='MC_CLIENT_STOP';
+	selector_ecf=*Default.Client_Stop ($EV);
+	ordinal=0;
+	closed_events=MC_CLIENT_START($CLOSE_EV) where [$CLOSE_EV.mc_host equals $EV.adapter_host AND $CLOSE_EV.mc_tool_class equals $EV.mc_tool_class AND $CLOSE_EV.mc_tool equals $EV.mc_tool ];
+	closed_events_descr='Client Start events for same client';
+	time_window=86400;
+	time_scale=DAYS;
+	supp_closing_event=1;
+END
+
+IM_PROPAGATION_POLICY;
+	mc_modification_requestor='';
+	name='Event_Reporting_Propagation';
+	description='Sample policy for propagating events to Portal for event reporting';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='All_Events';
+	selector_class='EVENT';
+	selector_ecf=*All_Events ($EV);
+	ordinal=0;
+	all_of_propagation_list=[];
+	one_of_propagation_list=[];
+END
+
+IM_DDBL_POLICY;
+	name='Dynamic_Blackout';
+	description='Example policy for dynamic event blackout';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='All_Events';
+	selector_class='EVENT';
+	selector_ecf=*All_Events ($EV);
+	ordinal=0;
+	execution_order=1;
+	event_class='EVENT';
+	lookup_table='DDBL_MATCH_TABLE';
+	lookup_table_tag='blackout-tag_1';
+	match_fields=['mc_host_class','mc_host','mc_object_class','mc_object','mc_parameter'];
+	trace=NO;
+	data_file='etc/samples/blackout.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+IM_DDEN_POLICY;
+	name='Location_Enrichment';
+	description='Example policy for location data enrichment';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='All_Events';
+	selector_class='EVENT';
+	selector_ecf=*All_Events ($EV);
+	ordinal=0;
+	execution_order=2;
+	event_class='EVENT';
+	lookup_table='DDEN_MATCH_TABLE';
+	lookup_table_tag='enrich-tag_2';
+	match_fields=['mc_host'];
+	output_fields=['mc_location'];
+	trace=NO;
+	data_file='etc/samples/location.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+IM_DDEN_POLICY;
+	name='Service_Contact_Enrichment';
+	description='Example policy for service contact data enrichment';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='All_Events';
+	selector_class='EVENT';
+	selector_ecf=*All_Events ($EV);
+	ordinal=0;
+	execution_order=3;
+	event_class='EVENT';
+	lookup_table='DDEN_MATCH_TABLE';
+	lookup_table_tag='enrich-tag_3';
+	match_fields=['mc_host_class','mc_host','mc_object_class','mc_object'];
+	output_fields=['mc_service','administrator'];
+	trace=NO;
+	data_file='etc/samples/Contact.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+IM_DDEN_POLICY;
+	name='PATROL_Message_Translation';
+	description='Example policy for PATROL message translation data enrichment';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='PATROL_Events';
+	selector_class='PATROL_EV';
+	selector_ecf=*PATROL_Events ($EV);
+	ordinal=0;
+	execution_order=4;
+	event_class='PATROL_EV';
+	lookup_table='DDEN_MATCH_TABLE';
+	lookup_table_tag='enrich-tag_4';
+	match_fields=['mc_object_class','mc_parameter','p_class'];
+	output_fields=['msg'];
+	trace=NO;
+	data_file='etc/samples/TextTranslation.csv';
+	data_file_separator=',';
+	pmep_file='';
+	last_import_time='';
+	last_import_type='';
+	num_of_total_records=0;
+	num_of_failed_records=0;
+END
+
+CI_ENRICH_POLICY;
+	name='Sample_Component_Based_Enrichment_Policy';
+	description='Example policy for Component based enrichment';
+	enabled=0;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='All_Events';
+	selector_class='EVENT';
+	selector_ecf=*All_Events ($EV);
+	ordinal=0;
+	execution_order=1;
+	ci_slots=['Site'];
+	event_slots=['mc_location'];
+	trace=NO;
+END
+
+IM_CLOSURE_POLICY;
+	name='JSERVERCellConnectionStatusPolicy';
+	description='';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='PPM.JSERVERCellConnectionStatusSelector';
+	selector_class='LOGFILE_BASE';
+	selector_ecf=*PPM.JSERVERCellConnectionStatusSelector ($EV);
+	ordinal=0;
+	closed_events=LOGFILE_BASE($CLOSE_EV) where [$CLOSE_EV.mc_object equals 'JSERVER' AND ( $CLOSE_EV.mc_parameter_value equals '0' OR $CLOSE_EV.mc_parameter_value equals '1' OR $CLOSE_EV.mc_parameter_value equals '2' OR $CLOSE_EV.mc_parameter_value equals '4' ) ];
+	closed_events_descr='';
+	time_window=0;
+	time_scale=SECONDS;
+	supp_closing_event=0;
+END
+IM_CLOSURE_POLICY;
+	name='RATECellConnectionStatusPolicy';
+	description='';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	active_global_timeframes=[];
+	except_global_timeframes=[];
+	selector_name='PPM.RATECellConnectionStatusSelector';
+	selector_class='LOGFILE_BASE';
+	selector_ecf=*PPM.RATECellConnectionStatusSelector ($EV);
+	ordinal=0;
+	closed_events=LOGFILE_BASE($CLOSE_EV) where [$CLOSE_EV.mc_object equals 'RATE' AND ( $CLOSE_EV.mc_parameter_value equals '0' OR $CLOSE_EV.mc_parameter_value equals '1' OR $CLOSE_EV.mc_parameter_value equals '2' OR $CLOSE_EV.mc_parameter_value equals '4' ) ];
+	closed_events_descr='';
+	time_window=0;
+	time_scale=SECONDS;
+	supp_closing_event=0;
+END
+
+
+IM_NOTIFICATION_POLICY;
+	name='Notify_Resource_Monitoring';
+	description='Policy for resource monitoring notification';
+	enabled=0;
+	selector_name='Cell_Resource_Monitor';
+	selector_class='MC_RESOURCE_MONITOR_EV';
+	selector_ecf=*Cell_Resource_Monitor ($EV);
+	notification_service='BASIC_EMAIL';	
+	notify_subject_format='%s';
+	notify_subject_slots=['$1.msg'];
+	notify_msg_format='Cell resource monitoring report:  Resource name: %s; Resource type: %s; Used units: %d; Total units: %d';
+	notify_msg_slots=['$1.resource_name','$1.resource_type','$1.used_units','$1.total_units'];	
+	when_slot='severity';
+	when_operator='greater_or_equals';
+	when_value='WARNING';	
+END

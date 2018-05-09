@@ -1,0 +1,653 @@
+#
+# File name: ibrsd_root_cause.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+# BMC Impact Integration for ARS
+# Date     : November , 2005
+# Revision : 		
+# Author   : SMS Pune Integration Connect Team
+#################################################################################
+
+#Assumption :- SIM Rules is running in single thread
+
+#added new rule for avoid the Impacted Component Status Change
+filter filter_non_status_changed: NOPASS
+	SIM_COMPONENT_CHANGE ($SIM_EV) where [
+		$SIM_EV.client_data == 'IBRSD', 
+                $SIM_EV.component_status == ''
+                ]
+END
+
+
+#Refine Rule for set the counter
+
+refine record_counter :
+    SIM_COMPONENT_CHANGE ($EV) where [ $EV.client_data == "IBRSD" ]
+       	{
+		$IBRSD_Record.incident_update = 0;
+		}
+END
+
+#Refind Rule for setting name of policy
+
+refine interlligent_policy_name :
+	IBRSD_SM_INCIDENT ($EV) where [ $EV.status == OPEN AND $EV.status != CLOSED AND $EV.bOrphanedRoot == 0]
+	{
+		$IBRSD_Record.policy_name = $EV.policy_name;
+	}
+END
+
+
+# Rule for Close the Old IBRSD_SM_INCIDENT and Create New in UPDATE Case
+# 1 -> Rule is running for new SIM_COMPONENT_CHANGE event
+# 2 -> Get component details from mcdb using SIM_COMPONENT_CHANGE event slot mc_smc_id
+# 3 -> Closed old SIM_COMPONENT_CHANGE event for component
+# 4 -> Generate new IBRSD_SM_INCIDENT event for component
+# 5 -> If new IBRSD_SM_INCIDENT event is of type OK severity genereate new
+#      IBRSD_SM_INCIDENT_CLOSE event for closing OK severity event
+#	In updates Site is not considered even if policy is updatedwith SIte reason being Component has to complete the life #	cycle
+
+new update_old_ibrsd_sm_incident : 
+	using_policy ALL
+	{
+	        Intelligent_Incident_Service_Policy ($POL) where
+	        [ ($POL.enabled == 1) AND ($POL.name == $IBRSD_Record.policy_name) ]
+	} 
+	$POL.selector_ecf_cust ($NEW) where [ $NEW.status == OPEN AND $NEW.client_data == "IBRSD" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ $COMP.mc_udid equals $NEW.component_udid ]
+		
+		SIM_NOTIFICATION_REGISTRY_INT ($REGISTRY) where [$REGISTRY.client_data == "IBRSD"]
+	}
+	updates IBRSD_SM_INCIDENT ($OLD) where [
+		$OLD.comp_id == $NEW.component_udid AND $OLD.status != CLOSED AND $OLD.bOrphanedRoot == 0
+	]
+	{
+		if ($REGISTRY.all_causes_notification_mode == YES) then
+		{
+			$causes = $COMP.all_causes;
+		}
+		else
+		{
+			$causes = $COMP.root_causes;
+		};
+		$OLD.status = CLOSED;
+		$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+		$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+		$CLASS_INFORMATION = $CUSTOM_MSG;
+		$IBRSD_Record.incident_update = 1;
+				generate_event( IBRSD_SM_INCIDENT,[ msg = $CLASS_INFORMATION,
+						comp_id = $COMP.mc_udid,
+						comp_name = $COMP.Name,
+						comp_class = $COMP.CLASS,
+						comp_category = $COMP.Category,
+						comp_type = $COMP.Type,
+						comp_item = $COMP.Item,
+						comp_status = $COMP.status,
+						comp_sub_status = $COMP.sub_status,
+						isSubStatusEnabled=$POL.isSubStatusEnabled,
+						comp_priority = $COMP.computed_priority,
+						comp_cost = $COMP.ImpactCostPerSec,
+						root_causes = $causes,
+						severity = $NEW.severity,
+						prop_destination = $POL.prop_destination,
+						incident_for=$POL.incident_for, 
+						status_incident=$POL.status_incident,
+						status_reason=$POL.status_reason, 
+						priority_urgency_option=$POL.priority_urgency_option,
+						status_impact_option=$POL.status_impact_option,
+						cell_name=$MC_CELL_INFO.cell_name,
+						policy_name=$POL.name,
+						company_name=$COMP.Company, 
+						causal_mc_ueid = $OLD.causal_mc_ueid ] ) ;
+						
+		if($COMP.status == OK AND ( $POL.isSubStatusEnabled != 1 OR $COMP.sub_status==OK)) then
+		{
+			generate_event(IBRSD_SM_INCIDENT_CLOSE,[comp_id=$COMP.mc_udid]);
+		};
+		drop_new;
+	}
+END
+
+#Close IBRSD_SM_INCIDENT with severity OK and 
+#Drop IBRSD_SM_INCIDENT_CLOSE event
+
+new close_ibrsd_sm_incident_event:
+	IBRSD_SM_INCIDENT_CLOSE($IIARS_CLOSE_EV)
+	updates IBRSD_SM_INCIDENT($EV) where [ 
+		$EV.status != CLOSED AND 
+		$EV.comp_status == OK AND 
+		$EV.bOrphanedRoot !=1 AND 
+		$EV.comp_id == $IIARS_CLOSE_EV.comp_id 
+		] 
+	
+	{
+		$EV.status = CLOSED;
+		drop_new;
+	}
+END
+
+
+## Make Sure IBRSD_SM_INCIDENT_CLOSE event will not go to mcdb
+
+new drop_ibrsd_sm_incident_close_event:
+	IBRSD_SM_INCIDENT_CLOSE($IIARS_CLOSE_EV)
+	updates IBRSD_SM_INCIDENT($EV)
+	{
+		drop_new;
+	}
+END
+
+
+# Rule for Creating the New IBRSD_SM_INCIDENT
+# 1 -> Get Intelligent_Incident_Service_Policy object 
+# 2 -> Get Information for component of interest using mcdb
+# 3 -> Itreate throgh CLASS list and Component list and if component is of 
+#      interest create new IBRSD_SM_INCIDENT for component
+
+
+new create_sm_incident_comp :
+	using_policy ALL
+	{
+	        Intelligent_Incident_Service_Policy ($POL) where
+	        [ ($POL.enabled == 1) AND ($POL.selected_comp_option == 1) AND 
+	          (($POL.active_timeframes == [] OR tf_active($POL.active_timeframes)) AND NOT tf_active($POL.except_timeframes)) ]
+	}
+	$POL.selector_ecf_cust ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT AND $EV.client_data == "IBRSD" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ($COMP.mc_udid equals $EV.component_udid) AND  
+								(($COMP.Site == $POL.site) OR ($POL.site == "")) AND 
+								(($COMP.Company == $POL.company_name) OR ($POL.company_name == "")) ]
+		
+		SIM_NOTIFICATION_REGISTRY_INT ($REGISTRY) where [$REGISTRY.client_data == "IBRSD"]
+	}
+	triggers
+	{
+		if( $IBRSD_Record.incident_update == 0 ) then
+		{
+			$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+			$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+			$CLASS_INFORMATION = $CUSTOM_MSG;
+			################### Start For Priority >= ############################
+			
+			listwalk($POL.component_list,$COMP_LIST);
+			
+			$IBRSD_Record.b_PriorityMatch = 0;
+			$IBRSD_Record.b_StatusMatch = 0;
+
+			# Check for Priority of the component
+			if ( $POL.operator_priority == '>' ) then
+			{
+				if ( $COMP.computed_priority > $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '>=' ) then
+			{
+				if ( $COMP.computed_priority >= $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '<' ) then
+			{
+				if ( $COMP.computed_priority < $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '<=' ) then
+			{
+				if ( $COMP.computed_priority <= $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '==' ) then
+			{
+				if ( $COMP.computed_priority == $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};			
+			if ( $POL.operator_priority == 'All' ) then
+			{
+				$IBRSD_Record.b_PriorityMatch = 1;
+			};			
+
+			# Check for Status of the component
+			if ( $POL.operator_status == '>' ) then
+			{
+				if ( $COMP.status > $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status > $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch= 1;
+				}
+			};
+			if ( $POL.operator_status == '>=' ) then
+			{
+				if ( $COMP.status >= $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status >= $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '<' ) then
+			{
+				if ( $COMP.status < $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status < $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '<=' ) then
+			{
+				if ( $COMP.status <= $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status <= $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '==' ) then
+			{
+				if ( $COMP.status == $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status == $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == 'All' ) then
+			{
+				$IBRSD_Record.b_StatusMatch = 1;
+			};			
+			
+			if( $COMP_LIST == $COMP.Name AND $IBRSD_Record.b_PriorityMatch == 1 AND $IBRSD_Record.b_StatusMatch == 1 ) then
+			{
+				if ($REGISTRY.all_causes_notification_mode == YES) then
+				{
+					$causes = $COMP.all_causes;
+				}
+				else
+				{
+					$causes = $COMP.root_causes;
+				};
+				
+				generate_event( IBRSD_SM_INCIDENT,[ msg = $CLASS_INFORMATION,
+								comp_id = $COMP.mc_udid,
+								comp_name = $COMP.Name,
+								comp_class = $COMP.CLASS,
+						comp_category = $COMP.Category,
+						comp_type = $COMP.Type,
+						comp_item = $COMP.Item,
+								comp_status = $COMP.status,
+								comp_sub_status = $COMP.sub_status,
+								comp_priority = $COMP.computed_priority,
+								comp_cost = $COMP.ImpactCostPerSec,
+								root_causes = $causes,
+								severity = $EV.severity,
+								prop_destination = $POL.prop_destination,
+								incident_for=$POL.incident_for, 
+								status_incident=$POL.status_incident,
+								isSubStatusEnabled=$POL.isSubStatusEnabled,
+								status_reason=$POL.status_reason, 
+								priority_urgency_option=$POL.priority_urgency_option,
+								status_impact_option=$POL.status_impact_option,
+								cell_name=$MC_CELL_INFO.cell_name,
+								policy_name=$POL.name,
+								company_name=$COMP.Company ] ) ;
+				drop_new;
+			};
+
+			# Reset the Flag
+			$IBRSD_Record.b_PriorityMatch = 0;
+			$IBRSD_Record.b_StatusMatch = 0;
+		};# End of if( $IBRSD_Record.incident_update == 0 ) then
+		
+	}
+END
+
+#Rule for CLASS Only
+
+new create_sm_incident_class :
+	using_policy ALL
+	{
+	        Intelligent_Incident_Service_Policy ($POL) where
+	        [ ($POL.enabled == 1) AND ($POL.all_comp_in_selected_class_option == 1) AND
+	          (($POL.active_timeframes == [] OR tf_active($POL.active_timeframes)) AND NOT tf_active($POL.except_timeframes)) ]
+	}
+	$POL.selector_ecf_cust ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT AND $EV.client_data == "IBRSD" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ( $COMP.mc_udid equals $EV.component_udid )AND
+					      ($COMP.CLASS subclass_of $POL.sel_class_name) AND
+						(($COMP.Site == $POL.site) OR ($POL.site == "")) AND
+						(($COMP.Company == $POL.company_name) OR ($POL.company_name == "")) ]
+		
+		SIM_NOTIFICATION_REGISTRY_INT ($REGISTRY) where [$REGISTRY.client_data == "IBRSD"]
+	}
+	triggers
+	{
+		if( $IBRSD_Record.incident_update == 0 ) then
+		{
+			$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+			$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+			$CLASS_INFORMATION = $CUSTOM_MSG;
+
+			$IBRSD_Record.b_PriorityMatch = 0;
+			$IBRSD_Record.b_StatusMatch = 0;
+
+			# Check for Priority of the component
+			if ( $POL.operator_priority == '>' ) then
+			{
+				if ( $COMP.computed_priority > $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '>=' ) then
+			{
+				if ( $COMP.computed_priority >= $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '<' ) then
+			{
+				if ( $COMP.computed_priority < $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '<=' ) then
+			{
+				if ( $COMP.computed_priority <= $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '==' ) then
+			{
+				if ( $COMP.computed_priority == $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};			
+			if ( $POL.operator_priority == 'All' ) then
+			{
+				$IBRSD_Record.b_PriorityMatch = 1;
+			};			
+
+			# Check for Status of the component
+			if ( $POL.operator_status == '>' ) then
+			{
+				if ( $COMP.status > $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status > $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch= 1;
+				}
+			};
+			if ( $POL.operator_status == '>=' ) then
+			{
+				if ( $COMP.status >= $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status >= $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '<' ) then
+			{
+				if ( $COMP.status < $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status < $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '<=' ) then
+			{
+				if ( $COMP.status <= $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status <= $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '==' ) then
+			{
+				if ( $COMP.status == $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status == $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == 'All' ) then
+			{
+				$IBRSD_Record.b_StatusMatch = 1;
+			};			
+			
+			if( $IBRSD_Record.b_PriorityMatch == 1 AND $IBRSD_Record.b_StatusMatch == 1 ) then
+			{
+				if ($REGISTRY.all_causes_notification_mode == YES) then
+				{
+					$causes = $COMP.all_causes;
+				}
+				else
+				{
+					$causes = $COMP.root_causes;
+				};
+				
+				generate_event( IBRSD_SM_INCIDENT,[ msg = $CLASS_INFORMATION,
+								comp_id = $COMP.mc_udid,
+								comp_name = $COMP.Name,
+								comp_class = $COMP.CLASS,
+						comp_category = $COMP.Category,
+						comp_type = $COMP.Type,
+						comp_item = $COMP.Item,
+								comp_status = $COMP.status,
+								comp_sub_status = $COMP.sub_status,
+								isSubStatusEnabled = $POL.isSubStatusEnabled,
+								comp_priority = $COMP.computed_priority,
+								comp_cost = $COMP.ImpactCostPerSec,
+								root_causes = $causes,
+								severity = $EV.severity,
+								prop_destination = $POL.prop_destination,
+								incident_for=$POL.incident_for, 
+								status_incident=$POL.status_incident,
+								status_reason=$POL.status_reason, 
+								priority_urgency_option=$POL.priority_urgency_option,
+								status_impact_option=$POL.status_impact_option,
+								cell_name=$MC_CELL_INFO.cell_name,
+								policy_name=$POL.name,
+								company_name=$COMP.Company ] ) ;
+				drop_new;
+			};
+			
+			$IBRSD_Record.b_PriorityMatch = 0;
+			$IBRSD_Record.b_StatusMatch = 0;
+			
+		}; #End of if( $IBRSD_Record.incident_update == 0 ) then
+		
+	}
+END
+
+new create_sm_incident_wildcard :
+	using_policy ALL
+	{
+	        Intelligent_Incident_Service_Policy ($POL) where
+	        [ ($POL.enabled == 1) AND ($POL.all_comp_that_begin_with_option == 1) AND
+	          (($POL.active_timeframes == [] OR tf_active($POL.active_timeframes)) AND NOT tf_active($POL.except_timeframes)) ]
+	}
+	$POL.selector_ecf_cust ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT AND $EV.client_data == "IBRSD"]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ($COMP.mc_udid equals $EV.component_udid) AND 
+								($COMP.CLASS subclass_of $POL.sel_class_name) AND 
+								(($COMP.Site == $POL.site) OR ($POL.site == "")) AND
+								(($COMP.Company == $POL.company_name) OR ($POL.company_name == "")) ]
+		
+		SIM_NOTIFICATION_REGISTRY_INT ($REGISTRY) where [$REGISTRY.client_data == "IBRSD"]
+	}
+	triggers
+	{
+		if( $IBRSD_Record.incident_update == 0 ) then
+		{
+			$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+			$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+			$CLASS_INFORMATION = $CUSTOM_MSG ;
+			listwalk($POL.comp_begin_with,$COMP_LIST);
+			$COMP_LIST_1 = $COMP_LIST || '(.*)' ;
+
+			$IBRSD_Record.b_PriorityMatch = 0;
+			$IBRSD_Record.b_StatusMatch = 0;
+
+			# Check for Priority of the component
+			if ( $POL.operator_priority == '>' ) then
+			{
+				if ( $COMP.computed_priority > $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '>=' ) then
+			{
+				if ( $COMP.computed_priority >= $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '<' ) then
+			{
+				if ( $COMP.computed_priority < $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '<=' ) then
+			{
+				if ( $COMP.computed_priority <= $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};
+			if ( $POL.operator_priority == '==' ) then
+			{
+				if ( $COMP.computed_priority == $POL.component_priority ) then
+				{
+					$IBRSD_Record.b_PriorityMatch = 1;
+				}
+			};			
+			if ( $POL.operator_priority == 'All' ) then
+			{
+				$IBRSD_Record.b_PriorityMatch = 1;
+			};			
+
+			# Check for Status of the component
+			if ( $POL.operator_status == '>' ) then
+			{
+				if ( $COMP.status > $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status > $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch= 1;
+				}
+			};
+			if ( $POL.operator_status == '>=' ) then
+			{
+				if ( $COMP.status >= $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status >= $POL.component_subStatus )  then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '<' ) then
+			{
+				if ( $COMP.status < $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status < $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '<=' ) then
+			{
+				if ( $COMP.status <= $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status <= $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == '==' ) then
+			{
+				if ( $COMP.status == $POL.component_status ) OR ($POL.isSubStatusEnabled==1 AND $COMP.sub_status == $POL.component_subStatus ) then
+				{
+					$IBRSD_Record.b_StatusMatch = 1;
+				}
+			};
+			if ( $POL.operator_status == 'All' ) then
+			{
+				$IBRSD_Record.b_StatusMatch = 1;
+			};			
+			
+			if(match_regex($COMP.Name,$COMP_LIST_1,'') AND $IBRSD_Record.b_PriorityMatch == 1 AND $IBRSD_Record.b_StatusMatch == 1 ) then
+			{
+				if ($REGISTRY.all_causes_notification_mode == YES) then
+				{
+					$causes = $COMP.all_causes;
+				}
+				else
+				{
+					$causes = $COMP.root_causes;
+				};
+
+				generate_event( IBRSD_SM_INCIDENT,[ msg = $CLASS_INFORMATION,
+								comp_id = $COMP.mc_udid,
+								comp_name = $COMP.Name,
+								comp_class = $COMP.CLASS,
+						comp_category = $COMP.Category,
+						comp_type = $COMP.Type,
+						comp_item = $COMP.Item,
+								comp_status = $COMP.status,
+								comp_sub_status = $COMP.sub_status,
+								isSubStatusEnabled = $POL.isSubStatusEnabled,
+								comp_priority = $COMP.computed_priority,
+								comp_cost = $COMP.ImpactCostPerSec,
+								root_causes = $causes,
+								severity = $EV.severity,
+								prop_destination = $POL.prop_destination,
+								incident_for=$POL.incident_for, 
+								status_incident=$POL.status_incident,
+								status_reason=$POL.status_reason, 
+								priority_urgency_option=$POL.priority_urgency_option,
+								status_impact_option=$POL.status_impact_option,
+								cell_name=$MC_CELL_INFO.cell_name,
+								policy_name=$POL.name,
+								company_name=$COMP.Company  ] ) ;
+				drop_new;
+			};
+
+			$IBRSD_Record.b_PriorityMatch = 0;
+			$IBRSD_Record.b_StatusMatch = 0;
+
+		};
+		
+		
+	}
+END
+
+# Drop SIM_COMP_CHANGE event if its not pass
+# through policy and has client_data BiiARS
+
+new drop_sim_comp_change:
+	SIM_COMPONENT_CHANGE($SIM_CH_EV) where [ $SIM_CH_EV.client_data == "IBRSD" AND 
+						 $SIM_CH_EV.status != CLOSED ]
+triggers
+{
+	drop_new;
+}
+END
+
+#propagate to BiiARS
+
+propagate to_biiars:
+	IBRSD_SM_INCIDENT ($EV)   where  [ $EV.status != CLOSED ]
+	to one_of $EV.prop_destination 				# to biiars
+END
+
+#If you want to close IBRSD_SM_INCIDENT events when the corresponding incident is remedy is CLOSED, then uncomment the following rule.
+#execute close_ibrsd_sm_incident:CI_INCIDENT_INFO($IN)
+#using
+#      {
+#            IBRSD_SM_INCIDENT ($D) where [$IN.component_id == $D.comp_id AND $D.status == OPEN]
+#      }
+#     when $IN.incident_status == Closed
+#     {
+#            $D.status = CLOSED    
+#     }
+#  END

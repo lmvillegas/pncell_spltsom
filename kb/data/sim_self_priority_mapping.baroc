@@ -1,0 +1,216 @@
+#
+# File name: sim_self_priority_mapping.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+#
+# Data instances provided in the default KB
+#
+
+#====================================================
+# BMC_SELF_PRIORITY_MAPPING
+#====================================================
+
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=UNAVAILABLE;
+	self_priority=PRIORITY_1;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=IMPACTED;
+	self_priority=PRIORITY_1;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=MINOR;
+	self_priority=PRIORITY_2;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=WARNING;
+	self_priority=PRIORITY_2;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=INFO;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=OK;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=UNKNOWN;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_1;
+	status=BLACKOUT;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=UNAVAILABLE;
+	self_priority=PRIORITY_2;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=IMPACTED;
+	self_priority=PRIORITY_2;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=MINOR;
+	self_priority=PRIORITY_3;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=WARNING;
+	self_priority=PRIORITY_3;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=INFO;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=OK;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=UNKNOWN;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_2;
+	status=BLACKOUT;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=UNAVAILABLE;
+	self_priority=PRIORITY_3;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=IMPACTED;
+	self_priority=PRIORITY_3;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=MINOR;
+	self_priority=PRIORITY_4;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=WARNING;
+	self_priority=PRIORITY_4;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=INFO;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=OK;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=UNKNOWN;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_3;
+	status=BLACKOUT;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=UNAVAILABLE;
+	self_priority=PRIORITY_4;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=IMPACTED;
+	self_priority=PRIORITY_4;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=MINOR;
+	self_priority=PRIORITY_4;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=WARNING;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=INFO;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=OK;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=UNKNOWN;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_4;
+	status=BLACKOUT;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=UNAVAILABLE;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=IMPACTED;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=MINOR;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=WARNING;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=INFO;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=OK;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=UNKNOWN;
+	self_priority=PRIORITY_5;
+END
+BMC_SELF_PRIORITY_MAPPING;
+	priority=PRIORITY_5;
+	status=BLACKOUT;
+	self_priority=PRIORITY_5;
+END
+

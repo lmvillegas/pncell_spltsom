@@ -1,0 +1,25 @@
+#
+# File name: proactivenet_dm_ev_rules.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+new update_SME_event : PROACTIVENET_DM_EV($PROACTIVENET_DM_EV) 
+where [ $PROACTIVENET_DM_EV.status != 'CLOSED' ]
+ 
+  updates PROACTIVENET_DM_EV($PROACTIVENET_DM_EV_OLD)
+  where [$PROACTIVENET_DM_EV_OLD.mc_origin_class == $PROACTIVENET_DM_EV.mc_origin_class AND $PROACTIVENET_DM_EV_OLD.mc_object == $PROACTIVENET_DM_EV.mc_object AND $PROACTIVENET_DM_EV_OLD.status != 'CLOSED' ]
+  {
+	$PROACTIVENET_DM_EV_OLD.repeat_count = $PROACTIVENET_DM_EV_OLD.repeat_count + 1;
+	$PROACTIVENET_DM_EV_OLD.msg = $PROACTIVENET_DM_EV.msg;
+		
+	if($PROACTIVENET_DM_EV_OLD.severity  != $PROACTIVENET_DM_EV.severity) then
+	 {
+	 $PROACTIVENET_DM_EV_OLD.severity = $PROACTIVENET_DM_EV.severity;
+	 $PROACTIVENET_DM_EV_OLD.mc_priority = $PROACTIVENET_DM_EV.mc_priority;
+	 };
+	
+	drop_new;
+	
+  }	
+		
+END

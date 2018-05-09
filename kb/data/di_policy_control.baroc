@@ -1,0 +1,37 @@
+#
+# File name: di_policy_control.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#---------------------------------------------------------------------
+#
+#  Description: Policy control
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Policy control data
+#---------------------------------------------------------------------
+
+POLICY_CONTROL; type=IM_ENRICHMENT_POLICY;	order=10; editor=EnrichmentEditor; END
+POLICY_CONTROL; type=IM_DDEN_POLICY;		order=15; editor=DynamicEnrichmentEditor; END
+POLICY_CONTROL; type=IM_BLACKOUT_POLICY;	order=20; editor=BlackoutEditor; END
+POLICY_CONTROL; type=IM_DDBL_POLICY;		order=25; editor=DynamicBlackoutEditor; END
+POLICY_CONTROL; type=CI_ENRICH_POLICY;		order=30; editor=CIEnrichmentEditor; END
+POLICY_CONTROL; type=IM_SUPPRESSION_POLICY;	order=35; editor=SuppressionEditor; END
+POLICY_CONTROL; type=IM_CLOSURE_POLICY;		order=40; editor=ClosureEditor; END
+POLICY_CONTROL; type=IM_RECURRENCE_POLICY;	order=45; editor=RecurrenceEditor; END
+POLICY_CONTROL; type=IM_CORRELATION_POLICY;	order=50; editor=CorrelationEditor; END
+POLICY_CONTROL; type=IM_NOTIFICATION_POLICY;	order=55; editor=NotificationEditor; END
+POLICY_CONTROL; type=IM_THRESHOLD_POLICY;	order=60; editor=ThresholdEditor; END
+POLICY_CONTROL; type=IM_PROPAGATION_POLICY;	order=65; editor=PropagationEditor; END
+POLICY_CONTROL; type=IM_ESCALATION_POLICY;	order=70; editor=EscalationEditor; END
+POLICY_CONTROL; type=IM_DREA_POLICY;		order=75; editor=RemoteActionEditor; END
+POLICY_CONTROL; type=IM_TIMEOUT_POLICY;		order=90; editor=TimeoutEditor; END
+POLICY_CONTROL; type=IM_CI_BLACKOUT_POLICY;		order=100; editor=CIEventBlackoutPolicyEditor; END
+POLICY_CONTROL; type=IM_AUTOMATED_CI_BLACKOUT_POLICY;		order=105; editor=CIEventBlackoutPolicyEditor; END
+
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

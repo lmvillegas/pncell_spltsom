@@ -1,0 +1,3 @@
+#!/bin/sh
+$MCELL_HOME/bin/msetmsg -u $event_handle -n $CELL_NAME -S "$1=$2" && echo "Slot \"$1\" set to \"$2\""
+

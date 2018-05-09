@@ -1,0 +1,557 @@
+#
+# File name: outage.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+# In this rule file, sequence of rules matters so please don't change the order of the rule
+
+refine initialize_update_value :
+    SIM_COMPONENT_CHANGE ($EV) where [ $EV.client_data == "IBRSD" ]
+	{
+		$OUTAGE_CONFIG.outage_update = 0;
+	}
+END
+
+# Rule for updating the old SM_OUTAGE event. Here Update means closing the old SM_OUTAGE and 
+# create new SM_OUTAGE
+
+# 1. Rule will be triggered for new SIM_COMPONENT_CHANGE event
+# 2. Check if any policy is in-schedule and enabled. and check below condition in policy
+#		a) OUTAGE_CONFIG.active_policy record value should not be NONE
+#		b) If OUTAGE_CONFIG.active_policy = DEFAULT then policy name should match with default policy name
+#		c) If OUTAGE_CONFIG.active_policy = CUSTOM then policy name should be other than the default policy
+# 3. Check if any SM_OUTAGE event exist for this particular CI
+# 4. If yes then 
+#       a) Close existing SM_OUTAGE event
+#       b) Set the OUTAGE_CONFIG.outage_update = 1 which means that outage is already updated and rest other rule
+#          For Outage creation will not be applicable
+#		c) If the status of the component is OK then generate new event SM_OUTAGE_CLOSE to close the generated new event
+
+new update_old_sm_outage :
+	using_policy ALL
+	{
+		OUTAGE_POLICY ($POL) where
+		[ ($POL.enabled == 1) AND $POL.during_schedule == YES AND ($OUTAGE_CONFIG.active_policy != NONE)
+		  AND ( ($OUTAGE_CONFIG.active_policy == DEFAULT AND $POL.name == $OUTAGE_DEFAULT_POLICY.policy_name)
+		 OR ($OUTAGE_CONFIG.active_policy == CUSTOM AND $POL.name != $OUTAGE_DEFAULT_POLICY.policy_name) )]
+	}
+	$POL.selector_ecf_cust ($EV) where [ $EV.status outside [CLOSED, BLACKOUT] AND $EV.client_data == "IBRSD" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ( $COMP.mc_udid equals $EV.component_udid ) ]
+	}
+	updates SM_OUTAGE ($OLD) where [ $OLD.comp_id == $EV.component_udid AND $OLD.status != CLOSED 
+	                                 AND $OLD.status != BLACKOUT AND $OLD.policy_name == $POL.name ]
+	{
+		$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $EV.component_status;
+		$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$OLD.comp_name,'k',$STAT_VAL]);
+			
+		$OUTAGE_CONFIG.outage_update = 1;
+		$OLD.status = CLOSED;
+			
+		if( $EV.component_status == OK ) then
+		{
+		generate_event( SM_OUTAGE,[ msg = $CUSTOM_MSG,
+					comp_id = $COMP.mc_udid,
+					comp_name = $COMP.Name,
+					comp_class = $COMP.CLASS,
+					comp_category = $COMP.Category,
+					comp_type = $COMP.Type,
+					comp_item = $COMP.Item,
+					comp_status = $COMP.status,
+					comp_priority = $COMP.computed_priority,
+					root_causes = $EV.root_causes,
+					severity = $EV.severity,
+					prop_destination = $POL.prop_destination,
+					outage_for=$POL.outage_for, 
+					status_outage='OPEN',
+					cell_name=$MC_CELL_INFO.cell_name,
+					policy_name=$POL.name,
+					site = $POL.site,
+					isCausal = $OLD.isCausal,
+					company_name=$COMP.Company,
+					causal_mc_ueid = $OLD.causal_mc_ueid,
+					causal_mc_udid = $OLD.causal_mc_udid ] ) ;
+			
+			generate_event(SM_OUTAGE_CLOSE,[comp_id=$OLD.comp_id]);
+		}
+		else
+		{
+			generate_event( SM_OUTAGE,[ msg = $CUSTOM_MSG,
+					comp_id = $COMP.mc_udid,
+					comp_name = $COMP.Name,
+					comp_class = $COMP.CLASS,
+					comp_category = $COMP.Category,
+					comp_type = $COMP.Type,
+					comp_item = $COMP.Item,
+					comp_status = $COMP.status,
+					comp_priority = $COMP.computed_priority,
+					root_causes = $EV.root_causes,
+					severity = $EV.severity,
+					prop_destination = $POL.prop_destination,
+					outage_for=$POL.outage_for, 
+					status_outage='OPEN',
+					isCausal = $OLD.isCausal,
+					cell_name=$MC_CELL_INFO.cell_name,
+					policy_name=$POL.name,
+					site = $POL.site,
+					company_name=$COMP.Company ] ) ;
+		};
+	}
+END
+
+# Close SM_OUTAGE with severity OK and Drop SM_OUTAGE_CLOSE event
+new close_sm_outage_event: SM_OUTAGE_CLOSE($CLOSE_EV)
+	updates SM_OUTAGE($EV) where [ $EV.status != CLOSED 
+	AND $EV.comp_status == OK AND $EV.comp_id == $CLOSE_EV.comp_id ]
+	{
+		$EV.status = CLOSED;
+	}
+	triggers
+	{
+		drop_new;
+	}
+END
+
+# Rule for Creating new SM_OUTAGE when all_comp_in_selected_class_option is true and 
+# class name is defined in the sel_class_name 
+
+# 1. Rule will be triggered for new SIM_COMPONENT_CHANGE event
+# 2. Check if any policy is in-schedule and enabled. and check below condition in policy
+#		a) OUTAGE_CONFIG.active_policy record value should not be NONE
+#		b) If OUTAGE_CONFIG.active_policy = DEFAULT then policy name should match with default policy name
+#		c) If OUTAGE_CONFIG.active_policy = CUSTOM then policy name should be other than the default policy
+#		d) If all_comp_in_selected_class_option == 1
+# 3. Check if any BMC_BaseElement CI exist for the class and sub_class defined in sel_class_name slot
+# 4. Check if the OUTAGE_CONFIG.outage_update is 0 means its not update case and we have to create new outage
+# 5. If above all condition matches then 
+#       a) check component priority matches to the priority defined in the class
+#       b) check component status matches to the status defined in the class
+#		c) If priority and status matches then Generate new SM_OUTAGE event for component
+
+new create_sm_outage_class :
+	using_policy ALL
+	{
+	        OUTAGE_POLICY ($POL) where
+	        [ ($POL.enabled == 1) AND $POL.during_schedule == YES AND ($POL.all_comp_in_selected_class_option == 1) 
+			  AND $OUTAGE_CONFIG.outage_update == 0 AND ($OUTAGE_CONFIG.active_policy != NONE) AND
+			  ( ($OUTAGE_CONFIG.active_policy == DEFAULT AND $POL.name == $OUTAGE_DEFAULT_POLICY.policy_name)
+			 OR ($OUTAGE_CONFIG.active_policy == CUSTOM AND $POL.name != $OUTAGE_DEFAULT_POLICY.policy_name) )]
+	}
+	$POL.selector_ecf_cust ($EV) where [ $EV.status outside [CLOSED, BLACKOUT] AND $EV.client_data == "IBRSD" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ( $COMP.mc_udid equals $EV.component_udid )AND
+					      ($COMP.CLASS subclass_of $POL.sel_class_name) AND
+						(($COMP.Site == $POL.site) OR ($POL.site == "")) AND
+						(($COMP.Company == $POL.company_name) OR ($POL.company_name == "")) ]
+	}
+	triggers
+	{
+
+		# Check for Priority of the component
+		if ( $POL.operator_priority == 'All' ) then
+		{
+			$priority_match = 1;
+		}
+		else
+		{
+			if ( $COMP.computed_priority == $POL.component_priority ) then
+			{
+				if ( $POL.operator_priority within ['>=', '==', '<='] )  then
+				{
+					$priority_match = 1;
+				}
+				else
+				{
+					$priority_match = 0;
+				}
+			}
+			else
+			{
+				if ( $COMP.computed_priority > $POL.component_priority ) then
+				{
+					if ( $POL.operator_priority within ['>=', '>'] ) then
+					{
+						$priority_match = 1;
+					}
+					else
+					{
+						$priority_match = 0;
+					}
+				}
+				else
+				{
+					if ( $POL.operator_priority within ['<=', '<'] ) then
+					{
+						$priority_match = 1;
+					}
+					else
+					{
+						$priority_match = 0;
+					}
+				}
+			}
+		};
+
+		# Check for Status of the component
+		if ( $POL.operator_status == 'All' ) then
+		{
+			$status_match = 1;
+		}
+		else
+		{
+			if ( $COMP.status == $POL.component_status ) then
+			{
+				if ( $POL.operator_status within ['>=', '==', '<='] )  then
+				{
+					$status_match = 1;
+				}
+				else
+				{
+					$status_match = 0;
+				}
+			}
+			else
+			{
+				if ( $COMP.status > $POL.component_status ) then
+				{
+					if ( $POL.operator_status within ['>=', '>'] )  then
+					{
+						$status_match = 1;
+					}
+					else
+					{
+						$status_match = 0;
+					}
+				}
+				else
+				{
+					if ( $POL.operator_status within ['<=', '<'] )  then
+					{
+						$status_match = 1;
+					}
+					else
+					{
+						$status_match = 0;
+					}
+				}
+			}
+		};			
+		
+		if( $priority_match == 1 AND $status_match == 1 ) then
+		{
+			$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+			$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+
+			generate_event( SM_OUTAGE,[ msg = $CUSTOM_MSG,
+							comp_id = $COMP.mc_udid,
+							comp_name = $COMP.Name,
+							comp_class = $COMP.CLASS,
+							comp_category = $COMP.Category,
+							comp_type = $COMP.Type,
+							comp_item = $COMP.Item,
+							comp_status = $COMP.status,
+							comp_priority = $COMP.computed_priority,
+							root_causes = $COMP.root_causes,
+							severity = $EV.severity,
+							prop_destination = $POL.prop_destination,
+							outage_for=$POL.outage_for, 
+							status_outage='OPEN',
+							cell_name=$MC_CELL_INFO.cell_name,
+							site = $POL.site,
+							policy_name=$POL.name,
+							company_name=$COMP.Company ] ) ;
+		};
+	}
+END
+
+# Rule for Creating new SM_OUTAGE when either all_comp_that_begin_with_option is true OR 
+# selected_comp_option is true
+
+# 1. Rule will be triggered for new SIM_COMPONENT_CHANGE event
+# 2. Check if any policy is in-schedule and enabled. and check below condition in policy
+#		a) OUTAGE_CONFIG.active_policy record value should not be NONE
+#		b) If OUTAGE_CONFIG.active_policy = DEFAULT then policy name should match with default policy name
+#		c) If OUTAGE_CONFIG.active_policy = CUSTOM then policy name should be other than the default policy
+#		d) If all_comp_that_begin_with_option == 1 or selected_comp_option == 1
+# 3. Check if any BMC_BaseElement CI exist for the SIM_COMPONENT_CHANGE event CI
+# 4. Check if the OUTAGE_CONFIG.outage_update is 0 means its not update case and we have to create new outage
+# 5. If above all condition matches then 
+#       a) check component priority matches to the priority defined in the class
+#       b) check component status matches to the status defined in the class
+#		c) If priority and status matches then 
+#			1. If all_comp_that_begin_with_option = 1 and if component matches to the component in the 
+#              comp_begin_with then generate new SM_OUTAGE event for component
+#			2. If selected_comp_option = 1 and if component matches to the component in the 
+#              component_list then generate new SM_OUTAGE event for component
+
+new create_sm_outage_comp :
+	using_policy ALL
+	{
+		OUTAGE_POLICY ($POL) where
+			[ $POL.enabled == 1 AND $POL.during_schedule == YES 
+			  AND ($POL.all_comp_that_begin_with_option == 1 OR $POL.selected_comp_option == 1)
+			  AND $OUTAGE_CONFIG.outage_update == 0  AND $OUTAGE_CONFIG.active_policy != NONE
+			  AND ( ($OUTAGE_CONFIG.active_policy == DEFAULT AND $POL.name == $OUTAGE_DEFAULT_POLICY.policy_name)
+			  OR ($OUTAGE_CONFIG.active_policy == CUSTOM AND $POL.name != $OUTAGE_DEFAULT_POLICY.policy_name) )]
+	}
+	$POL.selector_ecf_cust ($EV) where [ $EV.status outside [CLOSED, BLACKOUT] AND $EV.client_data == "IBRSD" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ($COMP.mc_udid equals $EV.component_udid) AND  
+								(($COMP.Site == $POL.site) OR ($POL.site == "")) AND 
+								(($COMP.Company == $POL.company_name) OR ($POL.company_name == "")) ]
+	}
+	triggers
+	{
+		# Check for Priority of the component
+		if ( $POL.operator_priority == 'All' ) then
+		{
+			$priority_match = 1;
+		}
+		else
+		{
+			if ( $COMP.computed_priority == $POL.component_priority ) then
+			{
+				if ( $POL.operator_priority within ['>=', '==', '<='] )  then
+				{
+					$priority_match = 1;
+				}
+				else
+				{
+					$priority_match = 0;
+				}
+			}
+			else
+			{
+				if ( $COMP.computed_priority > $POL.component_priority ) then
+				{
+					if ( $POL.operator_priority within ['>=', '>'] ) then
+					{
+						$priority_match = 1;
+					}
+					else
+					{
+						$priority_match = 0;
+					}
+				}
+				else
+				{
+					if ( $POL.operator_priority within ['<=', '<'] ) then
+					{
+						$priority_match = 1;
+					}
+					else
+					{
+						$priority_match = 0;
+					}
+				}
+			}
+		};
+
+		# Check for status of the component
+		if ( $POL.operator_status == 'All' ) then
+		{
+			$status_match = 1;
+		}
+		else
+		{
+			if ( $COMP.status == $POL.component_status ) then
+			{
+				if ( $POL.operator_status within ['>=', '==', '<='] )  then
+				{
+					$status_match = 1;
+				}
+				else
+				{
+					$status_match = 0;
+				}
+			}
+			else
+			{
+				if ( $COMP.status > $POL.component_status ) then
+				{
+					if ( $POL.operator_status within ['>=', '>'] )  then
+					{
+						$status_match = 1;
+					}
+					else
+					{
+						$status_match = 0;
+					}
+				}
+				else
+				{
+					if ( $POL.operator_status within ['<=', '<'] )  then
+					{
+						$status_match = 1;
+					}
+					else
+					{
+						$status_match = 0;
+					}
+				}
+			}
+		};			
+		
+		$create_outage = 0;
+		if ($priority_match == 1 AND $status_match == 1 ) then
+		{
+			if ($POL.selected_comp_option == 1) then
+			{
+				listwalk($POL.component_list,$COMP_LIST);
+				if( $COMP_LIST == $COMP.Name ) then
+				{
+					$create_outage = 1;
+				}
+				else
+				{
+					$create_outage = 0;
+				}
+			} 
+			else
+			{
+				if ($POL.all_comp_that_begin_with_option == 1) then
+				{
+					listwalk($POL.comp_begin_with,$COMP_LIST);
+					$COMP_LIST_1 = $COMP_LIST || '(.*)' ;
+					if(match_regex($COMP.Name,$COMP_LIST_1,'')) then
+					{
+						$create_outage = 1;
+					}
+					else
+					{
+						$create_outage = 0;
+					}
+				}
+			}
+		};
+
+		if( $create_outage == 1 ) then
+		{
+			$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+			$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+		
+			generate_event( SM_OUTAGE,[ msg = $CUSTOM_MSG,
+							comp_id = $COMP.mc_udid,
+							comp_name = $COMP.Name,
+							comp_class = $COMP.CLASS,
+							comp_category = $COMP.Category,
+							comp_type = $COMP.Type,
+							comp_item = $COMP.Item,
+							comp_status = $COMP.status,
+							comp_priority = $COMP.computed_priority,
+							root_causes = $COMP.root_causes,
+							severity = $EV.severity,
+							prop_destination = $POL.prop_destination,
+							outage_for=$POL.outage_for, 
+							status_outage='OPEN',
+							cell_name=$MC_CELL_INFO.cell_name,
+							site = $POL.site,
+							policy_name=$POL.name,
+							company_name=$COMP.Company ] ) ;
+		};
+	}
+END
+
+# This rule will be triggered on generation of SM_OUTAGE and it will search for
+# causal CI and causal event and it will do following activity
+# 1. Propagate the causal event to the ibrsd gateway (If not already propagated)
+# 2. Populate the causal CI and causal event information in the SM_OUTAGE event
+
+new propagate_events_to_sdig: SM_OUTAGE($EV)  
+where [$EV.status != CLOSED AND $EV.isCausal == 0]
+using ALL 
+{ 
+	MC_SM_ROOT_CAUSE ($RC) where [impact_udid: == $EV.comp_id ]
+	MC_SM_EVENT_INDEX ($EI) where [component_udid: == $RC.cause_udid AND causal: == YES]
+	EVENT ($CAUSAL_EVENT) where [mc_ueid: == $EI.event_ueid ]
+}
+triggers 
+{
+	if (NOT opqry($CAUSAL_EVENT, '', 'OutagePropagated', $Result_CNT1, $OP_NS)) then
+	{
+		if( listlen($EV.prop_destination) != 0  ) then
+		{
+			if ( (propagated_to($CAUSAL_EVENT, 'ibrsd')) == 0 )  then
+			{
+				propagate_to($EV.prop_destination, $CAUSAL_EVENT);
+				opadd($CAUSAL_EVENT, "OutagePropagated", listgetelt($EV.prop_destination,1));				
+			};
+		};
+	};
+	
+	$EV.causal_mc_ueid = $CAUSAL_EVENT.mc_ueid;
+	if($EV.outage_for contains "Causal") then
+	{
+		$EV.causal_mc_udid = $RC.cause_udid;
+	}
+}
+END
+
+# Rule for creating SM_OUTAGE for the causal CI when 'Impacted and Causal Components'
+# is selected in the policy
+
+# This rule will be triggered on arrival of the SM_OUTAGE. Assuming that in case of
+# 'Impacted and Causal Components' SM_OUTAGE will be created for the Impacted component only.
+# and on generation of SM_OUTAGE for the Impacted component this rule will search for the 
+# causal component and generate the SM_OUTAGE for the causal CI.
+
+new check_sm_outage_causal : SM_OUTAGE($EV) 
+           where [ $EV.outage_for == 'Impacted and Causal Components' AND 
+				  $EV.isCausal == 0 ]
+	using
+	{
+		SM_OUTAGE ($OLD) where [ $OLD.comp_id == $EV.causal_mc_udid AND $OLD.status != CLOSED 
+	                                 AND $OLD.status != BLACKOUT AND $OLD.policy_name == $EV.policy_name ]
+	}
+	triggers
+	{
+		$OUTAGE_CONFIG.outage_update = 2;
+	}
+END
+
+new create_sm_outage_causal : SM_OUTAGE($EV)
+           where [ $EV.outage_for == 'Impacted and Causal Components' AND 
+				  $EV.isCausal == 0 AND $OUTAGE_CONFIG.outage_update != 2 AND $EV.comp_id != $EV.causal_mc_udid ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ ($COMP.mc_udid equals $EV.causal_mc_udid) AND  
+								(($COMP.Site == $EV.site) OR ($EV.site == "")) AND 
+								(($COMP.Company == $EV.company_name) OR ($EV.company_name == "")) ]
+	}
+	triggers
+	{
+		$STAT_VAL = "ENUMVAL.SIM_NOTIFICATION_STATUS." || $COMP.status;
+		$CUSTOM_MSG=localize(kb,[IBRSD_status_changed,'s',$COMP.Name,'k',$STAT_VAL]);
+	
+		generate_event( SM_OUTAGE,[ msg = $CUSTOM_MSG,
+						comp_id = $COMP.mc_udid,
+						comp_name = $COMP.Name,
+						comp_class = $COMP.CLASS,
+						comp_category = $COMP.Category,
+						comp_type = $COMP.Type,
+						comp_item = $COMP.Item,
+						comp_status = $COMP.status,
+						comp_priority = $COMP.computed_priority,
+						root_causes = $COMP.root_causes,
+						severity = $EV.severity,
+						prop_destination = $EV.prop_destination,
+						status_outage=$EV.status_outage,
+						cell_name=$MC_CELL_INFO.cell_name,
+						site = $EV.site,
+						isCausal = 1,
+						policy_name=$EV.policy_name,
+						causal_mc_ueid = $EV.causal_mc_ueid,
+						causal_mc_udid = $EV.causal_mc_udid,
+						company_name=$COMP.Company ] ) ;
+	}
+END
+
+# Propagate to SDIG (ibrsd gateway)
+propagate outage_to_sdig:
+	SM_OUTAGE ($EV)   where  [ $EV.status != CLOSED ]
+	to one_of $EV.prop_destination
+END

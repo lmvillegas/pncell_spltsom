@@ -1,0 +1,91 @@
+#
+# File name: impact_admin_server.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+# 
+# These rule work on open events. This insures that
+# one event will be open, where the repeat count
+# will be incremented
+#
+
+new RepeatIASStart : IAS_START($EV)
+	where [$EV.status == OPEN]
+	updates ALL duplicate($OLD_EV)
+	where [$OLD_EV.status == OPEN,
+	       $OLD_EV.mc_tool == $EV.mc_tool,
+	       $OLD_EV.mc_host == $EV.mc_host]
+	{
+		$OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+		drop_new;
+	}
+END
+
+new CloseIASStop : IAS_START($EV)
+	where [ $EV.status == OPEN]
+	updates ALL IAS_STOP($OLD_EV)
+	where [ $OLD_EV.status == OPEN,
+	        $OLD_EV.mc_tool == $EV.mc_tool,
+	       $OLD_EV.mc_host == $EV.mc_host]
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new CloseIASStart : IAS_STOP($EV)
+	where [ $EV.status == OPEN]
+	updates IAS_START($OLD_EV)
+	where [ $OLD_EV.status == OPEN,
+	        $OLD_EV.mc_tool == $EV.mc_tool,
+	       $OLD_EV.mc_host == $EV.mc_host]
+	{
+		$OLD_EV.status=CLOSED;
+	}
+END
+
+new RepeatIASSyncBackup : IAS_SYNC_BACKUP($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status == OPEN,
+               $OLD_EV.mc_tool == $EV.mc_tool,
+               $OLD_EV.msg == $EV.msg,
+	       	   $OLD_EV.mc_host == $EV.mc_host]
+        {
+                $OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+		drop_new;
+        }
+END
+
+new RepeatIASSyncPrimary : IAS_SYNC_PRIMARY($EV)
+        where [$EV.status == OPEN]
+        updates ALL duplicate($OLD_EV)
+        where [$OLD_EV.status == OPEN,
+               $OLD_EV.mc_tool == $EV.mc_tool,
+               $OLD_EV.msg == $EV.msg,
+               $OLD_EV.mc_host == $EV.mc_host]
+        {
+                $OLD_EV.repeat_count=$OLD_EV.repeat_count + 1;
+		drop_new;
+        }
+END
+
+#
+# When "Synchronization ended" event is generated, the assocated
+# "Synchronization began"  event is closed along with the "ended"
+# event.  This will leave events showing which synchronziation is
+# in progress
+#
+new UpdateIASSync : IAS_SYNC_BACKUP($SE)
+	where [$SE.status == OPEN,
+               $SE.msg == 'Synchronization ended']
+	updates IAS_SYNC_BACKUP($SB)
+	where [$SB.status == OPEN,
+           $SB.mc_tool == $SE.mc_tool,
+	       $SB.msg == 'Synchronization began',
+	       $SB.mc_host == $SE.mc_host]
+	{
+		$SE.status=CLOSED;
+		$SB.status=CLOSED;
+	}
+END

@@ -1,0 +1,101 @@
+#
+# File name: mc_bylocation_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+collector 'By Location':
+{
+        r['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators', 'BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        w['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators', 'BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+        x['BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators', 'BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+          'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+}
+END
+
+
+collector 'By Location'.System:
+MC_CELL_CONTROL
+MC_CLIENT_BASE
+MC_ADAPTER_CONTROL
+IAS_EVENT
+END
+
+collector 'By Location'.System.'Event Processor':
+    MC_CELL_CONTROL
+END
+
+collector 'By Location'.System.'Event Processor'.'Heartbeat Log':
+	MC_CELL_HEARTBEAT_EVT
+END
+
+collector 'By Location'.System.'Event Processor'.'Connection Log':
+	MC_CELL_CLIENT
+	MC_CELL_CONNECT
+END
+
+collector 'By Location'.System.'Event Processor'.'Action Log':
+	MC_CELL_ACTION_RESULT
+END
+
+collector 'By Location'.System.'Clients':
+	MC_CLIENT_BASE
+END
+
+collector 'By Location'.System.'Adapters':
+	MC_ADAPTER_CONTROL
+END
+
+collector 'By Location'.System.'Adapters'.*:
+	MC_ADAPTER_CONTROL
+	where [$THIS.mc_tool != '']
+	create $THIS.mc_tool
+END
+collector 'By Location'.System.'Adapters'.*.*:
+	MC_ADAPTER_CONTROL
+	where [$THIS.mc_origin_class != '']
+	create $THIS.mc_origin_class
+END
+
+collector 'By Location'.System.'Adapters'.*.*.*:
+	MC_ADAPTER_CONTROL
+	where [$THIS.mc_origin != '']
+	create $THIS.mc_origin
+END
+
+collector 'By Location'.System.'Adapters'.*.*.*.*:
+	MC_ADAPTER_CONTROL
+	where [$THIS.mc_object != $THIS.mc_origin]
+	create $THIS.mc_object
+END
+
+collector 'By Location'.System.'Administration Server':
+    IAS_EVENT
+END
+
+collector 'By Location'.*:
+EVENT 
+where [
+	$THIS.CLASS != 'SMC_STATE_CHANGE' AND $THIS.CLASS != 'SIM_COMPONENT_CHANGE'
+]
+create cond($THIS.mc_location == '', "Unknown", $THIS.mc_location)
+END
+
+collector 'By Location'.*.*:
+EVENT
+create cond($THIS.mc_host == '', cond($THIS.mc_host_address == '', "Unknown", $THIS.mc_host_address), lower( listgetelt(strtolist($THIS.mc_host, '.'), 1) ))
+END
+
+collector 'By Location'.*.*.*: 
+EVENT
+where [$THIS.mc_tool_class != '']
+create $THIS.mc_tool_class
+END
+
+collector 'By Location'.*.*.*.*:
+EVENT
+where [$THIS.mc_tool != '']
+create $THIS.mc_tool
+END

@@ -1,0 +1,23 @@
+#
+# File name: itsm_change_task_association.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: itsm_change_task_association.baroc
+# Version: 9.0.00
+# Copyright 1998-2011 BMC Software, Inc. All Rights Reserved
+#
+#******************************************************************************************************************************
+# BPPM ITEGRATION WITH ITSM CHANGE MANAGEMENT
+# Description	: Event association for TASK_EV . 
+#				  It will create Related events of type "itsm_change_integration"
+# Author		: SMS Pune Integration Connect Team
+# Revision		: 
+#				  
+#******************************************************************************************************************************
+
+MC_EVENT_RELATION;
+class=TASK_EV;
+type=itsm_change_integration;
+END

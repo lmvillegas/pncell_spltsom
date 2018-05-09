@@ -1,0 +1,20 @@
+#
+# File name: mc_tm_root.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+MC_DATA_CLASS: MC_TM_DATA ISA CORE_DATA
+   DEFINES {
+      ReadSecurity : LIST_OF STRING;
+      WriteSecurity : LIST_OF STRING;
+   };
+END
+MC_DATA_CLASS: MC_TM_RELATIONSHIP ISA MC_TM_DATA
+   DEFINES {
+      SourceId : STRING, read_only=yes;
+      DestinationId : STRING, read_only=yes;
+	  SubType: STRING, read_only=yes;
+	  source:  STRING;
+   };
+END

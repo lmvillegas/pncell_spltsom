@@ -1,0 +1,37 @@
+#
+# File name: ibrsd_bem_actions.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+# BMC Impact Integration for ARS
+# Date			: March 08, 2005
+# Author		: SMS Pune Integration Connect Team
+# Description	: rule to create Remote action "Trigger Remedy Incident For Event"					
+# Revision		: 		
+#################################################################################
+
+#Create Remote Action named as "Trigger Remedy Incident" and 
+#will ask user for input parameter "Propagation Destination"
+
+action 'Trigger Remedy Incident For Event':
+{
+   [ 'BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators','BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators','BPPM Supervisors', 'Supervisors','BPPM Operators', 'Operators',
+	'Service Administrators','Service Operators - Senior','Event Administrator','Event Operator','Event Operator Supervisor','Full Access']
+
+} ["Destination":STRING($destination)] :
+   EVENT ($EV) where [$EV.status != CLOSED]
+   {
+    if (opqry($EV, '', 'IBRSDBEM', $Result_CNT, $OP_NR)) then
+	{
+		action_return(1, "Event already propagated to destination");
+	}
+	else
+	{
+	propagate_to($destination, $EV);
+	opadd($EV,"IBRSDBEM", $destination);
+	action_return(0, "");
+	}
+   }
+END
+
+

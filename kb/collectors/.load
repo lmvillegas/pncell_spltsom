@@ -1,0 +1,19 @@
+#
+# File name: .load
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+self_collector
+pom_activeevents_collectors
+pom_intelligentevents_collectors
+catchall_collector
+pom_byuser_collectors
+mc_bystatus_collectors
+mc_evr_collectors
+bii4p_collectors
+bco_collector
+itda_collectors
+ppm_sm_collector
+euem_collectors
+ibrsd_collectors
+mc_sm_collectors

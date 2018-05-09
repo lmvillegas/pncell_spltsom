@@ -1,0 +1,20 @@
+#
+# File name: mc_tec_severity.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# add HARMLESS and FATAL to SEVERITY
+# This file should be referenced in the .load when TEC compatibility is required
+
+ENUMERATION SEVERITY
+   10   UNKNOWN
+   20   OK
+   30   INFO
+   35   HARMLESS
+   40   WARNING
+   50   MINOR
+   60   MAJOR
+   70   CRITICAL
+   75	FATAL
+END

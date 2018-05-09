@@ -1,0 +1,41 @@
+#
+# File name: mc_deprecated_notification.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#
+# 1=NOTIFICATION_POLICY
+#
+# user_list slot format: <notification_mode>:<user_address>
+# notification_mode = EMAIL, PAGER
+#
+# EMAIL uses mc_sendmail external actions
+# PAGER uses mc_pager external actions
+# Please refer to the administration guide on how to setup
+# external actions. 
+# The default provided scripts are simple example that 
+# may not match your system
+#
+# Example: "EMAIL:sysadmin@domain.com"
+#
+#-----+---------------------+------------------------
+# 1   | schedule_name       | name of schedule used by policy
+#     | sched_invert        | if NO : use schedule as is
+#     |                     | if YES: use invert of schedule
+#     | users               | names of users whose address
+#     |                     | appears in the list (info only)
+#     | address_list        | list of addresses a notification
+#     |                     | must be sent to
+#-----+---------------------+------------------------
+
+MC_DATA_CLASS:
+	NOTIFICATION_POLICY ISA DEPRECATED_POLICY DEFINES
+	{
+		schedule_name: STRING;
+		sched_invert: MC_YESNO, default = NO;
+		users: STRING;
+		address_list: LIST_OF STRING;
+	};
+END
+

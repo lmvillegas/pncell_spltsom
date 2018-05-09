@@ -1,0 +1,187 @@
+#
+# File name: ips.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: Events related for reporting from Impact Publishing Server
+#----------------------------------------------------
+
+# ---- This is the super class for all ips events ----
+MC_EV_CLASS :
+   IPS_EVENT ISA EVENT
+   DEFINES {
+      mc_event_category : default = OPERATIONS_MANAGEMENT;
+      mc_object_class : default = "BMC Impact Publishing Server";
+      mc_tool_class : default = "BMC Impact Publishing Server";
+      mc_origin_class : default = "BMC Impact Publishing Server";
+      severity : default = "OK";
+   };
+END
+
+# -- event for control --
+MC_EV_CLASS :
+   IPS_CONTROL ISA IPS_EVENT
+   DEFINES {
+      process_run_id : STRING;
+   };
+END
+
+# -- event for IPS start information --
+MC_EV_CLASS :
+   IPS_START ISA IPS_CONTROL
+   DEFINES {
+      mc_parameter : default = "status";
+   };
+END
+
+# -- event for IPS config information --
+MC_EV_CLASS :
+   IPS_CONFIG ISA IPS_CONTROL
+   DEFINES {
+      os_class : STRING;
+      os_version : STRING;
+      ps_version : STRING;
+      ps_build_number : STRING;
+      ps_build_date : STRING;
+      home_dir : STRING;
+      conf_file : STRING;
+      kb_dir : STRING;
+      log_dir : STRING;
+      mcell_dir_file : STRING;
+      trace_conf_file :STRING;
+      trace_file : STRING;
+   };
+END
+
+# -- event for IPS stop information --
+MC_EV_CLASS :
+ IPS_STOP ISA IPS_CONTROL
+   DEFINES {
+      severity : default = INFO;
+      mc_parameter : default = "status";
+   };
+END
+
+# -- event for connection --
+ENUMERATION IPS_RESULT
+   10   UNK
+   20   SCS
+   30   FLR
+   40   NAK
+END
+
+MC_EV_CLASS :
+   IPS_CNX ISA IPS_EVENT
+   DEFINES {
+      ips_request_id : STRING;
+      destination : STRING;
+      dst_name : STRING;
+      dst_location : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   IPS_CONNECT ISA IPS_CNX
+   DEFINES {
+      dst_user : STRING;
+      result : IPS_RESULT;
+      };
+END
+
+MC_EV_CLASS :
+   IPS_IM_CONNECT ISA IPS_CONNECT
+   DEFINES {
+      dst_location2 : STRING;
+      };
+END
+
+# -- event for all kinds of other error messages
+MC_EV_CLASS :
+   IPS_ERROR ISA IPS_EVENT
+   DEFINES {
+      severity : default = WARNING;
+   };
+END
+
+# -- event for request --
+MC_EV_CLASS :
+   IPS_REQUEST ISA IPS_EVENT
+   DEFINES {
+      severity : default = INFO;
+      client_data : STRING;      
+      request_id : STRING, dup_detect = yes;
+      request_msg : STRING;
+      request_result : IPS_RESULT;
+      result_msg : STRING;
+      user_id : STRING;
+      description : STRING;
+};
+END
+
+ENUMERATION PUBLISH_TYPE
+   10   INIT
+   20   PUBLISH
+   30   PUBLISH_SELECTED
+   40	DIRECT
+   50   OTHER
+   60	CELL_PUBLISH
+END
+
+MC_EV_CLASS :
+   IPS_PUBLISH ISA IPS_REQUEST
+   DEFINES {
+      publish_type : PUBLISH_TYPE;
+      env_id : STRING;
+   };
+END
+
+ENUMERATION CELL_PUBLISH_TYPE
+    0   "N/A"
+   10   TO_CMDB
+   20   TO_SIM
+END
+
+MC_EV_CLASS :
+   IPS_CELL_PUBLISH ISA IPS_REQUEST
+   DEFINES {
+   publish_type : PUBLISH_TYPE, default=CELL_PUBLISH;
+      cp_type : CELL_PUBLISH_TYPE, default="N/A";
+      cell_name : STRING;
+   };
+END
+
+ENUMERATION CLASSINFO_TYPE
+   10   VALIDATION
+   20   EXPORT
+   30   OTHER
+END
+
+MC_EV_CLASS :
+   IPS_CLASSINFO ISA IPS_REQUEST
+   DEFINES {
+      classinfo_type : CLASSINFO_TYPE;
+   };
+END
+
+ENUMERATION ENV_TYPE
+   10   OPEN
+   20   INIT
+   30   SET
+   40	CLOSE
+END
+
+MC_EV_CLASS :
+   IPS_ENV ISA IPS_REQUEST
+   DEFINES {
+      env_type : ENV_TYPE;
+      env_id : STRING;
+      origin_id : STRING;
+   };
+END
+
+
+
+#
+# End-of-file
+#

@@ -1,0 +1,47 @@
+#
+# File name: ibrsd_propagate_causal_event.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ibrsd_propagate_causal_events.mrl
+# Version: 7.4.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+# BMC Impact Integration for ARS
+# Date			: 9th April 2010
+# Author		: SMS Pune Integration Connect Team
+# Description	: This rule is to propagate the root causal events of a CI. This 
+#				  will work only when there is a IBRSD_SM_INCIDENT event is gereated
+#				  by the cell depending upon the intelligent incident policy that 
+#				  user might have.
+# Revision		: 		
+#################################################################################
+
+
+new propagate_causal_event: EVENT($EV)  
+where [$EV.status != CLOSED] 
+using 
+{ 
+	CI_INCIDENT_INFO ($INCIDENTOBJ) where [
+			($EV.mc_smc_id != '') AND ($INCIDENTOBJ.component_id equals $EV.mc_smc_id ) AND 
+			($INCIDENTOBJ.bOrphanedRoot != 0 ) AND ($INCIDENTOBJ.status != CLOSED) AND ($INCIDENTOBJ.incident_status != Closed) AND ($INCIDENTOBJ.incident_status != Resolved) AND ($INCIDENTOBJ.incident_status != Cancelled)
+	]
+	
+
+}
+triggers 
+{
+                 if (NOT opqry($EV, '', 'RootCausePropagated', $Result_CNT1, $OP_NS)) then
+                 {
+						if (listlen($INCIDENTOBJ.prop_destination) != 0 ) then
+						{
+                              propagate_to($INCIDENTOBJ.prop_destination, $EV);          
+                              opadd($EV, "RootCausePropagated",listgetelt($INCIDENTOBJ.prop_destination,1));
+						}
+                 }
+}
+END
+
+

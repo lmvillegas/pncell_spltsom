@@ -1,0 +1,141 @@
+#
+# File name: ibrsd_orphaned_root_cause.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#################################################################################
+# BMC Impact Integration for ARS
+# Date			: March 21, 2005
+# Author		: SMS Pune Integration Connect Team
+# Description	: Rule to create IBRSD_SM_INCIDENT event when there is event.
+#				  And for the same component incident_info is already created. 
+#				  If already existing event of type IBRSD_SM_INCIDENT,
+#				  it will close the same and create new one.
+# Revision		: 		
+#################################################################################
+
+#Initialise flag used to decide event type. 
+#if this flag value = 0 , create new IBRSD_SM_INCIDENT event
+#if this flag value = 1 , create modified/update IBRSD_SM_INCIDENT event
+refine record_counter_orph :
+    SIM_COMPONENT_CHANGE ($EV) where [$EV.status == OPEN AND $EV.client_data == "IBRSD"]  
+	{
+		$ORPHANED_ROOT_IDS.orphaned_root_update = 0;
+		$ORPHANED_ROOT_IDS.cell_name = "INVALID";
+		$ORPHANED_ROOT_IDS.policy_name = "INVALID";
+	}
+END
+
+
+#get policy name and cell name from the incident_info created for the same componet having bOrphanedRoot flag =1
+new get_incident_info : SIM_COMPONENT_CHANGE ($SIMCOMOBJ) where [status:equals OPEN AND $SIMCOMOBJ.client_data == "IBRSD"]
+	updates CI_INCIDENT_INFO ($INCIDENTOBJ) where [
+			($INCIDENTOBJ.component_id equals $SIMCOMOBJ.component_udid ) AND 
+			($INCIDENTOBJ.bOrphanedRoot != 0 ) AND ($INCIDENTOBJ.status != CLOSED) AND ($INCIDENTOBJ.incident_status != Closed) AND ($INCIDENTOBJ.incident_status != Resolved) AND ($INCIDENTOBJ.incident_status != Cancelled) 
+			]
+	{
+		#Store policy name and cell name in the global variable.
+		#because we will use it across the rules to create IBRSD_SM_INCIDENT
+		$ORPHANED_ROOT_IDS.cell_name = $INCIDENTOBJ.cell_name;
+		$ORPHANED_ROOT_IDS.policy_name = $INCIDENTOBJ.policy_name;
+		$ORPHANED_ROOT_IDS.prop_destination=$INCIDENTOBJ.prop_destination;
+            $ORPHANED_ROOT_IDS.status_incident=$INCIDENTOBJ.status_incident;
+            $ORPHANED_ROOT_IDS.status_reason=$INCIDENTOBJ.status_reason;
+            $ORPHANED_ROOT_IDS.priority_urgency_option=$INCIDENTOBJ.priority_urgency_option;
+            $ORPHANED_ROOT_IDS.status_impact_option=$INCIDENTOBJ.status_impact_option;
+            $ORPHANED_ROOT_IDS.causal_mc_ueid = $INCIDENTOBJ.event_mc_ueid;
+	}
+END
+
+new get_policy : SIM_COMPONENT_CHANGE($EV) where [$EV.status != CLOSED AND $EV.client_data == "IBRSD" AND $ORPHANED_ROOT_IDS.cell_name != "INVALID"]
+	using
+		{
+		Intelligent_Incident_Service_Policy ($POL) where [$POL.name equals $ORPHANED_ROOT_IDS.policy_name AND 
+											$POL.enabled == 1]
+		}
+	updates CI_INCIDENT_INFO ($INCIDENTOBJ) where [
+			($INCIDENTOBJ.component_id equals $EV.component_udid ) AND 
+			($INCIDENTOBJ.bOrphanedRoot != 0 ) AND ($INCIDENTOBJ.status != CLOSED) AND ($INCIDENTOBJ.incident_status != Closed) AND ($INCIDENTOBJ.incident_status != Resolved) AND ($INCIDENTOBJ.incident_status != Cancelled) 
+			]
+	{
+	 	$ORPHANED_ROOT_IDS.status_incident=$POL.status_incident;
+		$ORPHANED_ROOT_IDS.status_reason=$POL.status_reason;
+	 }
+			
+
+END
+
+
+
+
+#Create New IBRSD_SM_INCIDENT for the component
+new create_ibrsd_sm_incident : SIM_COMPONENT_CHANGE($EV) where [$EV.status != CLOSED AND $EV.client_data == "IBRSD" AND $ORPHANED_ROOT_IDS.cell_name != "INVALID"]
+	#Get Policy object, it will be useful to get some data to create IBRSD_SM_INCIDENT 
+	#using_policy 
+	#{
+	#	Intelligent_Incident_Service_Policy ($POL) where [$POL.name equals $ORPHANED_ROOT_IDS.policy_name AND 
+	#										$POL.enabled == 1]
+	#}
+	#$POL.selector_ecf_cust ($EV) where [ $EV.status != CLOSED AND $EV.status != BLACKOUT AND $EV.client_data == "IBRSD"
+	#						AND $ORPHANED_ROOT_IDS.cell_name != "INVALID" ]
+	using
+	{
+		BMC_BaseElement ($COMP) where [ $COMP.mc_udid equals $EV.component_udid ]
+	}
+	triggers
+	{
+		if($ORPHANED_ROOT_IDS.orphaned_root_update == 0) then
+		{
+			#Create IBRSD_SM_INCIDENT for the component
+			$CLASS_INFORMATION=localize(kb,[IBRSD_orphaned_root_cause,'s',$COMP.Name]);
+			generate_event( IBRSD_SM_INCIDENT,[ msg 					= $CLASS_INFORMATION,
+												cell_name 				= $ORPHANED_ROOT_IDS.cell_name,
+												policy_name 			= $ORPHANED_ROOT_IDS.policy_name,
+												status_incident 		= $ORPHANED_ROOT_IDS.status_incident,
+												status_reason 			= $ORPHANED_ROOT_IDS.status_reason,
+												priority_urgency_option = $ORPHANED_ROOT_IDS.priority_urgency_option,
+												status_impact_option 	= $ORPHANED_ROOT_IDS.status_impact_option,
+												bOrphanedRoot			= 1,
+												comp_id					= $EV.component_udid,
+												comp_status				= $EV.component_status,
+												comp_priority 			= $COMP.computed_priority,
+												causal_mc_ueid			= $ORPHANED_ROOT_IDS.causal_mc_ueid,
+												itsm_incident_id		= $ORPHANED_ROOT_IDS.itsm_incident_id,
+												comp_name 				= $COMP.Name,
+												comp_category 				= $COMP.Category,
+												comp_type 				= $COMP.Type,
+												comp_item 				= $COMP.Item,
+												severity 				= $EV.severity,
+												company_name			= $COMP.Company,
+												prop_destination 		= $ORPHANED_ROOT_IDS.prop_destination ] 
+							);
+			
+			#if the component satus in SIM_COMPONENT_CHANGE is OK then create event of type IBRSD_SM_INCIDENT_CLOSE
+			#if($EV.component_status == OK) then
+			#{
+				generate_event(IBRSD_SM_INCIDENT_CLOSE,[comp_id=$EV.component_udid]);
+			#}
+		}
+	}
+END
+
+
+
+
+#Close IBRSD_SM_INCIDENT for orphaned root cause, when IBRSD_SM_INCIDENT_CLOSE type of event comes
+#and drop IBRSD_SM_INCIDENT_CLOSE event
+new close_orphaned_ibrsd_sm_incident_event:	IBRSD_SM_INCIDENT_CLOSE($IIARS_CLOSE_EV)
+	updates IBRSD_SM_INCIDENT($EV) where [ 
+		$EV.status != CLOSED AND 
+		$EV.bOrphanedRoot == 1 AND 
+		$EV.comp_id == $IIARS_CLOSE_EV.comp_id 
+		] 
+	{
+		#close IBRSD_SM_INCIDENT with component id is same as in IBRSD_SM_INCIDENT_CLOSE event
+		#And also if it is a orphaned root cause i.e. bOrphanedRoot = 1
+		$EV.status = CLOSED;
+		
+		#drop IBRSD_SM_INCIDENT_CLOSE event
+		drop_new;
+	}
+END

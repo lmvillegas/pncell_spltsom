@@ -1,0 +1,20 @@
+#
+# File name: severity_map.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#severity map
+#Refine rule to map integrated applications severities with Cell severities
+ 
+refine map_integration_severity : EVENT($EV)
+using
+{
+   SEVERITY_MAP($LSM)
+   where [ touppercase( $EV.CLASS)  equals touppercase($LSM.origin_class)    AND    
+   touppercase( $EV.mc_origin_sev)  equals touppercase($LSM.origin_sev )  ]
+}
+{
+   opadd($EV,'',"mc_origin_sev mapped to Cell  severity using data instance: " || $LSM.data_handle) ;
+   $EV.severity = $LSM.mapped_sev ;   
+}
+END

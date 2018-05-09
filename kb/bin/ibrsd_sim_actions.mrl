@@ -1,0 +1,22 @@
+#
+# File name: ibrsd_sim_actions.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+# BMC Impact Integration for ARS
+# Date			: March 08, 2005
+# Author		: SMS Pune Integration Connect Team
+# Description	: rule to create Remote action "Trigger Remedy Incident For Component"					
+# Revision		: 		
+#################################################################################
+
+#Create Remote Action named as "Trigger Remedy Incident" and 
+#will run executable named as "TriggerRemedyIncident" taking one input parameter
+#"Propagation Destination"
+
+action 'Trigger Remedy Incident For Component':
+{
+	['Service Administrators','BPPM Administrators', 'Administrators','BPPM Model Administrators', 'Model Administrators', 'BPPM Monitoring Administrators', 'Monitoring Administrators','Cloud Administrators']
+}  
+	TriggerRemedyIncidentForComp ["Destination"]
+END

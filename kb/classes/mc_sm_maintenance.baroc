@@ -1,0 +1,23 @@
+#
+# File name: mc_sm_maintenance.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#----------------------------------------------------
+#
+# Event class provided in the default KB
+# and supporting the Service Management Model
+#
+# The parent class is system defined (internal class)
+#----------------------------------------------------
+
+MC_EV_CLASS:
+	SMC_MAINTENANCE ISA MC_CELL_EVENT DEFINES
+	{
+		mc_smc_id: dup_detect = yes;
+		severity: default = UNKNOWN;
+		maintenance_mode: MC_YESNO, default = YES;
+		manual_status: MC_SM_COMPONENT_STATUS, default=UNKNOWN;
+	};
+END

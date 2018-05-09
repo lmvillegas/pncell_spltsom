@@ -1,0 +1,44 @@
+##Respaldo
+#
+#
+#
+#
+## File name: ppm_sm_ev_rules.mrl
+## Version: 11.0.00.001
+## Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+##
+#########################################
+##
+## Rule for Self Monitoring events.
+## Rule for reconciling multiple events raised with different status. \
+##
+#########################################
+#
+############################################################################################################################
+##  The followig two rules delay CRITICAL state of PATROL Agent Disconnect events from Agent Controller.
+#  Default delay is 5 minutes (300 seconds)
+############################################################################################################################
+
+new set_timer_pa_disc_to_crit : PPM_SM_EV($EV)
+where [ $EV.status != CLOSED AND
+	 $EV.mc_origin_class equals PROACTIVENET_SLFMON_COMPONENT AND
+         $EV.severity equals OK AND
+         $EV.mc_object has_prefix 'PA:' AND
+         $EV.msg has_suffix localize(kb,[patrol_agent_disconnect]) ]
+         triggers
+         {
+         set_timer($EV, 0, PATROL_SM_TO_CRITICAL);
+            }
+         END
+timer inc_pa_disc_to_crit : PPM_SM_EV($EV)
+where [ $EV.status != CLOSED AND
+         $EV.mc_origin_class equals PROACTIVENET_SLFMON_COMPONENT AND
+         $EV.severity equals OK AND
+         $EV.mc_object has_prefix 'PA:' AND
+         $EV.msg has_suffix localize(kb,[patrol_agent_disconnect]) ]
+timer_info: == PATROL_SM_TO_CRITICAL
+         {
+         $EV.severity = CRITICAL;
+        $EV.mc_priority = PRIORITY_1;
+                }
+END

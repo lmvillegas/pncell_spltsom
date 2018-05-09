@@ -1,0 +1,39 @@
+#
+# File name: sample_bem_categorization_data.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+BEM_PRODUCT_CATEGORIZATION;
+	Key=HOSTNAME:Software;
+	product_tier1=Software;
+	product_tier2=Corporate;
+	product_tier3=Finance;
+END
+
+BEM_PRODUCT_CATEGORIZATION; 
+	Key=HOSTNAME:Service;
+	product_tier1=Service;
+	product_tier2=Corporate;
+	product_tier3=Payroll;
+END
+
+BEM_PRODUCT_CATEGORIZATION;
+	Key=HOSTNAME:Hardware1;
+	product_tier1=Hardware;
+	product_tier2=Component;
+	product_tier3=Disk;
+END
+
+BEM_PRODUCT_CATEGORIZATION;
+	Key=HOSTNAME:Hardware2;
+	product_tier1=Hardware;
+	product_tier2=Personal Computer;
+	product_tier3=Desktop;
+END
+
+BEM_PRODUCT_CATEGORIZATION;
+	Key=HOSTNAME:Hardware3;
+	product_tier1=Hardware;
+	product_tier2=Server;
+	product_tier3=Unix;
+END 

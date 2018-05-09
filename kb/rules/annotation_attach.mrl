@@ -1,0 +1,44 @@
+#
+# File name: annotation_attach.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#This rule updates and existing PATROL_EV , ALARMS and ABNORMALITY events in cell and updates the annotation data into the same.
+#Post updation the annotation event ANNOTATION_ATTACH_EV is dropped
+
+new update_annotation : ANNOTATION_ATTACH_EV($NEW) where [
+		$NEW.status == OPEN	AND
+		$NEW.an_annotation_data != ''
+	]
+	updates PATROL_EV($OLD) where [
+	    $OLD.pn_object_class_id == $NEW.pn_object_class_id AND 
+	    $OLD.pn_object_id == $NEW.pn_object_id AND 
+		$OLD.status != CLOSED
+	]
+	{
+		ntadd( $OLD, $NEW.an_annotation_data );
+	}
+END
+
+#new update_annotation_alarm : ANNOTATION_ATTACH_EV($NEW) where [
+#		$NEW.status == OPEN	AND
+#		$NEW.an_annotation_data != ''
+#	]
+#	updates ALARM($OLD) where [
+#	    $OLD.pn_object_class_id == $NEW.pn_object_class_id AND 
+#	    $OLD.pn_object_id == $NEW.pn_object_id AND 
+#		$OLD.status != CLOSED
+#	]
+#	{
+#		ntadd( $OLD, $NEW.an_annotation_data );
+#	}
+#END
+
+new update_annotation_drop_event : ANNOTATION_ATTACH_EV($NEW) where [
+		$NEW.status == OPEN
+	]
+	triggers
+	{
+		drop_new;
+	}
+END

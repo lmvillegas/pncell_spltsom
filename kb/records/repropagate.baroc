@@ -1,0 +1,19 @@
+#
+# File name: repropagate.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#---------------------------------------------------------------------------------
+#
+#  Record to keep the destination name  
+#  Its required to repropagate the event which are not propagated earlier
+#
+#  This record will be triggered by event sync up tool to sync the cell and Jserver event
+#-----------------------------------------------------------------------------------
+
+RECORD
+   REPROPAGATE DEFINES {
+      dest: STRING;
+   }
+END

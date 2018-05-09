@@ -1,0 +1,604 @@
+#
+# File name: mcsnmptrapdmib.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.16.0
+# rmonEventsV2 OBJECT-GROUP
+#   -- FROM	RMON-MIB
+#   DESCRIPTION	"Definition point for RMON notifications."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) rmon(16) 0 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_rmonEventsV2 ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.55.2.0
+# ipv6NotificationPrefix OBJECT-TYPE
+#   -- FROM	IPV6-MIB
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) ipv6MIB(55) ipv6Notifications(2) 0 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_ipv6NotificationPrefix ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.63.2.0
+# schedTraps OBJECT-TYPE
+#   -- FROM	DISMAN-SCHEDULE-MIB
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) schedMIB(63) schedNotifications(2) 0 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_schedTraps ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.64.2.0
+# smTraps OBJECT-TYPE
+#   -- FROM	DISMAN-SCRIPT-MIB
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) scriptMIB(64) smNotifications(2) 0 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_smTraps ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.2021.251
+# ucdTraps OBJECT-TYPE
+#   -- FROM	UCD-SNMP-MIB
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) ucdavis(2021) 251 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_ucdTraps ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.9723.2
+# alertsNotification OBJECT-TYPE
+#   -- FROM	CORADIANT-WATCHPOINT-SMIV2
+#   DESCRIPTION	""
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) coradiant(9723) 2 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_alertsNotification ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.6.3.1.1.5
+# snmpTraps OBJECT-TYPE
+#   -- FROM	SNMPv2-MIB
+# ::= { iso(1) org(3) dod(6) internet(1) snmpV2(6) snmpModules(3) snmpMIB(1) snmpMIBObjects(1) 5 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_snmpTraps ISA SNMP_ENTERPRISE;
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.16.0.1
+# risingAlarm NOTIFICATION-TYPE
+#   -- FROM	RMON-MIB
+#   OBJECTS	{ alarmIndex, alarmVariable, alarmSampleType, alarmValue, alarmRisingThreshold }
+#   DESCRIPTION	"The SNMP trap that is generated when an alarm
+#         entry crosses its rising threshold and generates
+#         an event that is configured for sending SNMP
+#         traps."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) rmon(16) rmonEventsV2(0) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_risingAlarm ISA SNMP_rmonEventsV2
+DEFINES
+ {
+  snmpv_alarmIndex : INTEGER;
+  snmpi_alarmIndex : LIST_OF STRING;
+  snmpv_alarmVariable : STRING;
+  snmpi_alarmVariable : LIST_OF STRING;
+  snmpv_alarmSampleType : SNMPENUM_alarmSampleType;
+  snmpi_alarmSampleType : LIST_OF STRING;
+  snmpv_alarmValue : INTEGER;
+  snmpi_alarmValue : LIST_OF STRING;
+  snmpv_alarmRisingThreshold : INTEGER;
+  snmpi_alarmRisingThreshold : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.16.0.2
+# fallingAlarm NOTIFICATION-TYPE
+#   -- FROM	RMON-MIB
+#   OBJECTS	{ alarmIndex, alarmVariable, alarmSampleType, alarmValue, alarmFallingThreshold }
+#   DESCRIPTION	"The SNMP trap that is generated when an alarm
+#         entry crosses its falling threshold and generates
+#         an event that is configured for sending SNMP
+#         traps."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) rmon(16) rmonEventsV2(0) 2 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_fallingAlarm ISA SNMP_rmonEventsV2
+DEFINES
+ {
+  snmpv_alarmIndex : INTEGER;
+  snmpi_alarmIndex : LIST_OF STRING;
+  snmpv_alarmVariable : STRING;
+  snmpi_alarmVariable : LIST_OF STRING;
+  snmpv_alarmSampleType : SNMPENUM_alarmSampleType;
+  snmpi_alarmSampleType : LIST_OF STRING;
+  snmpv_alarmValue : INTEGER;
+  snmpi_alarmValue : LIST_OF STRING;
+  snmpv_alarmFallingThreshold : INTEGER;
+  snmpi_alarmFallingThreshold : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.55.2.0.1
+# ipv6IfStateChange NOTIFICATION-TYPE
+#   -- FROM	IPV6-MIB
+#   OBJECTS	{ ipv6IfDescr, ipv6IfOperStatus }
+#   DESCRIPTION	"An ipv6IfStateChange notification signifies
+#         that there has been a change in the state of
+#         an ipv6 interface.  This notification should
+#         be generated when the interface's operational
+#         status transitions to or from the up(1) state."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) ipv6MIB(55) ipv6Notifications(2) ipv6NotificationPrefix(0) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_ipv6IfStateChange ISA SNMP_ipv6NotificationPrefix
+DEFINES
+ {
+  snmpv_ipv6IfDescr : STRING;
+  snmpi_ipv6IfDescr : LIST_OF STRING;
+  snmpv_ipv6IfOperStatus : SNMPENUM_ipv6IfOperStatus;
+  snmpi_ipv6IfOperStatus : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.63.2.0.1
+# schedActionFailure NOTIFICATION-TYPE
+#   -- FROM	DISMAN-SCHEDULE-MIB
+#   OBJECTS	{ schedLastFailure, schedLastFailed }
+#   DESCRIPTION	"This notification is generated whenever the invocation of a
+#          scheduled action fails."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) schedMIB(63) schedNotifications(2) schedTraps(0) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_schedActionFailure ISA SNMP_schedTraps
+DEFINES
+ {
+  snmpv_schedLastFailure : SNMPENUM_schedLastFailure;
+  snmpi_schedLastFailure : LIST_OF STRING;
+  snmpv_schedLastFailed : STRING;
+  snmpi_schedLastFailed : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.64.2.0.1
+# smScriptAbort NOTIFICATION-TYPE
+#   -- FROM	DISMAN-SCRIPT-MIB
+#   OBJECTS	{ smRunExitCode, smRunEndTime, smRunError }
+#   DESCRIPTION	"This notification is generated whenever a running script
+#          terminates with an smRunExitCode unequal to `noError'."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) scriptMIB(64) smNotifications(2) smTraps(0) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_smScriptAbort ISA SNMP_smTraps
+DEFINES
+ {
+  snmpv_smRunExitCode : SNMPENUM_smRunExitCode;
+  snmpi_smRunExitCode : LIST_OF STRING;
+  snmpv_smRunEndTime : STRING;
+  snmpi_smRunEndTime : LIST_OF STRING;
+  snmpv_smRunError : STRING;
+  snmpi_smRunError : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.64.2.0.2
+# smScriptResult NOTIFICATION-TYPE
+#   -- FROM	DISMAN-SCRIPT-MIB
+#   OBJECTS	{ smRunResult }
+#   DESCRIPTION	"This notification can be used by scripts to notify other
+#          management applications about results produced by the
+#          script.
+# 
+#          This notification is not automatically generated by the
+#          Script MIB implementation. It is the responsibility of
+#          the executing script to emit this notification where it
+#          is appropriate to do so."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) scriptMIB(64) smNotifications(2) smTraps(0) 2 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_smScriptResult ISA SNMP_smTraps
+DEFINES
+ {
+  snmpv_smRunResult : STRING;
+  snmpi_smRunResult : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.2.1.64.2.0.3
+# smScriptException NOTIFICATION-TYPE
+#   -- FROM	DISMAN-SCRIPT-MIB
+#   OBJECTS	{ smRunError }
+#   DESCRIPTION	"This notification can be used by scripts to notify other
+#          management applications about script errors.
+# 
+#          This notification is not automatically generated by the
+#          Script MIB implementation. It is the responsibility of
+#          the executing script or the runtime system to emit this
+#          notification where it is appropriate to do so."
+# ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) scriptMIB(64) smNotifications(2) smTraps(0) 3 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_smScriptException ISA SNMP_smTraps
+DEFINES
+ {
+  snmpv_smRunError : STRING;
+  snmpi_smRunError : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.2021.251.1
+# ucdStart NOTIFICATION-TYPE
+#   -- FROM	UCD-SNMP-MIB
+#   DESCRIPTION	""
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) ucdavis(2021) ucdTraps(251) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_ucdStart ISA SNMP_ucdTraps
+DEFINES
+ {
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.2021.251.2
+# ucdShutdown NOTIFICATION-TYPE
+#   -- FROM	UCD-SNMP-MIB
+#   DESCRIPTION	"This trap is sent when the agent terminates"
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) ucdavis(2021) ucdTraps(251) 2 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_ucdShutdown ISA SNMP_ucdTraps
+DEFINES
+ {
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.9723.2.1
+# notificationAlertsTrafficError NOTIFICATION-TYPE
+#   -- FROM	CORADIANT-WATCHPOINT-SMIV2
+#   OBJECTS	{ trafficErrorTimeStamp, trafficErrorSource, trafficErrorTitle, trafficErrorErrorCode, trafficErrorErrorDescription, trafficErrorClientIp, trafficErrorServerIp, trafficErrorRequestHost, trafficErrorRequestUriStem, trafficErrorWpSummaryLink, trafficErrorSnapshotBrowserLink, trafficErrorErrorCodeConfigLink }
+#   DESCRIPTION	""
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) coradiant(9723) alertsNotification(2) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_notificationAlertsTrafficError ISA SNMP_alertsNotification
+DEFINES
+ {
+  snmpv_trafficErrorTimeStamp : STRING;
+  snmpi_trafficErrorTimeStamp : LIST_OF STRING;
+  snmpv_trafficErrorSource : STRING;
+  snmpi_trafficErrorSource : LIST_OF STRING;
+  snmpv_trafficErrorTitle : STRING;
+  snmpi_trafficErrorTitle : LIST_OF STRING;
+  snmpv_trafficErrorErrorCode : INTEGER;
+  snmpi_trafficErrorErrorCode : LIST_OF STRING;
+  snmpv_trafficErrorErrorDescription : STRING;
+  snmpi_trafficErrorErrorDescription : LIST_OF STRING;
+  snmpv_trafficErrorClientIp : STRING;
+  snmpi_trafficErrorClientIp : LIST_OF STRING;
+  snmpv_trafficErrorServerIp : STRING;
+  snmpi_trafficErrorServerIp : LIST_OF STRING;
+  snmpv_trafficErrorRequestHost : STRING;
+  snmpi_trafficErrorRequestHost : LIST_OF STRING;
+  snmpv_trafficErrorRequestUriStem : STRING;
+  snmpi_trafficErrorRequestUriStem : LIST_OF STRING;
+  snmpv_trafficErrorWpSummaryLink : STRING;
+  snmpi_trafficErrorWpSummaryLink : LIST_OF STRING;
+  snmpv_trafficErrorSnapshotBrowserLink : STRING;
+  snmpi_trafficErrorSnapshotBrowserLink : LIST_OF STRING;
+  snmpv_trafficErrorErrorCodeConfigLink : STRING;
+  snmpi_trafficErrorErrorCodeConfigLink : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.9723.2.2
+# notificationAlertsIncident NOTIFICATION-TYPE
+#   -- FROM	CORADIANT-WATCHPOINT-SMIV2
+#   OBJECTS	{ incidentTimeStamp, incidentSource, incidentType, incidentDetectionRuleName, incidentWatchpoint, incidentErrorDescription, incidentStatus, incidentUrgencyRating, incidentSummary, incidentAimLink, incidentSnapshotBrowserLink, incidentAimSettingsLink }
+#   DESCRIPTION	""
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) coradiant(9723) alertsNotification(2) 2 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_notificationAlertsIncident ISA SNMP_alertsNotification
+DEFINES
+ {
+  snmpv_incidentTimeStamp : STRING;
+  snmpi_incidentTimeStamp : LIST_OF STRING;
+  snmpv_incidentSource : STRING;
+  snmpi_incidentSource : LIST_OF STRING;
+  snmpv_incidentType : STRING;
+  snmpi_incidentType : LIST_OF STRING;
+  snmpv_incidentDetectionRuleName : STRING;
+  snmpi_incidentDetectionRuleName : LIST_OF STRING;
+  snmpv_incidentWatchpoint : STRING;
+  snmpi_incidentWatchpoint : LIST_OF STRING;
+  snmpv_incidentErrorDescription : STRING;
+  snmpi_incidentErrorDescription : LIST_OF STRING;
+  snmpv_incidentStatus : STRING;
+  snmpi_incidentStatus : LIST_OF STRING;
+  snmpv_incidentUrgencyRating : INTEGER;
+  snmpi_incidentUrgencyRating : LIST_OF STRING;
+  snmpv_incidentSummary : STRING;
+  snmpi_incidentSummary : LIST_OF STRING;
+  snmpv_incidentAimLink : STRING;
+  snmpi_incidentAimLink : LIST_OF STRING;
+  snmpv_incidentSnapshotBrowserLink : STRING;
+  snmpi_incidentSnapshotBrowserLink : LIST_OF STRING;
+  snmpv_incidentAimSettingsLink : STRING;
+  snmpi_incidentAimSettingsLink : LIST_OF STRING;
+  snmpv_incidentAimCMDBCIID : STRING;
+  snmpi_incidentAimCMDBCIID : LIST_OF STRING;
+  snmpv_incidentAimCMDBCIName : STRING;
+  snmpi_incidentAimCMDBCIName : LIST_OF STRING;  
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.9723.2.3
+# notificationAlertsOdfError NOTIFICATION-TYPE
+#   -- FROM	CORADIANT-WATCHPOINT-SMIV2
+#   OBJECTS	{ odfErrorTimeStamp, odfErrorSource, odfErrorDescription }
+#   DESCRIPTION	"Error event related to the ODF feature."
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) coradiant(9723) alertsNotification(2) 3 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_notificationAlertsOdfError ISA SNMP_alertsNotification
+DEFINES
+ {
+  snmpv_odfErrorTimeStamp : STRING;
+  snmpi_odfErrorTimeStamp : LIST_OF STRING;
+  snmpv_odfErrorSource : STRING;
+  snmpi_odfErrorSource : LIST_OF STRING;
+  snmpv_odfErrorDescription : STRING;
+  snmpi_odfErrorDescription : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.9723.2.4
+# notificationAlertsSslDecryptionError NOTIFICATION-TYPE
+#   -- FROM	CORADIANT-WATCHPOINT-SMIV2
+#   OBJECTS	{ sslDecryptionErrorTimeStamp, sslDecryptionErrorSource, sslDecryptionErrorDescription }
+#   DESCRIPTION	"Error event related to the SSL decryption."
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) coradiant(9723) alertsNotification(2) 4 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_notificationAlertsSslDecryptionError ISA SNMP_alertsNotification
+DEFINES
+ {
+  snmpv_sslDecryptionErrorTimeStamp : STRING;
+  snmpi_sslDecryptionErrorTimeStamp : LIST_OF STRING;
+  snmpv_sslDecryptionErrorSource : STRING;
+  snmpi_sslDecryptionErrorSource : LIST_OF STRING;
+  snmpv_sslDecryptionErrorDescription : STRING;
+  snmpi_sslDecryptionErrorDescription : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.4.1.9723.2.5
+# notificationAlertsPlatformError NOTIFICATION-TYPE
+#   -- FROM	CORADIANT-WATCHPOINT-SMIV2
+#   OBJECTS	{ platformErrorTimeStamp, platformErrorSource, platformErrorName, platformErrorSeverity, platformErrorState, platformErrorDescription }
+#   DESCRIPTION	"Error event related to the platform."
+# ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) coradiant(9723) alertsNotification(2) 5 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_notificationAlertsPlatformError ISA SNMP_alertsNotification
+DEFINES
+ {
+  snmpv_platformErrorTimeStamp : STRING;
+  snmpi_platformErrorTimeStamp : LIST_OF STRING;
+  snmpv_platformErrorSource : STRING;
+  snmpi_platformErrorSource : LIST_OF STRING;
+  snmpv_platformErrorName : STRING;
+  snmpi_platformErrorName : LIST_OF STRING;
+  snmpv_platformErrorSeverity : STRING;
+  snmpi_platformErrorSeverity : LIST_OF STRING;
+  snmpv_platformErrorState : STRING;
+  snmpi_platformErrorState : LIST_OF STRING;
+  snmpv_platformErrorDescription : STRING;
+  snmpi_platformErrorDescription : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.6.3.1.1.5.1
+# coldStart NOTIFICATION-TYPE
+#   -- FROM	SNMPv2-MIB
+#   DESCRIPTION	"A coldStart trap signifies that the SNMPv2 entity, acting
+#             in an agent role, is reinitializing itself and that its
+#             configuration may have been altered."
+# ::= { iso(1) org(3) dod(6) internet(1) snmpV2(6) snmpModules(3) snmpMIB(1) snmpMIBObjects(1) snmpTraps(5) 1 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_coldStart ISA SNMP_snmpTraps
+DEFINES
+ {
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.6.3.1.1.5.2
+# warmStart NOTIFICATION-TYPE
+#   -- FROM	SNMPv2-MIB
+#   DESCRIPTION	"A warmStart trap signifies that the SNMPv2 entity, acting
+#             in an agent role, is reinitializing itself such that its
+#             configuration is unaltered."
+# ::= { iso(1) org(3) dod(6) internet(1) snmpV2(6) snmpModules(3) snmpMIB(1) snmpMIBObjects(1) snmpTraps(5) 2 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_warmStart ISA SNMP_snmpTraps
+DEFINES
+ {
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.6.3.1.1.5.3
+# linkDown NOTIFICATION-TYPE
+#   -- FROM	IF-MIB
+#   OBJECTS	{ ifIndex, ifAdminStatus, ifOperStatus }
+#   DESCRIPTION	"A linkDown trap signifies that the SNMP entity, acting in
+#             an agent role, has detected that the ifOperStatus object for
+#             one of its communication links is about to enter the down
+#             state from some other state (but not from the notPresent
+#             state).  This other state is indicated by the included value
+#             of ifOperStatus."
+# ::= { iso(1) org(3) dod(6) internet(1) snmpV2(6) snmpModules(3) snmpMIB(1) snmpMIBObjects(1) snmpTraps(5) 3 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_linkDown ISA SNMP_snmpTraps
+DEFINES
+ {
+  snmpv_ifIndex : INTEGER;
+  snmpi_ifIndex : LIST_OF STRING;
+  snmpv_ifAdminStatus : SNMPENUM_ifAdminStatus;
+  snmpi_ifAdminStatus : LIST_OF STRING;
+  snmpv_ifOperStatus : SNMPENUM_ifOperStatus;
+  snmpi_ifOperStatus : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.6.3.1.1.5.4
+# linkUp NOTIFICATION-TYPE
+#   -- FROM	IF-MIB
+#   OBJECTS	{ ifIndex, ifAdminStatus, ifOperStatus }
+#   DESCRIPTION	"A linkUp trap signifies that the SNMP entity, acting in an
+#             agent role, has detected that the ifOperStatus object for
+#             one of its communication links left the down state and
+#             transitioned into some other state (but not into the
+#             notPresent state).  This other state is indicated by the
+#             included value of ifOperStatus."
+# ::= { iso(1) org(3) dod(6) internet(1) snmpV2(6) snmpModules(3) snmpMIB(1) snmpMIBObjects(1) snmpTraps(5) 4 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_linkUp ISA SNMP_snmpTraps
+DEFINES
+ {
+  snmpv_ifIndex : INTEGER;
+  snmpi_ifIndex : LIST_OF STRING;
+  snmpv_ifAdminStatus : SNMPENUM_ifAdminStatus;
+  snmpi_ifAdminStatus : LIST_OF STRING;
+  snmpv_ifOperStatus : SNMPENUM_ifOperStatus;
+  snmpi_ifOperStatus : LIST_OF STRING;
+};
+END
+
+
+# ------------------------------------------------------------------------------
+# 
+# 1.3.6.1.6.3.1.1.5.5
+# authenticationFailure NOTIFICATION-TYPE
+#   -- FROM	SNMPv2-MIB
+#   DESCRIPTION	"An authenticationFailure trap signifies that the SNMPv2
+#             entity, acting in an agent role, has received a protocol
+#             message that is not properly authenticated.  While all
+#             implementations of the SNMPv2 must be capable of generating
+#             this trap, the snmpEnableAuthenTraps object indicates
+#             whether this trap will be generated."
+# ::= { iso(1) org(3) dod(6) internet(1) snmpV2(6) snmpModules(3) snmpMIB(1) snmpMIBObjects(1) snmpTraps(5) 5 }
+# 
+# ------------------------------------------------------------------------------
+
+MC_EV_CLASS : SNMP_authenticationFailure ISA SNMP_snmpTraps
+DEFINES
+ {
+};
+END
+

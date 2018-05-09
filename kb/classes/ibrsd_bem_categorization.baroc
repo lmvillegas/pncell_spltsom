@@ -1,0 +1,23 @@
+#
+# File name: ibrsd_bem_categorization.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#  Description:	System definitions extensions
+#---------------------------------------------------------------------
+
+
+MC_DATA_CLASS : IBRSD_DATA ISA DATA;
+END
+
+MC_DATA_CLASS : BEM_PRODUCT_CATEGORIZATION ISA IBRSD_DATA
+DEFINES {
+	Key : STRING, key = yes;
+	product_tier1 : STRING;
+	product_tier2 : STRING;
+	product_tier3 : STRING;
+#	ProductName : STRING;
+#        Manufacturer : STRING;
+};
+END
+

@@ -1,0 +1,142 @@
+#
+# File name: catchall_collector.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+
+collector 'All Events' :
+{
+    r['BPPM Model Administrators', 'Model Administrators', 'BPPM Operators', 'Operators','BPPM Supervisors', 'Supervisors','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators',
+      'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+    w['BPPM Model Administrators', 'Model Administrators', 'BPPM Operators', 'Operators','BPPM Supervisors', 'Supervisors','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators',
+      'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+    x['BPPM Model Administrators', 'Model Administrators', 'BPPM Operators', 'Operators','BPPM Supervisors', 'Supervisors','BPPM Monitoring Administrators', 'Monitoring Administrators','BPPM Administrators', 'Administrators','Cloud Administrators',
+      'Service Administrators','Event Administrator','Service Operators - Senior','Event Supervisor','Service Operators','Event Operator','Service Managers - Senior','Service Managers']
+}
+
+catchall
+END
+
+collector 'All Events'.'By Status':
+EVENT
+MC_CELL_CONTROL
+MC_CLIENT_BASE
+MC_ADAPTER_CONTROL
+IAS_EVENT
+END
+
+collector 'All Events'.'By Status'.Open:
+EVENT
+where [
+	$THIS.status == OPEN 
+]
+MC_CELL_CONTROL
+where [
+	$THIS.status == OPEN 
+]
+MC_CLIENT_BASE
+where [
+	$THIS.status == OPEN 
+]
+MC_ADAPTER_CONTROL
+where [
+	$THIS.status == OPEN 
+]
+IAS_EVENT
+where [
+	$THIS.status == OPEN 
+]
+END
+
+collector 'All Events'.'By Status'.Acknowledged:
+EVENT
+where [
+	$THIS.status == ACK 
+]
+MC_CELL_CONTROL
+where [
+	$THIS.status == ACK 
+]
+MC_CLIENT_BASE
+where [
+	$THIS.status == ACK 
+]
+MC_ADAPTER_CONTROL
+where [
+	$THIS.status == ACK 
+]
+IAS_EVENT
+where [
+	$THIS.status == ACK 
+]
+END
+
+collector 'All Events'.'By Status'.Assigned:
+EVENT
+where [
+	$THIS.status == ASSIGNED 
+]
+MC_CELL_CONTROL
+where [
+	$THIS.status == ASSIGNED 
+]
+MC_CLIENT_BASE
+where [
+	$THIS.status == ASSIGNED 
+]
+MC_ADAPTER_CONTROL
+where [
+	$THIS.status == ASSIGNED 
+]
+IAS_EVENT
+where [
+	$THIS.status == ASSIGNED 
+]
+END
+
+collector 'All Events'.'By Status'.Closed:
+EVENT
+where [
+	$THIS.status == CLOSED 
+]
+MC_CELL_CONTROL
+where [
+	$THIS.status == CLOSED 
+]
+MC_CLIENT_BASE
+where [
+	$THIS.status == CLOSED 
+]
+MC_ADAPTER_CONTROL
+where [
+	$THIS.status == CLOSED 
+]
+IAS_EVENT
+where [
+	$THIS.status == CLOSED 
+]
+END
+
+collector 'All Events'.'By Status'.Blackout:
+EVENT
+where [
+	$THIS.status == BLACKOUT 
+]
+MC_CELL_CONTROL
+where [
+	$THIS.status == BLACKOUT 
+]
+MC_CLIENT_BASE
+where [
+	$THIS.status == BLACKOUT 
+]
+MC_ADAPTER_CONTROL
+where [
+	$THIS.status == BLACKOUT 
+]
+IAS_EVENT
+where [
+	$THIS.status == BLACKOUT 
+]
+END

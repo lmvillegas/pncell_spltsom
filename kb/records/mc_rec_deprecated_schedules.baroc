@@ -1,0 +1,37 @@
+#
+# File name: mc_rec_deprecated_schedules.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+#
+# The unit for the refresh_period is the tick
+# if refresh_period is equal to N, the record's lists
+# will be updated each N tick
+# The supporting parameters in mcell.conf are: 
+#      CellEventEnable=Yes
+#      CellTickInterval=600 sec = 10 mn
+# You may want to reduce the tick interval to augment
+# the granularity of time. Notice however that there
+# is not an absolute guarantee that the Event Processor
+# will be able to strictly match a 60 sec or less tick
+# interval when processing large event flows.
+# 
+# The cell_utc_offset slot must contain the offset
+# between UTC time and the timezone the cell is in.
+# For example, a cell running in Austin, TX is in
+# the Central Standard Time (CST) timezone which
+# corresponds to a UTC offset of 6 hours (UTC-06).
+# In that case, you should have: cell_utc_offset = -6
+#----------------------------------------------------
+
+RECORD MC_DEPRECATED_SCHEDULES DEFINES
+{
+	active_schedule_list: LIST_OF STRING;
+	inactive_schedule_list: LIST_OF STRING;
+	refresh_period: INTEGER, default = 1;
+	tick_count: INTEGER;
+	cell_utc_offset: INTEGER, default = 0;
+}
+END

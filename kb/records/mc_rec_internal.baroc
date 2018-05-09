@@ -1,0 +1,42 @@
+#
+# File name: mc_rec_internal.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#  COPY OF INTERNAL DEFINITIONS - DO NOT LOAD!
+#---------------------------------------------------------------------
+#
+#  Module :	Impact Manager specific BAROC elements
+#  Description:	System definitions part 2 - internal classes
+#  Creation :	25-Feb-2002
+#  Modified :	27-May-2007
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Records
+#---------------------------------------------------------------------
+
+RECORD MC_CELL_INFO
+   DEFINES {
+      cell_name : STRING;	# Cell name
+      cell_description : STRING;# Cell description
+      cell_release : STRING;	# Cell release number
+      cell_build : STRING;	# Cell build number
+      cell_date : STRING;	# Cell build date
+      service_address : STRING;	# IP Address of service
+      service_port : INTEGER;	# Port number of service
+      alternate_address : STRING;# IP Address of alternate node
+      alternate_port : INTEGER;	# Port number of alternate node
+      home_dir : STRING;	# Home directory
+      start_date : INTEGER;	# Time stamp of Cell start
+      platform : STRING;	# Platform code
+      ha_failover : MC_YESNO;	# Part of FailOver system
+      ha_duplicate : MC_YESNO;	# Duplicate of FailOver system
+      ha_standby : MC_YESNO;	# Stand by for FailOver system
+   }
+END
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

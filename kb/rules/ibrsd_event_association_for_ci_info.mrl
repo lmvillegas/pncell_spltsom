@@ -1,0 +1,52 @@
+#
+# File name: ibrsd_event_association_for_ci_info.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# File name: ibrsd_event_association.mrl
+# Version: 9.6.00
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+#******************************************************************************************************************************
+# BMC Impact Integration for ARS
+# Date     		: April 10 , 2006
+# Description	: Event association rule for CI_INCIDENT_INFO . 
+#				  It will create Related events of type "biiars_event_association"
+# Author		: SMS Pune Integration Connect Team
+# Revision		: 
+#				  
+#******************************************************************************************************************************
+
+#Relate ci_incident_Info to the event,having mc_ueid stored in the mc_relation_source of ci_incident_info
+new ci_incident_info_relate : CI_INCIDENT_INFO($E)
+triggers
+      { relate($E); }
+END
+
+
+#Relate ci_incident_Info from the event,having mc_ueid stored in the mc_relation_source of event_incident_info on update of Incident Info
+execute ci_incident_info_relate : CI_INCIDENT_INFO($E)
+      when $E.mc_relation_source {
+        relate($E); 
+      }
+END`
+
+
+#UnRelate ci_incident_Info from the event,having mc_ueid stored in the mc_relation_source of CI_incident_info
+execute ci_incident_info_unrelate : CI_INCIDENT_INFO($E)
+      when $E.status == CLOSED { unrelate($E); }
+END
+
+#Update the incident id and incident status in original event. This is helpful in incident updates on ITSM side.
+new update_ci_for_incident_id : CI_INCIDENT_INFO($E) 
+                updates EVENT ($EV) where 
+                [
+                                $EV.mc_ueid == $E.event_mc_ueid 
+                ]
+                {
+                                #set the incident_id of the orignial event to the incident_id
+                                $EV.itsm_incident_id = $E.incident_id ;
+								$EV.itsm_incident_status = $E.incident_status;
+                }
+END

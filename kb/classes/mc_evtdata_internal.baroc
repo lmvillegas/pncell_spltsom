@@ -1,0 +1,648 @@
+#
+# File name: mc_evtdata_internal.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+#  COPY OF INTERNAL DEFINITIONS - DO NOT LOAD!
+#---------------------------------------------------------------------
+#
+# Module :	Impact Manager - Cell specific BAROC elements
+# Description:	System definitions part 2 - internal classes
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#  Enumerations
+#---------------------------------------------------------------------
+
+ENUMERATION MC_COMPONENT
+   10   cell
+   20   gateway
+   30   adapter
+   40   cli
+   50   browser
+   60   admin
+END
+
+ENUMERATION MC_LOG_LEVEL
+   10   VERBOSE
+   20   INFORM
+   30   WARNING
+   40   ERROR
+   50   FATAL
+   90   ALL
+END
+
+ENUMERATION MC_CONFIG_CATEGORY
+   10	DIR
+   20	TRACE
+   30	CONF
+   40	COLLECT
+   50	KB
+   60	DATA
+   70	CELL
+END
+
+ENUMERATION MC_RESOURCE_TYPE
+   10   PROPAGATE_BUFFER
+   20   DESTINATION_BUFFER
+END
+
+#---------------------------------------------------------------------
+#  Event classes
+#---------------------------------------------------------------------
+
+MC_EV_CLASS :
+   MC_CELL_CONTROL ISA CORE_EVENT
+   DEFINES {
+      severity : default = INFO;
+      mc_event_category : default = OPERATIONS_MANAGEMENT;
+      cell_name : STRING, dup_detect = yes;
+      cell_location : STRING, dup_detect = yes;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_START ISA MC_CELL_CONTROL
+   DEFINES {
+      pid : INTEGER;
+	  severity : default = OK;
+      init_events : INTEGER;
+      init_data : INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_STOP ISA MC_CELL_CONTROL
+   DEFINES {
+      pid : INTEGER;
+	  severity : default = CRITICAL;
+      termination_cause : STRING;
+      termination_info : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_ABORT ISA MC_CELL_STOP
+   DEFINES {
+      exception : STRING;
+      dump_file : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_TICK ISA MC_CELL_CONTROL
+   DEFINES {
+      time_to_next : INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_STATBLD_START ISA MC_CELL_CONTROL
+   DEFINES {
+      pid : INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_STATBLD_STOP ISA MC_CELL_CONTROL
+   DEFINES {
+      pid : INTEGER;
+      exit_status : INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_ACTIVITY_CHANGED ISA MC_CELL_CONTROL
+   DEFINES {
+      active_server : INTEGER;
+      duplicate_connected : MC_YESNO;
+      paused : MC_YESNO;
+   };
+END
+
+
+MC_EV_CLASS :
+   MC_CELL_DB_CLEANUP ISA MC_CELL_CONTROL
+   DEFINES {
+      nr_closed_events_before : INTEGER;
+      nr_non_closed_events_before : INTEGER;
+      nr_closed_events_after : INTEGER;
+      nr_non_closed_events_after : INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_LOG_CHANGED ISA MC_CELL_CONTROL
+   DEFINES {
+      log_module : STRING;
+      log_level : MC_LOG_LEVEL;
+      log_destination : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_LOG_MSG ISA MC_CELL_CONTROL
+   DEFINES {
+      log_time : INTEGER, representation=date;
+      log_program : STRING;
+      log_module : STRING;
+      log_level : MC_LOG_LEVEL;
+      log_src_file : STRING;
+      log_src_line : INTEGER;
+      log_msg_id : STRING;
+      log_text : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_CONNECT ISA MC_CELL_CONTROL
+   DEFINES {
+      descriptor_limit : INTEGER;
+      connected_clients : INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_CONNECT_RESOURCES_EXPANDED ISA MC_CELL_CONNECT ;
+END
+
+MC_EV_CLASS :
+   MC_CELL_CONNECT_SUSPENDED ISA MC_CELL_CONNECT
+   DEFINES {
+      severity : default = CRITICAL;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_CONNECT_RESUMED ISA MC_CELL_CONNECT
+   DEFINES {
+      severity : default = OK;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_CLIENT ISA MC_CELL_CONTROL
+   DEFINES {
+      client_type : STRING;
+      client_name : STRING;
+      client_location : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_ALLOWED_CONNECT ISA MC_CELL_CLIENT ;
+END
+
+MC_EV_CLASS :
+   MC_CELL_UNALLOWED_CONNECT ISA MC_CELL_CLIENT
+   DEFINES {
+      severity : default = WARNING;
+      reason : STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_DISCONNECT ISA MC_CELL_CLIENT ;
+END
+
+MC_EV_CLASS :
+   MC_CELL_MODIFIED_EVENT ISA MC_CELL_CLIENT
+   DEFINES {
+      requestor: STRING;
+      event: STRING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_DESTINATION_UNREACHABLE ISA MC_CELL_CONTROL
+   DEFINES {
+      severity: default = WARNING;
+      destination: STRING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_HEARTBEAT_EVT ISA MC_CELL_CONTROL
+   DEFINES {
+      cell: STRING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_HEARTBEAT_ON ISA MC_CELL_HEARTBEAT_EVT
+   DEFINES {
+      down_time: INTEGER;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_HEARTBEAT_FAILURE ISA MC_CELL_HEARTBEAT_EVT
+   DEFINES {
+      severity: default = WARNING;
+      missed: INTEGER;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_DUPLICATE_EVT ISA MC_CELL_CONTROL;
+END
+
+MC_EV_CLASS:
+   MC_CELL_DUPLICATE_ON ISA MC_CELL_DUPLICATE_EVT
+   DEFINES {
+      severity: default = OK;
+      down_time: INTEGER;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_DUPLICATE_FAILURE ISA MC_CELL_DUPLICATE_EVT
+   DEFINES {
+      severity: default = WARNING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_RESOURCE ISA MC_CELL_CONTROL
+   DEFINES {
+      resource: STRING;
+      resource_type: MC_RESOURCE_TYPE;
+      resource_name: STRING;
+      total_units: INTEGER;
+      used_units: INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_RESOURCE_OVERFLOW ISA MC_CELL_RESOURCE
+   DEFINES {
+      severity: default = CRITICAL;
+      effect: STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_RESOURCE_EXPANSION ISA MC_CELL_RESOURCE
+   DEFINES {
+      added_units: INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_RESOURCE_REDUCTION ISA MC_CELL_RESOURCE
+   DEFINES {
+      removed_units: INTEGER;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_RELOADED ISA MC_CELL_CONTROL
+   DEFINES {
+      category: LIST_OF MC_CONFIG_CATEGORY;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_ACTION_RESULT ISA MC_CELL_CONTROL
+   DEFINES {
+      name: STRING;
+      action: STRING;
+      event: STRING;
+      data: STRING;
+      requestor: STRING;
+      arguments: LIST_OF STRING;
+      failure: STRING;
+      start_time: INTEGER, representation = date;
+      end_time: INTEGER, representation = date;
+      exit: INTEGER;
+      output_val: STRING;
+      output_ref: STRING;
+      error_val: STRING;
+      error_ref: STRING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_PUBLISH_RESULT ISA MC_CELL_CONTROL
+   DEFINES {
+      requestor: STRING;
+      publish_env_id: STRING;
+      incremental: MC_YESNO;
+      nr_objects_created: INTEGER;
+      nr_objects_modified: INTEGER;
+      nr_objects_deleted: INTEGER;
+   };
+END
+
+MC_EV_CLASS :
+   MC_CELL_EVENT ISA EVENT
+   DEFINES {
+      mc_event_category : default = OPERATIONS_MANAGEMENT;
+      cell_name : STRING, dup_detect = yes;
+      cell_location : STRING, dup_detect = yes;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_PARSE_ERROR ISA MC_CELL_EVENT
+   DEFINES {
+      severity : default = MINOR;
+      event_text: STRING;
+      error_line: INTEGER;
+      error_column: INTEGER;
+      error_message: STRING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_UNDEFINED_CLASS ISA MC_CELL_EVENT
+   DEFINES {
+      severity : default = MINOR;
+      class_name: STRING;
+   };
+END
+
+MC_EV_CLASS:
+   MC_CELL_PROCESS_ERROR ISA MC_CELL_EVENT
+   DEFINES {
+      severity : default = MINOR;
+      event: STRING;
+      error_goal: STRING;
+      error_source: STRING;
+      error_code: INTEGER;
+      error_message: STRING;
+   };
+END
+
+MC_EV_CLASS :
+   MC_UPDATE_EVENT ISA EVENT
+   DEFINES {
+      mod_ueid : STRING;
+      mod_slots : LIST_OF STRING;
+      mod_values : LIST_OF STRING;
+   };
+END
+
+#---------------------------------------------------------------------
+#  Data classes
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS :
+   MC_CELL_DATA ISA DATA ;
+END
+
+MC_DATA_CLASS :
+   MC_CELL_DIR_COMPONENT ISA MC_CELL_DATA
+   DEFINES {
+      type : MC_COMPONENT,		# Type of component
+         read_only = yes;
+      subtype : STRING,			# Component subtype if any
+         read_only = yes;
+      name : STRING,			# Name of component
+         read_only = yes, key = yes;
+      location : STRING,		# Location as Address/Port
+         read_only = yes;
+      location2 : STRING,		# Secondary location
+         read_only = yes;
+   };
+END
+
+MC_DATA_CLASS :
+   MC_CELL_REGULATE ISA MC_CELL_DATA
+   DEFINES {
+      rule : STRING,			# Regulate rule name
+         read_only = yes, key = yes;
+      event_handle : INTEGER,		# ID of one of queued events
+         read_only = yes, key = yes;
+      class : STRING,			# Queued event class name
+         read_only = yes;
+      low_severity : SEVERITY,		# Lowest severity of queued events
+         read_only = yes;
+      high_severity : SEVERITY,		# Highest severity of queued events
+         read_only = yes;
+      repeat_count : INTEGER,		# Number of events in Queue
+         read_only = yes;
+      first_time : INTEGER,		# Reception time of first event
+         read_only = yes, representation = date;
+      last_time : INTEGER,		# Reception time of last event
+         read_only = yes, representation = date;
+      duration : INTEGER,		# Time between first and last event
+         read_only = yes;
+   };
+END
+
+MC_DATA_CLASS :
+   MC_CELL_HEARTBEAT ISA MC_CELL_DATA
+   DEFINES {
+      cell : STRING,			# Source/destination Cell name
+         read_only = yes, key = yes;
+      enable : INTEGER, default = 1;	# 0=disabled / 1=enabled
+      client_target : INTEGER,
+	 default = 0;			# 0=server / 1=client
+      last_time : INTEGER,		# Time of last succeeded heartbeat
+         read_only = yes, representation = date;
+      interval : INTEGER;		# Interval between heartbeats (s)
+      missed_warning : INTEGER;		# Number of misses for WARNING event
+      missed_minor : INTEGER;		# Number of misses for MINOR event
+      missed_critical : INTEGER;	# Number of misses for CRITICAL event
+      missed : INTEGER, read_only = yes;# Number of consecutive misses
+   };
+END
+
+MC_DATA_CLASS :
+   MC_CELL_PASSIVE_CLIENT ISA MC_CELL_HEARTBEAT ;
+END
+
+MC_DATA_CLASS :
+   MC_CELL_METRIC ISA MC_CELL_DATA
+   DEFINES {
+      subject : STRING,			# Metric subject name
+         read_only = yes,  key = yes;
+      description : STRING;		# Metric description
+      short_interval : INTEGER,		# Short term interval length (s)
+         read_only = yes;
+      short_total : INTEGER,		# Short term total count
+         read_only = yes;
+      short_average : INTEGER,		# Short term average (per s)
+         read_only = yes;
+      medium_interval : INTEGER,	# Medium term interval length (s)
+         read_only = yes;
+      medium_total : INTEGER,		# Medium term total count
+         read_only = yes;
+      medium_average : INTEGER,		# Medium term average (per s)
+         read_only = yes;
+      long_interval : INTEGER,		# Long term interval length (s)
+         read_only = yes;
+      long_total : INTEGER,		# Long term total count
+         read_only = yes;
+      long_average : INTEGER,		# Long term average (per s)
+         read_only = yes;
+   };
+END
+
+MC_DATA_CLASS :
+   MC_EVENT_RELATION ISA MC_CELL_DATA
+   DEFINES {
+      class : STRING,			# Related event class
+         read_only = yes,  key = yes;
+      type : STRING;			# Relation type
+   };
+END
+
+#----------------------------------------------------
+# CLASS		Access Control List
+# name		name of the access control list
+# read_list	roles granted with read permission
+# write_list	roles granted with write permission
+# execute_list	roles granted with execute permission
+#----------------------------------------------------
+
+MC_DATA_CLASS:
+   MC_ACL ISA DATA
+   DEFINES
+   {
+      name: STRING,
+	read_only = yes, key = yes;
+      read_list: LIST_OF STRING, default = ['MC_SuperAdmins'];
+      write_list: LIST_OF STRING, default = ['MC_SuperAdmins'];
+      execute_list: LIST_OF STRING, default = ['MC_SuperAdmins'];
+   };
+END
+
+#---------------------------------------------------------------------
+#  Calendaring
+#---------------------------------------------------------------------
+
+MC_DATA_CLASS : 
+   MC_CALENDARING ISA DATA
+   DEFINES {
+      description : STRING;
+   };
+END
+
+MC_DATA_CLASS : 
+   TIME_ZONE ISA MC_CALENDARING
+   DEFINES {
+      tzid : STRING,
+	read_only = yes, key = yes;
+      utc_offset : STRING;
+      dst_offset : STRING;
+      std2dst_date : LIST_OF INTEGER;
+      dst2std_date : LIST_OF INTEGER;
+   };
+END
+
+MC_DATA_CLASS : 
+   BASE_TIME_FRAME ISA MC_CALENDARING
+   DEFINES {
+      name : 		STRING;
+      dtstart : 	STRING;
+      dtend :		STRING;
+      duration : 	STRING;
+      interruptions : 	LIST_OF STRING;
+      tzid : 		STRING;
+      rdate : 		LIST_OF STRING;
+      rrule : 		LIST_OF STRING;
+      exdate : 		LIST_OF STRING;
+      exrule : 		LIST_OF STRING;
+      active : 		INTEGER, parse=no, read_only = yes;
+      permanent_time_frame : MC_YESNO, default = YES;
+   };
+END
+
+MC_DATA_CLASS : 
+   TIME_FRAME ISA BASE_TIME_FRAME
+   DEFINES {
+      name : STRING, read_only = yes, key = yes;
+   };
+END
+
+# for backward compatibility only
+MC_DATA_CLASS:
+   ACTIVE_TIME_FRAME ISA TIME_FRAME;
+END
+
+MC_DATA_CLASS : 
+   SCHEDULE ISA MC_CALENDARING
+   DEFINES {
+      name : STRING,
+	read_only = yes, key = yes;
+      tf_name : STRING;
+      start_action : STRING;
+      end_action : STRING;
+   };
+END
+
+
+#---------------------------------------------------------------------
+#  Genneric actions
+#---------------------------------------------------------------------
+ENUMERATION EXECUTE_TYPE
+    10  CELL
+    20  AGENT
+END
+
+MC_DATA_CLASS: BASE_GENERIC_ACTION ISA POLICY
+        DEFINES
+        {
+		action_group		: STRING;
+		action_name		: STRING;
+		roles			: LIST_OF STRING;
+		parameters      	: STRING;
+		action_type     	: EXECUTE_TYPE;
+		agent_name		: STRING;
+		action_program		: STRING;
+		action_program_args	: LIST_OF STRING;
+                action_event		: MC_YESNO;
+         };
+END
+
+MC_DATA_CLASS: GENERIC_ACTION ISA BASE_GENERIC_ACTION
+        DEFINES
+        {
+		selector_ecf    	: ECF CORE_EVENT;
+                operation_token		: STRING;
+         };
+END
+
+MC_DATA_CLASS: GENERIC_DATA_ACTION ISA BASE_GENERIC_ACTION
+        DEFINES
+        {
+		data_selector    	: ECF CORE_DATA;
+         };
+END
+
+#---------------------------------------------------------------------
+#  Records
+#---------------------------------------------------------------------
+
+RECORD MC_CELL_INFO
+   DEFINES {
+      cell_name : STRING;	# Cell name
+      cell_description : STRING;# Cell description
+      cell_release : STRING;	# Cell release number
+      cell_build : STRING;	# Cell build number
+      cell_date : STRING;	# Cell build date
+      service_address : STRING;	# IP Address of service
+      service_port : INTEGER;	# Port number of service
+      alternate_address : STRING;# IP Address of alternate node
+      alternate_port : INTEGER;	# Port number of alaternate node
+      home_dir : STRING;	# Home directory
+      start_date : INTEGER;	# Time stamp of Cell start
+      platform : STRING;	# Platform code
+      ha_failover : MC_YESNO;	# Part of FailOver system
+      ha_duplicate : MC_YESNO;	# Duplicate of FailOver system
+      ha_standby : MC_YESNO;	# Stand by for FailOver system
+   }
+END
+
+#---------------------------------------------------------------------
+#  Interfaces
+#---------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+#   End Of file
+#---------------------------------------------------------------------

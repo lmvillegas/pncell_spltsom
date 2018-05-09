@@ -1,0 +1,54 @@
+#
+# File name: capacityManagement.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+################################################################################
+#
+# update the original capacity event based on the updated capacity event received.
+# If the capacity event is in a CLOSED state, create a new capacity event or else update
+# it.
+################################################################################
+
+
+new update_capacity_event : BCO_EV($BCO_EV) 
+          updates ALL BCO_EV($BCO_EV_OLD)
+          where [$BCO_EV_OLD.unique_identifier == $BCO_EV.unique_identifier AND $BCO_EV_OLD.status != CLOSED]
+          {
+          	if ($BCO_EV.mc_date_modification > $BCO_EV_OLD.mc_date_modification)
+          	then
+          	{
+				ntadd($BCO_EV_OLD, concat(["Capacity Event updated on Date: ", $BCO_EV_OLD.mc_date_modification, " , Msg: ", $BCO_EV_OLD.msg]));
+			};
+			$BCO_EV_OLD.msg = $BCO_EV.msg;
+			$BCO_EV_OLD.entity = $BCO_EV.entity;
+			$BCO_EV_OLD.metric = $BCO_EV.metric;
+			$BCO_EV_OLD.event_type = $BCO_EV.event_type;
+			$BCO_EV_OLD.metric_utilization = $BCO_EV.metric_utilization;
+			$BCO_EV_OLD.utilization_measurment_unit = $BCO_EV.utilization_measurment_unit;
+			$BCO_EV_OLD.days_to_reach_threshold = $BCO_EV.days_to_reach_threshold;
+			$BCO_EV_OLD.threshold_value = $BCO_EV.threshold_value;
+			$BCO_EV_OLD.threshold_measurment_unit = $BCO_EV.threshold_measurment_unit;
+			#$BCO_EV_OLD.is_predictive = $BCO_EV.is_predictive;
+			$BCO_EV_OLD.cluster_name = $BCO_EV.cluster_name;
+			$BCO_EV_OLD.partition_name = $BCO_EV.partition_name;
+			$BCO_EV_OLD.file_system_name = $BCO_EV.file_system_name;
+			$BCO_EV_OLD.datastore_name = $BCO_EV.datastore_name;
+			$BCO_EV_OLD.VM_name = $BCO_EV.VM_name;
+			$BCO_EV_OLD.host_name = $BCO_EV.host_name;
+			$BCO_EV_OLD.data_store_hosts_affected = $BCO_EV.data_store_hosts_affected;
+			$BCO_EV_OLD.mc_timeout = $BCO_EV.mc_timeout;
+			# delete the old timer and set the BCO Auto close timer back.
+			delete_timers($BCO_EV_OLD, Event_Timeout);
+		        set_timer($BCO_EV_OLD, $BCO_EV_OLD.mc_timeout, Event_Timeout);
+			ntadd($BCO_EV_OLD, concat(["mc_timeout value: ", $BCO_EV_OLD.mc_timeout]));
+			
+		  	#increment the repeat count
+          	$BCO_EV_OLD.repeat_count = $BCO_EV_OLD.repeat_count + 1;
+			
+          	drop_new;
+          }
+
+END
+

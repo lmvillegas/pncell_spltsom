@@ -1,0 +1,39 @@
+#
+# File name: app_diagnostics_close_event.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#-----------------------------------------------------------------------------
+# mc_origin_key is used to store APM event ID.
+# when we create an event where incident status is changed we search for event with the
+# same incident id and close the old one, if the event closed (status == 'COMPLETED') we also drop the new event.
+#-----------------------------------------------------------------------------
+
+new close_old_event : APM_Event_v2($NEW) where [status: equals OPEN]
+	updates APM_Event_v2($OLD) where [$OLD.mc_origin_key equals $NEW.mc_origin_key AND $OLD.status != CLOSED]
+	{
+		$OLD.msg = $NEW.msg;
+		$OLD.severity = $NEW.severity;
+		$OLD.mc_object_uri = $NEW.mc_object_uri;
+		$OLD.mc_incident_time = $NEW.mc_incident_time;
+		$OLD.mc_parameter_unit = $NEW.mc_parameter_unit;
+		$OLD.mc_parameter_value = $NEW.mc_parameter_value;
+		$OLD.mc_parameter_threshold = $NEW.mc_parameter_threshold;
+		if ($NEW.mc_tool_key == 'COMPLETED') then
+		{
+			$OLD.status = CLOSED;
+		};
+		drop_new;
+	}
+END
+
+new close_new_event : 
+	APM_Event_v2($NEW) where [status: equals OPEN]
+	triggers
+	{
+		if ($NEW.mc_tool_key == 'COMPLETED') then
+		{
+			$NEW.status = CLOSED;
+		};
+	}
+END

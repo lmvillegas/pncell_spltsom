@@ -1,0 +1,24 @@
+#
+# File name: iipem_em_propagation.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SELECTOR;
+	based_on='EVENT';
+	name='IIPEM.All_EM_Events';
+	description='All EM Events';
+	ecfs=['EVENT($EV) where [$EV.CLASS not_equals ''SMC_STATE_CHANGE'' ]'];
+	ecfs_descr=['All EM Events'];
+END
+IM_PROPAGATION_POLICY;
+	name='IIPEM_EM_PROPAGATION';
+	description='Propagation All EM Events to PATROL EM';
+	enabled=1;
+	active_timeframes=[];
+	except_timeframes=[];
+	selector_name='IIPEM.All_EM_Events';
+	selector_class='EVENT';
+	selector_ecf=*IIPEM.All_EM_Events ($EV);
+	all_of_propagation_list=[jServer];
+	one_of_propagation_list=[];
+END

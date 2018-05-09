@@ -1,0 +1,17 @@
+#
+# File name: apmV2.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+#
+# Description: V2 Events for APM
+#
+#----------------------------------------------------
+
+MC_EV_CLASS:
+   APM_Event_v2 ISA APM_Event
+   DEFINES
+   {
+      apm_application_id : STRING;     
+   };
+END

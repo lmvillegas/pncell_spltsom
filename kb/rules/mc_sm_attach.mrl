@@ -1,0 +1,149 @@
+#
+# File name: mc_sm_attach.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+#----------------------------------------------------
+# WARNING! IT IS RECOMMENDED NOT TO EDIT THIS RULESET
+#          AS THIS MAY ALTER THE NORMAL BEHAVIOR
+#          OF THE SERVICE MANAGEMENT MODEL
+#----------------------------------------------------
+
+#----------------------------------------------------
+# ATTACH 1 of 4
+#----------------------------------------------------
+execute detach_event:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id != "" AND
+		$RAW_EVENT.mc_smc_impact within [ATTACHED,IMPACTING]
+	]
+	using
+	{
+		MC_SM_COMPONENT ($COMP) where
+		[
+			$COMP.mc_udid == $RAW_EVENT.mc_smc_id
+		]
+	}
+	when $RAW_EVENT.status within [CLOSED,BLACKOUT]
+	{
+		smc_detach($RAW_EVENT, $COMP);
+	}
+END
+
+#----------------------------------------------------
+# ATTACH 2 of 4
+#----------------------------------------------------
+execute update_component:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id != "" AND
+		$RAW_EVENT.mc_smc_impact within [ATTACHED,IMPACTING] 
+	]
+	when $RAW_EVENT.severity
+	{
+		smc_update_self_status($RAW_EVENT);
+	}
+	when $RAW_EVENT.status  outside [CLOSED,BLACKOUT]
+	{
+		smc_update_event_indicator($RAW_EVENT);
+	}
+END
+
+#----------------------------------------------------
+# update abnormality score
+#----------------------------------------------------
+execute update_abnormality_score:
+	ABNORMALITY ($EV) where
+	[
+		$EV.mc_smc_id != "" AND
+		$EV.mc_smc_impact within [ATTACHED,IMPACTING] 
+	]
+	when $EV.pn_event_score
+	{
+		smc_update_abnormality_score($EV);
+	}
+END
+
+#----------------------------------------------------
+# update predictive
+#----------------------------------------------------
+execute update_predicitive_info:
+	ALARM ($EV) where
+	[
+		$EV.mc_smc_id != "" AND
+		$EV.mc_smc_impact within [ATTACHED,IMPACTING] 
+	]
+	when $EV.pn_predicted_severity
+	{
+		smc_update_predictive_info($EV);
+	}
+END
+
+#----------------------------------------------------
+# ATTACH 3 of 4
+#----------------------------------------------------
+
+execute attach_event:
+	EVENT ($RAW_EVENT) where
+	[
+		$RAW_EVENT.mc_smc_id != "" AND
+		$RAW_EVENT.mc_smc_impact == ELECTED
+	]
+	using
+	{
+		MC_SM_COMPONENT ($COMP) where
+		[
+			$COMP.mc_udid == $RAW_EVENT.mc_smc_id
+		]
+	}
+	when $RAW_EVENT.status outside [CLOSED,BLACKOUT]
+	{
+		smc_attach($RAW_EVENT, $COMP);
+	}
+END
+
+#----------------------------------------------------
+# ATTACH 4 of 4
+#----------------------------------------------------
+
+delete detach_delete_event: 
+        EVENT ($RAW_EVENT) 
+                 where [ $RAW_EVENT.mc_smc_id != '' AND  
+                         $RAW_EVENT.mc_smc_impact within [ATTACHED,IMPACTING] 
+		       ] 
+         using 
+         { 
+                 MC_SM_COMPONENT ($COMP) where 
+                 [ 
+                         $COMP.mc_udid == $RAW_EVENT.mc_smc_id 
+                 ] 
+         } 
+         { 
+                 smc_detach($RAW_EVENT, $COMP); 
+         } 
+END
+
+
+#----------------------------------------------------
+# Repair rules
+#----------------------------------------------------
+
+new sim_repair:
+	MC_CELL_CONTROL ($EV) where [$EV.mc_tool_rule == sim_repair]
+	triggers
+	{
+		smc_detach_deleted_events;
+		smc_repair_root_causes;
+	}
+END
+
+new sim_repair_unimpacted_ci:
+	MC_CELL_CONTROL ($EV) where [$EV.mc_tool_rule == sim_repair_unimpacted_ci]
+	triggers
+	{
+		smc_repair_unimpacted_ci;
+	}
+END
+

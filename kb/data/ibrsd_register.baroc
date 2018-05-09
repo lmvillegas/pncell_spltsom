@@ -1,0 +1,15 @@
+#
+# File name: ibrsd_register.baroc
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+SIM_NOTIFICATION_REGISTRY_INT;
+	client_data='IBRSD';
+	clients=[];
+	requested_notifications=[COMPONENT_CHANGE];
+	notification_mode=FULL;
+	notifications_at_registration=YES;
+	asset_filter='';
+	causal_event_notification_mode=NONE;
+	all_causes_notification_mode=NO;
+END

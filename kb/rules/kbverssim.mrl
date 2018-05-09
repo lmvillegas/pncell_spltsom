@@ -1,0 +1,8 @@
+#
+# File name: kbverssim.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+@kbversion(im_sim,'9.0.00',9000)
+

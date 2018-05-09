@@ -1,0 +1,11 @@
+#
+# File name: ibrsd_sim_error_collectors.mrl
+# Version: 11.0.00.001
+# Copyright 1998-2018 BMC Software, Inc. All Rights Reserved
+#
+
+collector 'Incident Errors'.'Component Incident Errors':
+IBRSD_ERROR 
+where [$THIS.use_case == 'SIM']
+END	
+
